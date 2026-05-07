@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#060810">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TipsterBook">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>TipsterBook PRO</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC0uoiKkkQIU_NrnJQr5VSs2vB94UN87Mo",
+    authDomain: "myproject-dfb0d.firebaseapp.com",
+    databaseURL: "https://myproject-dfb0d-default-rtdb.firebaseio.com",
+    projectId: "myproject-dfb0d",
+    storageBucket: "myproject-dfb0d.firebasestorage.app",
+    messagingSenderId: "142948635097",
+    appId: "1:142948635097:web:5893a023003346eb22c9c8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const dataRef = ref(db, 'tipsterbook');
+
+  window._fbSave = async (dataObj) => {
+    try {
+      await set(dataRef, { payload: JSON.stringify(dataObj) });
+    } catch(e) {
+      console.error('Firebase save error:', e);
+      localStorage.setItem('tipsterbook_v3', JSON.stringify(dataObj));
+    }
+  };
+
+  window._fbListen = (callback) => {
+    onValue(dataRef, (snapshot) => {
+      const val = snapshot.val();
+      if (val && val.payload) {
+        try {
+          callback(JSON.parse(val.payload));
+        } catch(e) { console.error('Firebase parse error:', e); }
+      } else {
+        // Base de datos vacía — igual dispara el callback con datos vacíos
+        callback({ tipsters: [] });
+      }
+    });
+  };
+
+  window._fbReady = true;
+  window.dispatchEvent(new Event('fb-ready'));
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Unbounded:wght@400;700;900&family=DM+Sans:wght@400;500;700&display=swap');
+:root{--bg:#060810;--s1:#0d1018;--s2:#131720;--s3:#1a1f2c;--border:#222736;--accent:#6c63ff;--green:#22c55e;--red:#ef4444;--gold:#f59e0b;--cyan:#06b6d4;--pink:#e879f9;--text:#e2e8f0;--muted:#4a5270;--muted2:#6b7694;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+header{background:linear-gradient(135deg,#0d1018 0%,#131028 100%);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:100;}
+header h1{font-family:'Unbounded',sans-serif;font-size:1.05rem;font-weight:900;color:var(--accent);}
+.header-badge{background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.3);color:var(--accent);padding:3px 10px;border-radius:20px;font-size:0.62rem;font-family:'DM Mono',monospace;letter-spacing:1px;}
+.header-actions{margin-left:auto;display:flex;gap:6px;}
+.hbtn{padding:6px 12px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all 0.15s;}
+.hbtn:hover{color:var(--accent);border-color:var(--accent);}
+.container{max-width:1320px;margin:0 auto;padding:18px 14px;}
+.tabs{display:flex;gap:3px;background:var(--s1);border-radius:10px;padding:4px;border:1px solid var(--border);margin-bottom:18px;overflow-x:auto;}
+.tab{flex:1;padding:9px 10px;background:transparent;border:none;color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;border-radius:7px;transition:all 0.2s;white-space:nowrap;min-width:max-content;}
+.tab.active{background:var(--s3);color:var(--accent);border:1px solid var(--border);}
+.tab-content{display:none;}.tab-content.active{display:block;}
+.stats-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:9px;margin-bottom:18px;}
+.stat-box{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+.stat-lbl{font-size:0.55rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px;}
+.stat-val{font-family:'DM Mono',monospace;font-size:1.05rem;font-weight:500;}
+.green{color:var(--green);}.red{color:var(--red);}.gold{color:var(--gold);}.cyan{color:var(--cyan);}.purple{color:var(--accent);}.pink{color:var(--pink);}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;}
+.card-title{font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:12px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px;margin-bottom:12px;}
+.fg label{display:block;font-size:0.7rem;color:var(--muted2);margin-bottom:5px;font-weight:700;}
+input[type=text],input[type=number],input[type=date],select{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-family:'DM Mono',monospace;font-size:0.8rem;outline:none;transition:border-color 0.2s;}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(108,99,255,0.12);}
+select option{background:var(--s2);}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;}
+.chip{padding:5px 11px;border-radius:20px;font-size:0.7rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all 0.15s;user-select:none;}
+.chip.selected{background:rgba(108,99,255,0.2);border-color:var(--accent);color:var(--accent);}
+.jugada-section{background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:12px;margin-bottom:12px;}
+.jugada-section .section-label{font-size:0.65rem;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.jugada-toggle{display:flex;gap:6px;}
+.jt-btn{flex:1;padding:11px;border:2px solid var(--border);border-radius:10px;background:var(--s2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.18s;text-align:center;}
+.jt-btn.played{border-color:var(--green);background:rgba(34,197,94,0.12);color:var(--green);}
+.jt-btn.skipped{border-color:var(--pink);background:rgba(232,121,249,0.12);color:var(--pink);}
+.result-toggle{display:flex;gap:6px;flex-wrap:wrap;}
+.rt-btn{flex:1;min-width:80px;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--s2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.18s;text-align:center;}
+.rt-btn.win{border-color:var(--green);background:rgba(34,197,94,0.12);color:var(--green);}
+.rt-btn.loss{border-color:var(--red);background:rgba(239,68,68,0.12);color:var(--red);}
+.rt-btn.void{border-color:var(--gold);background:rgba(245,158,11,0.12);color:var(--gold);}
+.btn{padding:9px 16px;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.8rem;cursor:pointer;transition:all 0.18s;}
+.btn-primary{background:var(--accent);color:#fff;}.btn-primary:hover{background:#7c75ff;transform:translateY(-1px);}
+.btn-ghost{background:var(--s2);color:var(--text);border:1px solid var(--border);}.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-del{background:transparent;border:1px solid rgba(239,68,68,0.3);color:var(--red);padding:5px 10px;font-size:0.68rem;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;transition:all 0.15s;}
+.btn-del:hover{background:rgba(239,68,68,0.15);}
+.btn-edit{background:transparent;border:1px solid rgba(108,99,255,0.3);color:var(--accent);padding:5px 10px;font-size:0.68rem;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;transition:all 0.15s;}
+.btn-edit:hover{background:rgba(108,99,255,0.1);}
+.tipster-list{display:flex;flex-direction:column;gap:9px;}
+.tipster-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color 0.2s;}
+.tipster-card:hover{border-color:rgba(108,99,255,0.4);}
+.tipster-header{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;cursor:pointer;background:var(--s2);flex-wrap:wrap;gap:8px;}
+.tipster-left{display:flex;align-items:center;gap:10px;}
+.avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:0.6rem;font-weight:900;color:#fff;flex-shrink:0;}
+.tipster-name{font-family:'Unbounded',sans-serif;font-size:0.78rem;font-weight:700;}
+.tipster-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.tip-stat{text-align:right;}
+.tip-stat-lbl{font-size:0.52rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;}
+.tip-stat-val{font-family:'DM Mono',monospace;font-size:0.82rem;font-weight:500;}
+.chevron{color:var(--muted);font-size:0.7rem;transition:transform 0.2s;}.chevron.open{transform:rotate(180deg);}
+.tipster-body{display:none;padding:14px;}.tipster-body.open{display:block;}
+.pboxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:7px;margin-bottom:12px;}
+.pbox{background:var(--s2);border-radius:8px;padding:10px;text-align:center;border:1px solid var(--border);}
+.pbox-lbl{font-size:0.52rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:3px;}
+.pbox-val{font-family:'DM Mono',monospace;font-size:0.88rem;font-weight:500;}
+.bets-table{width:100%;border-collapse:collapse;font-size:0.72rem;margin-bottom:12px;overflow-x:auto;display:block;}
+.bets-table th{padding:6px 8px;text-align:left;font-size:0.56rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
+.bets-table td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,0.03);white-space:nowrap;vertical-align:middle;}
+.bets-table tr:last-child td{border-bottom:none;}
+.bets-table tr.row-skipped td{opacity:0.5;}
+.badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:0.58rem;font-weight:700;letter-spacing:0.5px;}
+.badge-win{background:rgba(34,197,94,0.15);color:var(--green);}.badge-loss{background:rgba(239,68,68,0.15);color:var(--red);}
+.badge-void{background:rgba(245,158,11,0.15);color:var(--gold);}.badge-pending{background:rgba(108,99,255,0.15);color:var(--accent);}
+.badge-played{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.3);}
+.badge-skipped{background:rgba(232,121,249,0.12);color:var(--pink);border:1px solid rgba(232,121,249,0.3);}
+.types-tags{display:flex;flex-wrap:wrap;gap:3px;}
+.type-tag{background:rgba(108,99,255,0.12);color:var(--accent);border:1px solid rgba(108,99,255,0.2);padding:1px 5px;border-radius:4px;font-size:0.56rem;font-weight:700;}
+.chart-wrap{position:relative;height:260px;margin-top:12px;}
+.chart-wrap-lg{position:relative;height:320px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:640px){.two-col{grid-template-columns:1fr;}}
+.filter-bar{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.filter-label{font-size:0.63rem;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.flt-btn{padding:5px 12px;border-radius:20px;font-size:0.7rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.flt-btn.active-all{border-color:var(--accent);background:rgba(108,99,255,0.15);color:var(--accent);}
+.flt-btn.active-played{border-color:var(--green);background:rgba(34,197,94,0.12);color:var(--green);}
+.flt-btn.active-skipped{border-color:var(--pink);background:rgba(232,121,249,0.12);color:var(--pink);}
+.period-bar{display:flex;gap:4px;flex-wrap:wrap;}
+.period-btn{padding:5px 10px;border-radius:6px;font-size:0.68rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.period-btn.active{border-color:var(--cyan);background:rgba(6,182,212,0.12);color:var(--cyan);}
+.tipster-filter{display:flex;gap:4px;flex-wrap:wrap;}
+.tf-btn{padding:4px 9px;border-radius:6px;font-size:0.66rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.tf-btn.active{border-color:var(--accent);background:rgba(108,99,255,0.15);color:var(--accent);}
+.sort-bar{display:flex;gap:4px;flex-wrap:wrap;}
+.sort-btn{padding:4px 10px;border-radius:6px;font-size:0.66rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.sort-btn.active{border-color:var(--gold);background:rgba(245,158,11,0.12);color:var(--gold);}
+.empty{text-align:center;padding:36px 20px;color:var(--muted2);}
+.empty-icon{font-size:2.2rem;margin-bottom:8px;}
+.no-bets{text-align:center;padding:12px;color:var(--muted);font-size:0.78rem;}
+.preview-box{background:var(--s2);border:1px solid rgba(108,99,255,0.3);border-radius:10px;padding:12px;margin:10px 0;display:none;}
+.preview-title{font-size:0.6rem;color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.preview-row{display:flex;justify-content:space-between;font-size:0.78rem;padding:3px 0;}
+.section-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.winrate-bar{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;margin-top:3px;}
+.winrate-fill{height:100%;background:var(--green);border-radius:3px;transition:width 0.5s;}
+.info-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.25);color:var(--cyan);padding:4px 10px;border-radius:20px;font-size:0.65rem;font-weight:700;}
+.section-divider{font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:12px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-box{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:20px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Unbounded',sans-serif;font-size:0.85rem;font-weight:700;margin-bottom:16px;color:var(--accent);}
+.modal-actions{display:flex;gap:8px;margin-top:16px;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎯 TipsterBook</h1>
+  <span class="header-badge">SPORTS BETTING PRO</span>
+  <span id="syncStatus" style="font-size:0.65rem;font-family:'DM Mono',monospace;color:#6b7694;margin-left:4px;">🔄 Conectando...</span>
+  <div class="header-actions">
+    <button class="hbtn" onclick="exportData()">⬇ Exportar</button>
+    <button class="hbtn" onclick="document.getElementById('importFile').click()">⬆ Importar</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+</header>
+<div class="container">
+
+<!-- GLOBAL STATS -->
+<div class="stats-strip">
+  <div class="stat-box"><div class="stat-lbl">Tipsters</div><div class="stat-val purple" id="gTipsters">0</div></div>
+  <div class="stat-box"><div class="stat-lbl">Total Apostado</div><div class="stat-val" id="gInvertido">$0</div></div>
+  <div class="stat-box"><div class="stat-lbl">Profit Jugadas</div><div class="stat-val green" id="gProfit">$0</div></div>
+  <div class="stat-box"><div class="stat-lbl">ROI Jugadas</div><div class="stat-val cyan" id="gRoi">0%</div></div>
+  <div class="stat-box"><div class="stat-lbl">WR Jugadas</div><div class="stat-val gold" id="gWinrate">0%</div></div>
+  <div class="stat-box"><div class="stat-lbl">Profit No Jugadas</div><div class="stat-val pink" id="gProfitSkip">$0</div></div>
+  <div class="stat-box"><div class="stat-lbl">ROI No Jugadas</div><div class="stat-val pink" id="gRoiSkip">0%</div></div>
+  <div class="stat-box"><div class="stat-lbl">WR No Jugadas</div><div class="stat-val gold" id="gWinrateSkip">0%</div></div>
+  <div class="stat-box"><div class="stat-lbl">Jugadas / Total</div><div class="stat-val purple" id="gBets">0/0</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('tipsters')">👤 Tipsters</button>
+  <button class="tab" onclick="switchTab('nueva-apuesta')">➕ Nueva Apuesta</button>
+  <button class="tab" onclick="switchTab('unidades')">📐 Unidades</button>
+  <button class="tab" onclick="switchTab('graficas')">📊 Gráficas</button>
+</div>
+
+<!-- TAB TIPSTERS -->
+<div id="tab-tipsters" class="tab-content active">
+  <div class="card">
+    <div class="card-title">Agregar Tipster</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <input type="text" id="newName" placeholder="Nombre del tipster..." style="flex:1;min-width:200px;" onkeydown="if(event.key==='Enter')addTipster()">
+      <button class="btn btn-primary" onclick="addTipster()">+ Agregar</button>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+    <span class="filter-label">Ordenar:</span>
+    <div class="sort-bar" id="tipsterSortBar">
+      <button class="sort-btn active" onclick="setSortTipsters('nombre',this)">Nombre</button>
+      <button class="sort-btn" onclick="setSortTipsters('profit',this)">Profit</button>
+      <button class="sort-btn" onclick="setSortTipsters('roi',this)">ROI</button>
+      <button class="sort-btn" onclick="setSortTipsters('unidades',this)">Unidades</button>
+      <button class="sort-btn" onclick="setSortTipsters('winrate',this)">Win Rate</button>
+      <button class="sort-btn" onclick="setSortTipsters('apuestas',this)">Apuestas</button>
+    </div>
+  </div>
+  <div id="tipsterList" class="tipster-list">
+    <div class="empty"><div class="empty-icon">⚽</div><p>Sin tipsters. Agrega el primero.</p></div>
+  </div>
+</div>
+
+<!-- TAB NUEVA APUESTA -->
+<div id="tab-nueva-apuesta" class="tab-content">
+  <div class="card">
+    <div class="card-title">Registrar Apuesta</div>
+    <div class="form-grid">
+      <div class="fg"><label>Tipster</label><select id="bTipster"><option value="">— Seleccionar —</option></select></div>
+      <div class="fg"><label>Descripción <span style="color:var(--muted);font-weight:400;font-size:0.62rem;">(opcional)</span></label><input type="text" id="bDesc" placeholder="Ej: Real Madrid vs Barça"></div>
+      <div class="fg"><label>Stake (unidades)</label><input type="number" id="bStake" min="0.5" max="20" step="0.5" placeholder="5" oninput="updatePreview()"></div>
+      <div class="fg"><label>Dinero Apostado ($)</label><input type="number" id="bMonto" placeholder="100" oninput="updatePreview()"></div>
+      <div class="fg"><label>Cuota / Odd</label><input type="number" id="bCuota" step="0.01" placeholder="2.10" oninput="updatePreview()"></div>
+      <div class="fg"><label>Nº de Eventos</label><input type="number" id="bEventos" min="1" placeholder="1"></div>
+      <div class="fg"><label>Deporte</label>
+        <select id="bDeporte"><option value="Fútbol">⚽ Fútbol</option><option value="Basketball">🏀 Basketball</option><option value="Tennis">🎾 Tennis</option><option value="NFL">🏈 NFL</option><option value="Hockey">🏒 Hockey</option><option value="Baseball">⚾ Baseball</option><option value="Otro"\
