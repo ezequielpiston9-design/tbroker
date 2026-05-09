@@ -378,14 +378,15 @@ select option{background:var(--s2);}
       </div>
       <div><span class="flbl">Período:</span>
         <div class="period-bar" style="margin-top:5px;">
-          <button class="period-btn active" id="per-all" onclick="setPeriod('all')">Todo</button>
-          <button class="period-btn" id="per-1y" onclick="setPeriod('1y')">1 Año</button>
-          <button class="period-btn" id="per-6m" onclick="setPeriod('6m')">6 Meses</button>
-          <button class="period-btn" id="per-3m" onclick="setPeriod('3m')">3 Meses</button>
-          <button class="period-btn" id="per-1m" onclick="setPeriod('1m')">1 Mes</button>
-          <button class="period-btn" id="per-1w" onclick="setPeriod('1w')">1 Semana</button>
-          <button class="period-btn" id="per-1d" onclick="setPeriod('1d')">Hoy</button>
+          <button class="period-btn active" data-period="all" onclick="setPeriod('all')">Todo</button>
+          <button class="period-btn" data-period="1y" onclick="setPeriod('1y')">1 Año</button>
+          <button class="period-btn" data-period="6m" onclick="setPeriod('6m')">6 Meses</button>
+          <button class="period-btn" data-period="3m" onclick="setPeriod('3m')">3 Meses</button>
+          <button class="period-btn" data-period="1m" onclick="setPeriod('1m')">1 Mes</button>
+          <button class="period-btn" data-period="1w" onclick="setPeriod('1w')">1 Semana</button>
+          <button class="period-btn" data-period="1d" onclick="setPeriod('1d')">Hoy</button>
         </div>
+        <div class="period-bar" style="margin-top:5px;" id="monthButtons"></div>
       </div>
     </div>
   </div>
@@ -1183,11 +1184,11 @@ function renderUnidades() {
 // ============================================================
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
 function cOpts(pre='',suf=''){
-  return{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>pre+v+suf},grid:{color:'rgba(255,255,255,.04)'}}}};
+  return{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>{if(pre==='$')return(v<0?'-$'+Math.abs(v):'$'+v);return v+suf;}},grid:{color:'rgba(255,255,255,.04)'}}}};
 }
 function setChartFilter(f){chartFilter=f;['all','played','skipped'].forEach(x=>document.getElementById('flt-'+x).className='flt-btn'+(x===f?' a-'+x:''));renderCharts();}
 function setChartTipster(id,el){chartTipster=id;document.querySelectorAll('#chartTipsterFilter .tf-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderCharts();}
-function setPeriod(p){chartPeriod=p;['all','1y','6m','3m','1m','1w','1d'].forEach(x=>document.getElementById('per-'+x).className='period-btn'+(x===p?' active':''));renderCharts();}
+function setPeriod(p){chartPeriod=p;document.querySelectorAll('.period-btn').forEach(x=>x.classList.toggle('active',x.dataset&&x.dataset.period===p));renderCharts();}
 function updateChartTipsterFilter(){
   const el=document.getElementById('chartTipsterFilter');if(!el)return;
   el.innerHTML=`<button class="tf-btn ${chartTipster==='all'?'active':''}" onclick="setChartTipster('all',this)">Todos</button>`+
@@ -1198,10 +1199,22 @@ function getFilteredBets(){
   let bets=ts.flatMap(t=>t.bets.map(b=>({...b,tipsterName:t.name})));
   if(chartFilter==='played') bets=bets.filter(b=>b.played);
   else if(chartFilter==='skipped') bets=bets.filter(b=>!b.played);
-  return filterByPeriod(bets,chartPeriod);
+  return filterByPeriodEx(bets,chartPeriod);
+}
+function updateMonthButtons(){
+  const months=new Set();
+  data.tipsters.forEach(t=>t.bets.forEach(b=>{if(b.fecha)months.add(b.fecha.substring(0,7));}));
+  const el=document.getElementById('monthButtons');if(!el)return;
+  const sorted=[...months].sort().reverse();
+  el.innerHTML=sorted.map(m=>{
+    const [y,mo]=m.split('-');
+    const name=new Date(y,parseInt(mo)-1,1).toLocaleString('es',{month:'long',year:'numeric'});
+    return `<button class="period-btn" data-period="m:${m}" onclick="setPeriod('m:${m}')">${name}</button>`;
+  }).join('');
 }
 function renderCharts(){
   updateChartTipsterFilter();
+  updateMonthButtons();
   const bets=getFilteredBets();
   const closed=bets.filter(b=>b.result!=='pending');
   let profit=0,invested=0,won=0;
@@ -1216,13 +1229,16 @@ function renderCharts(){
   se('cs-wr',wr.toFixed(0)+'%','gold');
   se('cs-stake',avgSt.toFixed(1)+'u');
 
-  // Profit evolution
+  // Profit evolution — grouped by date to avoid duplicates
   destroyChart('cProfit');
   const sc=closed.filter(b=>b.fecha).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const dateMap={};
+  sc.forEach(b=>{if(!dateMap[b.fecha])dateMap[b.fecha]=0;dateMap[b.fecha]+=calcProfit(b);});
+  const sortedDays=Object.keys(dateMap).sort();
   let cum=0;const lb=[],vl=[];
-  sc.forEach(b=>{cum+=calcProfit(b);lb.push(b.fecha);vl.push(parseFloat(cum.toFixed(2)));});
+  sortedDays.forEach(d=>{cum+=dateMap[d];lb.push(d);vl.push(parseFloat(cum.toFixed(2)));});
   const c1=document.getElementById('chartProfit')?.getContext('2d');
-  if(c1) charts.cProfit=new Chart(c1,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado',data:vl,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,.1)',fill:true,tension:0.3,pointRadius:vl.length>40?0:3,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444')}]},options:cOpts('$')});
+  if(c1) charts.cProfit=new Chart(c1,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado',data:vl,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,.12)',fill:true,tension:0.4,pointRadius:vl.length>60?0:4,pointHoverRadius:6,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444'),pointBorderColor:'transparent'}]},options:{...cOpts('$'),plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}},tooltip:{callbacks:{label:ctx=>{const v=ctx.parsed.y;return(v>=0?'+$':'-$')+Math.abs(v).toFixed(2);}}}}}});
 
   // Donut
   destroyChart('cResults');
@@ -1239,7 +1255,7 @@ function renderCharts(){
 
   // Jugadas comparison
   destroyChart('cJugadas');
-  let allB=filterByPeriod((chartTipster==='all'?data.tipsters:data.tipsters.filter(t=>t.id==chartTipster)).flatMap(t=>t.bets),chartPeriod).filter(b=>b.result!=='pending');
+  let allB=filterByPeriodEx((chartTipster==='all'?data.tipsters:data.tipsters.filter(t=>t.id==chartTipster)).flatMap(t=>t.bets),chartPeriod).filter(b=>b.result!=='pending');
   const pb2=allB.filter(b=>b.played),sb2=allB.filter(b=>!b.played);
   const pP=pb2.reduce((s,b)=>s+calcProfit(b),0),sP=sb2.reduce((s,b)=>s+calcProfit(b),0);
   const pI=pb2.reduce((s,b)=>s+(b.monto||0),0),sI=sb2.reduce((s,b)=>s+(b.monto||0),0);
@@ -1247,33 +1263,34 @@ function renderCharts(){
   const pWR=pb2.filter(b=>b.result!=='void').length>0?pb2.filter(b=>b.result==='win').length/pb2.filter(b=>b.result!=='void').length*100:0;
   const sWR=sb2.filter(b=>b.result!=='void').length>0?sb2.filter(b=>b.result==='win').length/sb2.filter(b=>b.result!=='void').length*100:0;
   const c4=document.getElementById('chartJugadas')?.getContext('2d');
-  if(c4) charts.cJugadas=new Chart(c4,{type:'bar',data:{labels:['Profit ($)','Yield (%)','Win Rate (%)'],datasets:[{label:'✅ Jugadas',data:[parseFloat(pP.toFixed(2)),parseFloat(pY2.toFixed(1)),parseFloat(pWR.toFixed(1))],backgroundColor:'rgba(34,197,94,.6)',borderColor:'#22c55e',borderWidth:1},{label:'👁 No Jugadas',data:[parseFloat(sP.toFixed(2)),parseFloat(sY2.toFixed(1)),parseFloat(sWR.toFixed(1))],backgroundColor:'rgba(232,121,249,.5)',borderColor:'#e879f9',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  if(c4) charts.cJugadas=new Chart(c4,{type:'bar',data:{labels:['Profit ($)','Yield (%)','Win Rate (%)'],datasets:[{label:'✅ Jugadas',data:[parseFloat(pP.toFixed(2)),parseFloat(pY2.toFixed(1)),parseFloat(pWR.toFixed(1))],backgroundColor:pP>=0?'rgba(34,197,94,.65)':'rgba(239,68,68,.65)',borderColor:pP>=0?'#22c55e':'#ef4444',borderWidth:1},{label:'👁 No Jugadas',data:[parseFloat(sP.toFixed(2)),parseFloat(sY2.toFixed(1)),parseFloat(sWR.toFixed(1))],backgroundColor:sP>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)',borderColor:sP>=0?'#06b6d4':'#fb923c',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
 
   // All tipsters cumulative
   destroyChart('cAll');
   const allDates=new Set();
   data.tipsters.forEach(t=>t.bets.forEach(b=>{if(b.fecha)allDates.add(b.fecha);}));
-  const sortedDates=filterByPeriod([...allDates].sort().map(d=>({fecha:d})),chartPeriod).map(x=>x.fecha);
-  if(sortedDates.length){
+  const allSortedDates=filterByPeriod([...allDates].sort().map(d=>({fecha:d})),chartPeriod).map(x=>x.fecha);
+  if(allSortedDates.length){
     const datasets=data.tipsters.map((t,i)=>{
       let b=t.bets.filter(x=>x.result!=='pending'&&x.fecha);
       if(chartFilter==='played') b=b.filter(x=>x.played);
       else if(chartFilter==='skipped') b=b.filter(x=>!x.played);
+      const dm={};b.forEach(x=>{if(!dm[x.fecha])dm[x.fecha]=0;dm[x.fecha]+=calcProfit(x);});
       let r=0;
-      const dp=sortedDates.map(d=>{b.filter(x=>x.fecha===d).forEach(x=>r+=calcProfit(x));return parseFloat(r.toFixed(2));});
-      return{label:t.name,data:dp,borderColor:COLORS[i%COLORS.length],backgroundColor:'transparent',tension:0.3,pointRadius:sortedDates.length>40?0:3};
+      const dp=allSortedDates.map(d=>{r+=(dm[d]||0);return parseFloat(r.toFixed(2));});
+      return{label:t.name,data:dp,borderColor:COLORS[i%COLORS.length],backgroundColor:'transparent',tension:0.4,pointRadius:allSortedDates.length>60?0:3,pointHoverRadius:5};
     });
     const c5=document.getElementById('chartAllTipsters')?.getContext('2d');
-    if(c5) charts.cAll=new Chart(c5,{type:'line',data:{labels:sortedDates,datasets},options:cOpts('$')});
+    if(c5) charts.cAll=new Chart(c5,{type:'line',data:{labels:allSortedDates,datasets},options:cOpts('$')});
   }
 
   // Yield comparison
   destroyChart('cYield');
   const rL=data.tipsters.map(t=>t.name);
-  const rP=data.tipsters.map(t=>parseFloat(calcStats(filterByPeriod(t.bets,chartPeriod),'played').yield_.toFixed(1)));
-  const rS=data.tipsters.map(t=>parseFloat(calcStats(filterByPeriod(t.bets,chartPeriod),'skipped').yield_.toFixed(1)));
+  const rP=data.tipsters.map(t=>parseFloat(calcStats(filterByPeriodEx(t.bets,chartPeriod),'played').yield_.toFixed(1)));
+  const rS=data.tipsters.map(t=>parseFloat(calcStats(filterByPeriodEx(t.bets,chartPeriod),'skipped').yield_.toFixed(1)));
   const c6=document.getElementById('chartYieldComparison')?.getContext('2d');
-  if(c6) charts.cYield=new Chart(c6,{type:'bar',data:{labels:rL,datasets:[{label:'✅ Yield Jugadas',data:rP,backgroundColor:'rgba(34,197,94,.6)',borderColor:'#22c55e',borderWidth:1},{label:'👁 Yield No Jugadas',data:rS,backgroundColor:'rgba(232,121,249,.5)',borderColor:'#e879f9',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  if(c6) charts.cYield=new Chart(c6,{type:'bar',data:{labels:rL,datasets:[{label:'✅ Yield Jugadas',data:rP,backgroundColor:rP.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:rP.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1},{label:'👁 Yield No Jugadas',data:rS,backgroundColor:rS.map(v=>v>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)'),borderColor:rS.map(v=>v>=0?'#06b6d4':'#fb923c'),borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'}}}}});
 }
 
 // ============================================================
@@ -1338,6 +1355,7 @@ window.setChartTipster=setChartTipster;
 window.setPeriod=setPeriod;
 window.setUnitFilter=setUnitFilter;
 window.setUnitTipster=setUnitTipster;
+window.updateMonthButtons=updateMonthButtons;
 window.exportData=exportData;
 window.importData=importData;
 </script>
