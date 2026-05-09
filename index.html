@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>TipsterBook PRO</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-
+ 
 <!-- Firebase Realtime Database -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -38,7 +38,7 @@
   window._fbReady = true;
   window.dispatchEvent(new Event('fb-ready'));
 </script>
-
+ 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Unbounded:wght@400;700;900&family=DM+Sans:wght@400;500;700&display=swap');
 :root{--bg:#060810;--s1:#0d1018;--s2:#131720;--s3:#1a1f2c;--border:#222736;--accent:#6c63ff;--green:#22c55e;--red:#ef4444;--gold:#f59e0b;--cyan:#06b6d4;--pink:#e879f9;--text:#e2e8f0;--muted:#4a5270;--muted2:#6b7694;}
@@ -178,7 +178,7 @@ select option{background:var(--s2);}
 </style>
 </head>
 <body>
-
+ 
 <header>
   <h1>🎯 TipsterBook</h1>
   <span class="hbadge">PRO</span>
@@ -189,9 +189,9 @@ select option{background:var(--s2);}
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
   </div>
 </header>
-
+ 
 <div class="container">
-
+ 
 <!-- GLOBAL STATS -->
 <div class="stats-strip" id="globalStats">
   <div class="stat-box"><div class="stat-lbl">Tipsters</div><div class="stat-val purple" id="g-tipsters">0</div></div>
@@ -205,7 +205,7 @@ select option{background:var(--s2);}
   <div class="stat-box"><div class="stat-lbl">WR (no jug)</div><div class="stat-val gold" id="g-wr-skip">0%</div></div>
   <div class="stat-box"><div class="stat-lbl">Jugadas / Total</div><div class="stat-val purple" id="g-bets">0/0</div></div>
 </div>
-
+ 
 <!-- TABS -->
 <div class="tabs">
   <button class="tab active" onclick="switchTab('tipsters')">👤 Tipsters</button>
@@ -213,7 +213,7 @@ select option{background:var(--s2);}
   <button class="tab" onclick="switchTab('unidades')">📐 Unidades</button>
   <button class="tab" onclick="switchTab('graficas')">📊 Gráficas</button>
 </div>
-
+ 
 <!-- ===== TAB TIPSTERS ===== -->
 <div id="tab-tipsters" class="tab-content active">
   <div class="card">
@@ -241,7 +241,7 @@ select option{background:var(--s2);}
     <div class="empty"><div class="empty-icon">⚽</div><p>Sin tipsters. Agrega el primero.</p></div>
   </div>
 </div>
-
+ 
 <!-- ===== TAB NUEVA APUESTA ===== -->
 <div id="tab-nueva" class="tab-content">
   <div class="card">
@@ -269,7 +269,7 @@ select option{background:var(--s2);}
       </div>
       <div class="fg"><label>Fecha</label><input type="date" id="bFecha"></div>
     </div>
-
+ 
     <!-- TIPO -->
     <div style="margin-bottom:11px;">
       <div class="fg" style="margin-bottom:6px;"><label>Tipo de Apuesta</label></div>
@@ -286,12 +286,12 @@ select option{background:var(--s2);}
         <div class="chip" data-val="Live" onclick="toggleChip(this)">🔴 Live</div>
       </div>
     </div>
-
+ 
     <!-- EXCEPCION AUTO-STAKE -->
     <div id="exceptionRow" style="display:none;margin-bottom:11px;padding:9px 11px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:8px;">
       <span style="font-size:0.65rem;color:var(--gold);font-weight:700;">⚠️ Modo excepción activo para esta apuesta — los valores no se calcularán automáticamente.</span>
     </div>
-
+ 
     <!-- JUGADA -->
     <div class="jugada-section">
       <div class="slabel">¿La jugaste vos?</div>
@@ -301,7 +301,7 @@ select option{background:var(--s2);}
       </div>
       <div style="font-size:0.6rem;color:var(--muted);margin-top:5px;">Las "no jugadas" analizan el rendimiento real del tipster sin afectar tu profit.</div>
     </div>
-
+ 
     <!-- RESULTADO -->
     <div style="margin-bottom:11px;">
       <div class="fg" style="margin-bottom:6px;"><label>Resultado</label></div>
@@ -312,7 +312,7 @@ select option{background:var(--s2);}
         <button class="rt-btn" id="rt-pending" onclick="setResult('pending')">⏳ Pendiente</button>
       </div>
     </div>
-
+ 
     <!-- PREVIEW -->
     <div class="preview-box" id="bPreview">
       <div class="preview-title">Vista Previa</div>
@@ -322,14 +322,14 @@ select option{background:var(--s2);}
       <div class="preview-row"><span>Pérdida si pierde</span><span id="prev-loss" style="color:var(--red)">—</span></div>
       <div class="preview-row" id="prev-units-row" style="display:none"><span>Unidades (gana / pierde)</span><span id="prev-units">—</span></div>
     </div>
-
+ 
     <div class="section-actions">
       <button class="btn btn-primary" onclick="saveBet()">💾 Guardar Apuesta</button>
       <button class="btn btn-ghost" onclick="clearForm()">🗑 Limpiar</button>
     </div>
   </div>
 </div>
-
+ 
 <!-- ===== TAB UNIDADES ===== -->
 <div id="tab-unidades" class="tab-content">
   <div class="stats-strip">
@@ -360,7 +360,7 @@ select option{background:var(--s2);}
   </div>
   <div class="card"><div class="card-title">Detalle por Apuesta</div><div id="unidadesTable"></div></div>
 </div>
-
+ 
 <!-- ===== TAB GRAFICAS ===== -->
 <div id="tab-graficas" class="tab-content">
   <div class="card" style="margin-bottom:11px;">
@@ -376,7 +376,8 @@ select option{background:var(--s2);}
       <div><span class="flbl">Tipster:</span>
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="chartTipsterFilter"><button class="tf-btn active" onclick="setChartTipster('all',this)">Todos</button></div>
       </div>
-      <div><span class="flbl">Período:</span>
+      <div>
+        <span class="flbl">Período rápido:</span>
         <div class="period-bar" style="margin-top:5px;">
           <button class="period-btn active" data-period="all" onclick="setPeriod('all')">Todo</button>
           <button class="period-btn" data-period="1y" onclick="setPeriod('1y')">1 Año</button>
@@ -386,7 +387,14 @@ select option{background:var(--s2);}
           <button class="period-btn" data-period="1w" onclick="setPeriod('1w')">1 Semana</button>
           <button class="period-btn" data-period="1d" onclick="setPeriod('1d')">Hoy</button>
         </div>
-        <div class="period-bar" style="margin-top:5px;" id="monthButtons"></div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="flbl">Rango personalizado:</span>
+          <input type="date" id="dateFrom" style="width:140px;padding:5px 9px;font-size:0.72rem;" onchange="setDateRange()">
+          <span style="color:var(--muted);font-size:0.75rem;">→</span>
+          <input type="date" id="dateTo" style="width:140px;padding:5px 9px;font-size:0.72rem;" onchange="setDateRange()">
+          <button class="period-btn" onclick="clearDateRange()" style="padding:4px 9px;">✕ Limpiar</button>
+          <span id="dateRangeLabel" style="font-size:0.65rem;color:var(--cyan);font-family:'DM Mono',monospace;"></span>
+        </div>
       </div>
     </div>
   </div>
@@ -408,9 +416,9 @@ select option{background:var(--s2);}
   <div class="card"><div class="card-title">Profit Acumulado por Tipster</div><div class="chart-wrap-lg"><canvas id="chartAllTipsters"></canvas></div></div>
   <div class="card"><div class="card-title">Yield Jugadas vs No Jugadas por Tipster</div><div class="chart-wrap"><canvas id="chartYieldComparison"></canvas></div></div>
 </div>
-
+ 
 </div><!-- /container -->
-
+ 
 <!-- MODAL EDITAR APUESTA -->
 <div class="modal-overlay" id="editModal" style="display:none;" onclick="if(event.target===this)closeEditModal()">
   <div class="modal-box">
@@ -461,7 +469,7 @@ select option{background:var(--s2);}
     </div>
   </div>
 </div>
-
+ 
 <!-- MODAL EDITAR TIPSTER -->
 <div class="modal-overlay" id="editTipsterModal" style="display:none;" onclick="if(event.target===this)closeEditTipsterModal()">
   <div class="modal-box">
@@ -484,7 +492,7 @@ select option{background:var(--s2);}
     </div>
   </div>
 </div>
-
+ 
 <!-- MODAL GRAFICA TIPSTER INDIVIDUAL -->
 <div class="modal-overlay" id="tipsterChartModal" style="display:none;" onclick="if(event.target===this)closeTipsterChart()">
   <div class="modal-box" style="max-width:780px;">
@@ -517,7 +525,7 @@ select option{background:var(--s2);}
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeTipsterChart()">Cerrar</button></div>
   </div>
 </div>
-
+ 
 <script>
 // ============================================================
 // STATE
@@ -528,14 +536,14 @@ let editResult = 'pending', editJugada = null;
 let etAutoStakeOn = true;
 let autoStakeOn = true;       // for new bet form
 let betException = false;     // per-bet exception override
-let chartFilter = 'all', chartTipster = 'all', chartPeriod = 'all';
+let chartFilter = 'all', chartTipster = 'all', chartPeriod = 'all', chartDateFrom = null, chartDateTo = null;
 let unitFilter = 'all', unitTipster = 'all';
 let tipsterSort = 'nombre';
 let tcId = null, tcPeriod = 'all', tcFilter = 'all', tcMetric = 'profit';
 let charts = {};
 let fbListening = false;
 const COLORS = ['#6c63ff','#22c55e','#06b6d4','#f59e0b','#e879f9','#ef4444','#f97316','#84cc16','#14b8a6','#a78bfa'];
-
+ 
 // ============================================================
 // FIREBASE + INIT
 // ============================================================
@@ -549,7 +557,7 @@ function initApp() {
   if (window._fbReady) startFB();
   else window.addEventListener('fb-ready', startFB, { once: true });
 }
-
+ 
 function startFB() {
   if (fbListening) return;
   fbListening = true;
@@ -564,7 +572,7 @@ function startFB() {
     setSyncStatus('ok');
   });
 }
-
+ 
 function save() {
   localStorage.setItem('tipsterbook_v4', JSON.stringify(data));
   if (window._fbSave) {
@@ -572,16 +580,16 @@ function save() {
     window._fbSave(data).then(() => setSyncStatus('ok'));
   }
 }
-
+ 
 function setSyncStatus(s) {
   const el = document.getElementById('syncStatus'); if (!el) return;
   const m = { connecting:'🔄 Conectando...', syncing:'🔄 Sincronizando...', saving:'💾 Guardando...', ok:'☁️ Sincronizado' };
   const c = { connecting:'#6b7694', syncing:'#06b6d4', saving:'#f59e0b', ok:'#22c55e' };
   el.textContent = m[s]; el.style.color = c[s];
 }
-
+ 
 window.onload = initApp;
-
+ 
 // ============================================================
 // HELPERS
 // ============================================================
@@ -599,7 +607,7 @@ function calcUnits(b) {
 function fmt(n)  { return (n >= 0 ? '+' : '') + '$' + Math.abs(n).toFixed(2); }
 function fmtU(n) { return (n >= 0 ? '+' : '') + n.toFixed(2) + 'u'; }
 function resLabel(r) { return r==='win'?'✅ Ganada':r==='loss'?'❌ Perdida':r==='void'?'↩️ Void':'⏳ Pendiente'; }
-
+ 
 function filterByPeriod(bets, p) {
   if (p === 'all') return bets;
   const now = new Date(), d = new Date(now);
@@ -611,7 +619,7 @@ function filterByPeriod(bets, p) {
   else if (p==='1d') d.setDate(now.getDate()-1);
   return bets.filter(b => b.fecha && new Date(b.fecha) >= d);
 }
-
+ 
 function calcStats(bets, filter = 'all') {
   const fb = filter==='all' ? bets : bets.filter(b => filter==='played' ? b.played : !b.played);
   const closed = fb.filter(b => b.result !== 'pending');
@@ -627,14 +635,14 @@ function calcStats(bets, filter = 'all') {
   const uYield  = uStaked > 0 ? uNet / uStaked * 100 : 0;
   return { total:fb.length, closed:closed.length, won:won.length, invested, profit, yield_, wr, uNet, uStaked, uYield };
 }
-
+ 
 // Average $/stake ratio for a tipster (played bets only, with both stake+monto)
 function avgStakeRatio(bets) {
   const b = bets.filter(x => x.played && x.stake && x.monto);
   if (!b.length) return null;
   return b.reduce((s,x) => s + x.monto / x.stake, 0) / b.length;
 }
-
+ 
 // ============================================================
 // ALERTS / CONFIRMS
 // ============================================================
@@ -657,7 +665,7 @@ function showConfirm(msg, onYes) {
   ov.querySelector('#_cy').onclick=()=>{ov.remove();onYes();};
   ov.querySelector('#_cn').onclick=()=>ov.remove();
 }
-
+ 
 // ============================================================
 // TABS
 // ============================================================
@@ -669,7 +677,7 @@ function switchTab(id) {
   if (id==='graficas') { updateChartTipsterFilter(); renderCharts(); }
   if (id==='unidades') { updateUnitTipsterFilter(); renderUnidades(); }
 }
-
+ 
 // ============================================================
 // TIPSTERS
 // ============================================================
@@ -707,7 +715,7 @@ function getSortedTipsters() {
   });
 }
 function renderAll() { renderTipsterList(); updateTipsterSelect(); updateGlobalStats(); }
-
+ 
 function renderTipsterList() {
   const el = document.getElementById('tipsterList');
   const sorted = getSortedTipsters();
@@ -747,7 +755,7 @@ function renderTipsterList() {
     </div>`;
   }).join('');
 }
-
+ 
 function renderTipsterBody(t, s, sk, ratio, roi, color) {
   const pb = t.bets.filter(b=>b.played), sb2 = t.bets.filter(b=>!b.played);
   return `
@@ -792,7 +800,7 @@ function renderTipsterBody(t, s, sk, ratio, roi, color) {
     </div>
     <div id="betsTableWrap-${t.id}">${renderBetsTable(t,'fecha')}</div>` : '<div class="no-bets">Sin apuestas registradas.</div>'}`;
 }
-
+ 
 function renderBetsTable(t, sortKey) {
   let bets = t.bets.slice();
   if (sortKey==='fecha')  bets.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
@@ -823,7 +831,7 @@ function renderBetsTable(t, sortKey) {
     </tr>`;
   }).join('')}</tbody></table>`;
 }
-
+ 
 function sortBetsTable(tid, key, el) {
   const t = data.tipsters.find(t=>t.id===tid); if(!t) return;
   document.querySelectorAll(`#bsort-${tid} .sort-btn`).forEach(b=>b.classList.remove('active'));
@@ -834,7 +842,7 @@ function toggleTipster(id) {
   document.getElementById('tbody-'+id).classList.toggle('open');
   document.getElementById('chev-'+id).classList.toggle('open');
 }
-
+ 
 // ============================================================
 // EDIT TIPSTER MODAL
 // ============================================================
@@ -864,7 +872,7 @@ function saveEditTipster() {
   t.autoStake = etAutoStakeOn;
   save(); renderAll(); closeEditTipsterModal(); showToast('✅ Tipster actualizado');
 }
-
+ 
 // ============================================================
 // BETS FORM
 // ============================================================
@@ -873,7 +881,7 @@ function onTipsterChange() {
   document.getElementById('exceptionRow').style.display = 'none';
   updatePreview();
 }
-
+ 
 function toggleAutoStake() {
   // per-bet exception: overrides tipster setting for this one bet
   betException = !betException;
@@ -887,18 +895,18 @@ function toggleAutoStake() {
     badge.textContent = '🔗 Auto';
   }
 }
-
+ 
 function getSelectedTipster() {
   const tid = parseInt(document.getElementById('bTipster').value);
   return data.tipsters.find(t => t.id === tid) || null;
 }
-
+ 
 function isAutoActive() {
   if (betException) return false;
   const t = getSelectedTipster();
   return t ? t.autoStake !== false : true;
 }
-
+ 
 function onStakeInput() {
   if (isAutoActive()) {
     const t = getSelectedTipster();
@@ -912,7 +920,7 @@ function onStakeInput() {
   }
   updatePreview();
 }
-
+ 
 function onMontoInput() {
   if (isAutoActive()) {
     const t = getSelectedTipster();
@@ -926,7 +934,7 @@ function onMontoInput() {
   }
   updatePreview();
 }
-
+ 
 function updatePreview() {
   const m = parseFloat(document.getElementById('bMonto').value);
   const c = parseFloat(document.getElementById('bCuota').value);
@@ -945,7 +953,7 @@ function updatePreview() {
     } else ur.style.display='none';
   } else box.style.display='none';
 }
-
+ 
 function setResult(r) {
   curResult = r;
   ['win','loss','void','pending'].forEach(x => document.getElementById('rt-'+x).className='rt-btn'+(x===r?' '+x:''));
@@ -957,7 +965,7 @@ function setJugada(v) {
 }
 function toggleChip(el) { el.classList.toggle('selected'); }
 function getChips(id) { return [...document.querySelectorAll(`#${id} .chip.selected`)].map(c=>c.dataset.val); }
-
+ 
 function saveBet() {
   const tid = parseInt(document.getElementById('bTipster').value);
   const t = data.tipsters.find(t=>t.id===tid);
@@ -967,7 +975,7 @@ function saveBet() {
   const cuota = parseFloat(document.getElementById('bCuota').value);
   if (!cuota||cuota<=1) return showAlert('La cuota debe ser mayor a 1');
   if (curJugada===null) return showAlert('Indicá si la jugaste');
-
+ 
   t.bets.push({
     id: Date.now(),
     desc: document.getElementById('bDesc').value.trim() || '—',
@@ -983,7 +991,7 @@ function saveBet() {
   });
   save(); renderAll(); clearForm(); showToast('✅ Apuesta guardada');
 }
-
+ 
 function clearForm() {
   ['bDesc','bStake','bMonto','bCuota'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('bEventos').value = '1';
@@ -997,14 +1005,14 @@ function clearForm() {
   document.getElementById('autoStakeBadge').className='auto-badge on';
   document.getElementById('autoStakeBadge').textContent='🔗 Auto';
 }
-
+ 
 function deleteBet(tid, bid) {
   showConfirm('¿Eliminar esta apuesta?', () => {
     const t = data.tipsters.find(t=>t.id===tid);
     if (t) { t.bets=t.bets.filter(b=>b.id!==bid); save(); renderAll(); showToast('🗑 Apuesta eliminada'); }
   });
 }
-
+ 
 // ============================================================
 // EDIT BET MODAL
 // ============================================================
@@ -1050,7 +1058,7 @@ function saveEditBet() {
   b.played=editJugada; b.result=editResult;
   save(); renderAll(); closeEditModal(); showToast('✅ Apuesta actualizada');
 }
-
+ 
 // ============================================================
 // TIPSTER INDIVIDUAL CHART
 // ============================================================
@@ -1068,7 +1076,7 @@ function closeTipsterChart() { document.getElementById('tipsterChartModal').styl
 function setTCPeriod(p) { tcPeriod=p; ['all','1y','6m','3m','1m','1w','1d'].forEach(x=>document.getElementById('tcp-'+x).className='period-btn'+(x===p?' active':'')); renderTipsterChart(); }
 function setTCFilter(f) { tcFilter=f; ['all','played','skipped'].forEach(x=>document.getElementById('tcf-'+x).className='flt-btn'+(x===f?' a-'+x:'')); renderTipsterChart(); }
 function setTCMetric(m) { tcMetric=m; ['profit','units'].forEach(x=>document.getElementById('tcm-'+x).className='period-btn'+(x===m?' active':'')); renderTipsterChart(); }
-
+ 
 function renderTipsterChart() {
   destroyChart('tcIndividual');
   const t=data.tipsters.find(t=>t.id===tcId); if(!t) return;
@@ -1084,7 +1092,7 @@ function renderTipsterChart() {
   const pre=tcMetric==='units'?'':'$', suf=tcMetric==='units'?'u':'';
   charts.tcIndividual=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:tcMetric==='units'?'Unidades acumuladas':'Profit acumulado',data:vals,borderColor:color,backgroundColor:color+'33',fill:true,tension:0.3,pointRadius:vals.length>40?0:3,pointBackgroundColor:vals.map(v=>v>=0?'#22c55e':'#ef4444')}]},options:cOpts(pre,suf)});
 }
-
+ 
 // ============================================================
 // GLOBAL STATS
 // ============================================================
@@ -1115,7 +1123,7 @@ function updateGlobalStats() {
   se('g-wr-skip', wrSk.toFixed(0)+'%', 'gold');
   se('g-bets', played+'/'+total, 'purple');
 }
-
+ 
 // ============================================================
 // UNITS TAB
 // ============================================================
@@ -1152,25 +1160,25 @@ function renderUnidades() {
   se('u-net-s',fmtU(sNet),sNet>=0?'pink':'red');
   se('u-yield-s',sY.toFixed(1)+'%',sY>=0?'pink':'red');
   se('u-streak',streak+' 🔥','gold');
-
+ 
   let bets=allTs.flatMap(t=>t.bets.map(b=>({...b,tipsterName:t.name})));
   if(unitFilter==='played') bets=bets.filter(b=>b.played);
   else if(unitFilter==='skipped') bets=bets.filter(b=>!b.played);
   bets=bets.filter(b=>b.stake&&b.result!=='pending').sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
-
+ 
   destroyChart('chartU');
   let cum=0; const lbs=[],vls=[];
   bets.forEach(b=>{cum+=calcUnits(b);lbs.push(b.fecha||'');vls.push(parseFloat(cum.toFixed(3)));});
   const c1=document.getElementById('chartUnidades')?.getContext('2d');
   if(c1) charts.chartU=new Chart(c1,{type:'line',data:{labels:lbs,datasets:[{label:'U. Acumuladas',data:vls,borderColor:'#06b6d4',backgroundColor:'rgba(6,182,212,.08)',fill:true,tension:0.3,pointRadius:vls.length>40?0:3,pointBackgroundColor:vls.map(v=>v>=0?'#22c55e':'#ef4444')}]},options:cOpts('','u')});
-
+ 
   destroyChart('chartUT');
   const tL=data.tipsters.map(t=>t.name);
   const tP=data.tipsters.map(t=>parseFloat(t.bets.filter(b=>b.played&&b.stake&&b.result!=='pending').reduce((s,b)=>s+calcUnits(b),0).toFixed(2)));
   const tS=data.tipsters.map(t=>parseFloat(t.bets.filter(b=>!b.played&&b.stake&&b.result!=='pending').reduce((s,b)=>s+calcUnits(b),0).toFixed(2)));
   const c2=document.getElementById('chartUnidadesTipster')?.getContext('2d');
   if(c2) charts.chartUT=new Chart(c2,{type:'bar',data:{labels:tL,datasets:[{label:'✅ Jugadas',data:tP,backgroundColor:'rgba(34,197,94,.55)',borderColor:'#22c55e',borderWidth:1},{label:'👁 No Jugadas',data:tS,backgroundColor:'rgba(232,121,249,.45)',borderColor:'#e879f9',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'u'},grid:{color:'rgba(255,255,255,.04)'}}}}});
-
+ 
   const tEl=document.getElementById('unidadesTable'); if(!tEl) return;
   if(!bets.length){tEl.innerHTML='<div class="no-bets">Sin apuestas con stake.</div>';return;}
   let r=0; const rows=bets.map(b=>{r+=calcUnits(b);return{b,cum:parseFloat(r.toFixed(3))};});
@@ -1178,7 +1186,7 @@ function renderUnidades() {
   ${rows.slice().reverse().map(({b,cum})=>{const u=calcUnits(b);return`<tr class="${b.played?'':'row-skipped'}"><td>${b.fecha||'—'}</td><td>${b.tipsterName||'—'}</td><td>${b.desc||'—'}</td><td style="font-family:'DM Mono',monospace;">${b.stake}u</td><td>${b.cuota.toFixed(2)}</td><td><span class="badge ${b.played?'badge-played':'badge-skipped'}">${b.played?'✅':'👁'}</span></td><td><span class="badge badge-${b.result}">${resLabel(b.result)}</span></td><td class="${u>=0?'green':'red'}" style="font-family:'DM Mono',monospace;">${u>=0?'+':''}${u.toFixed(2)}u</td><td class="${cum>=0?'cyan':'red'}" style="font-family:'DM Mono',monospace;font-weight:600;">${cum>=0?'+':''}${cum.toFixed(2)}u</td></tr>`;}).join('')}
   </tbody></table>`;
 }
-
+ 
 // ============================================================
 // CHARTS TAB
 // ============================================================
@@ -1188,7 +1196,31 @@ function cOpts(pre='',suf=''){
 }
 function setChartFilter(f){chartFilter=f;['all','played','skipped'].forEach(x=>document.getElementById('flt-'+x).className='flt-btn'+(x===f?' a-'+x:''));renderCharts();}
 function setChartTipster(id,el){chartTipster=id;document.querySelectorAll('#chartTipsterFilter .tf-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderCharts();}
-function setPeriod(p){chartPeriod=p;document.querySelectorAll('.period-btn').forEach(x=>x.classList.toggle('active',x.dataset&&x.dataset.period===p));renderCharts();}
+function setPeriod(p){
+  chartPeriod=p; chartDateFrom=null; chartDateTo=null;
+  document.querySelectorAll('.period-btn').forEach(x=>x.classList.toggle('active',x.dataset&&x.dataset.period===p));
+  const lbl=document.getElementById('dateRangeLabel'); if(lbl) lbl.textContent='';
+  const df=document.getElementById('dateFrom'); if(df) df.value='';
+  const dt=document.getElementById('dateTo'); if(dt) dt.value='';
+  renderCharts();
+}
+function setDateRange(){
+  const from=document.getElementById('dateFrom')?.value;
+  const to=document.getElementById('dateTo')?.value;
+  if(!from&&!to) return;
+  chartDateFrom=from||null; chartDateTo=to||null;
+  chartPeriod='custom';
+  document.querySelectorAll('.period-btn').forEach(x=>x.classList.remove('active'));
+  const lbl=document.getElementById('dateRangeLabel');
+  if(lbl) lbl.textContent=(from||'inicio')+' → '+(to||'hoy');
+  renderCharts();
+}
+function clearDateRange(){
+  chartDateFrom=null; chartDateTo=null;
+  const df=document.getElementById('dateFrom'); if(df) df.value='';
+  const dt=document.getElementById('dateTo'); if(dt) dt.value='';
+  setPeriod('all');
+}
 function updateChartTipsterFilter(){
   const el=document.getElementById('chartTipsterFilter');if(!el)return;
   el.innerHTML=`<button class="tf-btn ${chartTipster==='all'?'active':''}" onclick="setChartTipster('all',this)">Todos</button>`+
@@ -1214,7 +1246,6 @@ function updateMonthButtons(){
 }
 function renderCharts(){
   updateChartTipsterFilter();
-  updateMonthButtons();
   const bets=getFilteredBets();
   const closed=bets.filter(b=>b.result!=='pending');
   let profit=0,invested=0,won=0;
@@ -1228,7 +1259,7 @@ function renderCharts(){
   se('cs-yield',yield_.toFixed(1)+'%',yield_>=0?'cyan':'red');
   se('cs-wr',wr.toFixed(0)+'%','gold');
   se('cs-stake',avgSt.toFixed(1)+'u');
-
+ 
   // Profit evolution — grouped by date to avoid duplicates
   destroyChart('cProfit');
   const sc=closed.filter(b=>b.fecha).sort((a,b)=>a.fecha.localeCompare(b.fecha));
@@ -1238,13 +1269,13 @@ function renderCharts(){
   let cum=0;const lb=[],vl=[];
   sortedDays.forEach(d=>{cum+=dateMap[d];lb.push(d);vl.push(parseFloat(cum.toFixed(2)));});
   const c1=document.getElementById('chartProfit')?.getContext('2d');
-  if(c1) charts.cProfit=new Chart(c1,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado',data:vl,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,.12)',fill:true,tension:0.4,pointRadius:vl.length>60?0:4,pointHoverRadius:6,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444'),pointBorderColor:'transparent'}]},options:{...cOpts('$'),plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}},tooltip:{callbacks:{label:ctx=>{const v=ctx.parsed.y;return(v>=0?'+$':'-$')+Math.abs(v).toFixed(2);}}}}}});
-
+  if(c1) charts.cProfit=new Chart(c1,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado',data:vl,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,.12)',fill:true,tension:0.4,pointRadius:vl.length>60?0:4,pointHoverRadius:6,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444'),pointBorderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}},tooltip:{callbacks:{label:ctx=>{const v=ctx.parsed.y;return(v>=0?'+$':'-$')+Math.abs(v).toFixed(2);}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v<0?'-$'+Math.abs(v):'$'+v},grid:{color:'rgba(255,255,255,.04)'}}}}}); 
+ 
   // Donut
   destroyChart('cResults');
   const c2=document.getElementById('chartResults')?.getContext('2d');
   if(c2) charts.cResults=new Chart(c2,{type:'doughnut',data:{labels:['Ganadas','Perdidas','Void'],datasets:[{data:[closed.filter(b=>b.result==='win').length,closed.filter(b=>b.result==='loss').length,closed.filter(b=>b.result==='void').length],backgroundColor:['#22c55e','#ef4444','#f59e0b'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}}}});
-
+ 
   // Types
   destroyChart('cTypes');
   const typeMap={};
@@ -1252,7 +1283,7 @@ function renderCharts(){
   const tl=Object.keys(typeMap),tv=tl.map(l=>parseFloat(typeMap[l].toFixed(2)));
   const c3=document.getElementById('chartTypes')?.getContext('2d');
   if(c3) charts.cTypes=new Chart(c3,{type:'bar',data:{labels:tl,datasets:[{label:'Profit',data:tv,backgroundColor:tv.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:tv.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1}]},options:cOpts('$')});
-
+ 
   // Jugadas comparison
   destroyChart('cJugadas');
   let allB=filterByPeriodEx((chartTipster==='all'?data.tipsters:data.tipsters.filter(t=>t.id==chartTipster)).flatMap(t=>t.bets),chartPeriod).filter(b=>b.result!=='pending');
@@ -1264,7 +1295,7 @@ function renderCharts(){
   const sWR=sb2.filter(b=>b.result!=='void').length>0?sb2.filter(b=>b.result==='win').length/sb2.filter(b=>b.result!=='void').length*100:0;
   const c4=document.getElementById('chartJugadas')?.getContext('2d');
   if(c4) charts.cJugadas=new Chart(c4,{type:'bar',data:{labels:['Profit ($)','Yield (%)','Win Rate (%)'],datasets:[{label:'✅ Jugadas',data:[parseFloat(pP.toFixed(2)),parseFloat(pY2.toFixed(1)),parseFloat(pWR.toFixed(1))],backgroundColor:pP>=0?'rgba(34,197,94,.65)':'rgba(239,68,68,.65)',borderColor:pP>=0?'#22c55e':'#ef4444',borderWidth:1},{label:'👁 No Jugadas',data:[parseFloat(sP.toFixed(2)),parseFloat(sY2.toFixed(1)),parseFloat(sWR.toFixed(1))],backgroundColor:sP>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)',borderColor:sP>=0?'#06b6d4':'#fb923c',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
-
+ 
   // All tipsters cumulative
   destroyChart('cAll');
   const allDates=new Set();
@@ -1283,7 +1314,7 @@ function renderCharts(){
     const c5=document.getElementById('chartAllTipsters')?.getContext('2d');
     if(c5) charts.cAll=new Chart(c5,{type:'line',data:{labels:allSortedDates,datasets},options:cOpts('$')});
   }
-
+ 
   // Yield comparison
   destroyChart('cYield');
   const rL=data.tipsters.map(t=>t.name);
@@ -1292,7 +1323,7 @@ function renderCharts(){
   const c6=document.getElementById('chartYieldComparison')?.getContext('2d');
   if(c6) charts.cYield=new Chart(c6,{type:'bar',data:{labels:rL,datasets:[{label:'✅ Yield Jugadas',data:rP,backgroundColor:rP.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:rP.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1},{label:'👁 Yield No Jugadas',data:rS,backgroundColor:rS.map(v=>v>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)'),borderColor:rS.map(v=>v>=0?'#06b6d4':'#fb923c'),borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'}}}}});
 }
-
+ 
 // ============================================================
 // EXPORT / IMPORT
 // ============================================================
@@ -1307,14 +1338,14 @@ function importData(ev){
   r.onload=e=>{try{data=JSON.parse(e.target.result);save();renderAll();showToast('✅ Datos importados');}catch{showToast('❌ Archivo inválido',false);}};
   r.readAsText(f);ev.target.value='';
 }
-
+ 
 // ============================================================
 // PWA
 // ============================================================
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
-
+ 
 // ============================================================
 // EXPOSE TO GLOBAL (needed for onclick in dynamic HTML)
 // ============================================================
@@ -1355,7 +1386,8 @@ window.setChartTipster=setChartTipster;
 window.setPeriod=setPeriod;
 window.setUnitFilter=setUnitFilter;
 window.setUnitTipster=setUnitTipster;
-window.updateMonthButtons=updateMonthButtons;
+window.setDateRange=setDateRange;
+window.clearDateRange=clearDateRange;
 window.exportData=exportData;
 window.importData=importData;
 </script>
