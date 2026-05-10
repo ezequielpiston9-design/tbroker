@@ -696,7 +696,7 @@ function avgCuota(bets) {
 }
 
 function avgStakeRatio(bets) {
-  const b = bets.filter(x => x.played && x.stake && x.monto);
+  const b = bets.filter(x => x.stake && x.monto);
   if (!b.length) return null;
   return b.reduce((s,x) => s + x.monto / x.stake, 0) / b.length;
 }
@@ -1031,8 +1031,9 @@ function prefillFromTipster(t) {
       defaultStake = t.stakeTable[0].stake;
     }
     const monto = resolveMontoFromStake(t, defaultStake);
+    // Always set stake; only set monto if we could calculate it
+    document.getElementById('bStake').value = defaultStake;
     if (monto !== null) {
-      document.getElementById('bStake').value = defaultStake;
       document.getElementById('bMonto').value = monto.toFixed(2);
     }
   }
