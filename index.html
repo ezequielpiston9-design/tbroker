@@ -175,6 +175,9 @@ select option{background:var(--s2);}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.tipster-chip{padding:6px 14px;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;border:2px solid var(--tc,var(--border));background:transparent;color:var(--muted2);transition:all .18s;font-family:'DM Sans',sans-serif;}
+.tipster-chip.sel{background:var(--tc,var(--accent));color:#fff;box-shadow:0 2px 12px color-mix(in srgb,var(--tc,var(--accent)) 40%,transparent);}
+.tipster-chip:hover{background:color-mix(in srgb,var(--tc,var(--accent)) 20%,transparent);color:var(--text);}
 </style>
 </head>
 <body>
@@ -339,18 +342,39 @@ select option{background:var(--s2);}
 <!-- ===== TAB UNIDADES ===== -->
 <div id="tab-unidades" class="tab-content">
   <div class="stats-strip">
-    <div class="stat-box"><div class="stat-lbl">U. Stakeadas (jug)</div><div class="stat-val purple" id="u-staked">0u</div></div>
-    <div class="stat-box"><div class="stat-lbl">U. Netas (jug)</div><div class="stat-val green" id="u-net-p">+0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">U. Net (jug)</div><div class="stat-val green" id="u-net-p">+0u</div></div>
     <div class="stat-box"><div class="stat-lbl">Yield U. (jug)</div><div class="stat-val cyan" id="u-yield-p">0%</div></div>
-    <div class="stat-box"><div class="stat-lbl">U. Stakeadas (no jug)</div><div class="stat-val purple" id="u-staked-s">0u</div></div>
-    <div class="stat-box"><div class="stat-lbl">U. Netas (no jug)</div><div class="stat-val pink" id="u-net-s">+0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">U. Net (no jug)</div><div class="stat-val pink" id="u-net-s">+0u</div></div>
     <div class="stat-box"><div class="stat-lbl">Yield U. (no jug)</div><div class="stat-val pink" id="u-yield-s">0%</div></div>
-    <div class="stat-box"><div class="stat-lbl">Mejor racha (jug)</div><div class="stat-val gold" id="u-streak">0</div></div>
+    <div class="stat-box"><div class="stat-lbl">U. Net (ambas)</div><div class="stat-val purple" id="u-net-all">+0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">Yield U. (ambas)</div><div class="stat-val purple" id="u-yield-all">0%</div></div>
+    <div class="stat-box"><div class="stat-lbl">Mejor racha 🔥</div><div class="stat-val gold" id="u-streak">+0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">Peor racha 📉</div><div class="stat-val red" id="u-lstreak">-0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">Balance período</div><div class="stat-val cyan" id="u-period-net">+0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">U. Stakeadas (jug)</div><div class="stat-val muted" id="u-staked">0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">U. Stakeadas (no jug)</div><div class="stat-val muted" id="u-staked-s">0u</div></div>
   </div>
   <div class="card" style="margin-bottom:11px;">
     <div class="card-title">Filtros</div>
     <div style="margin-bottom:8px;"><span class="flbl">Tipster:</span>
       <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="uTipsterFilter"><button class="tf-btn active" onclick="setUnitTipster('all',this)">Todos</button></div>
+    </div>
+    <div style="margin-top:9px;"><span class="flbl">Período:</span>
+      <div class="period-bar" style="margin-top:5px;">
+        <button class="period-btn active" data-uperiod="all" onclick="setUnitPeriod('all')">Todo</button>
+        <button class="period-btn" data-uperiod="1y" onclick="setUnitPeriod('1y')">1 Año</button>
+        <button class="period-btn" data-uperiod="6m" onclick="setUnitPeriod('6m')">6 Meses</button>
+        <button class="period-btn" data-uperiod="3m" onclick="setUnitPeriod('3m')">3 Meses</button>
+        <button class="period-btn" data-uperiod="1m" onclick="setUnitPeriod('1m')">1 Mes</button>
+        <button class="period-btn" data-uperiod="1w" onclick="setUnitPeriod('1w')">1 Semana</button>
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <input type="date" id="uDateFrom" style="width:130px;padding:5px 9px;font-size:0.72rem;" onchange="setUnitDateRange()">
+        <span style="color:var(--muted);font-size:0.75rem;">→</span>
+        <input type="date" id="uDateTo" style="width:130px;padding:5px 9px;font-size:0.72rem;" onchange="setUnitDateRange()">
+        <button class="period-btn" onclick="clearUnitDateRange()" style="padding:4px 9px;">✕</button>
+        <span id="uDateRangeLabel" style="font-size:0.65rem;color:var(--cyan);font-family:'DM Mono',monospace;"></span>
+      </div>
     </div>
     <div style="margin-top:9px;"><span class="flbl">Ver:</span>
       <div class="filter-bar" style="margin-top:5px;">
@@ -379,8 +403,8 @@ select option{background:var(--s2);}
           <button class="flt-btn" id="flt-skipped" onclick="setChartFilter('skipped')">👁 No Jugadas</button>
         </div>
       </div>
-      <div><span class="flbl">Tipster:</span>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="chartTipsterFilter"><button class="tf-btn active" onclick="setChartTipster('all',this)">Todos</button></div>
+      <div><span class="flbl">Tipsters:</span>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="chartTipsterFilter"></div>
       </div>
       <div>
         <span class="flbl">Período rápido:</span>
@@ -419,8 +443,10 @@ select option{background:var(--s2);}
     <div class="card"><div class="card-title">Profit por Tipo</div><div class="chart-wrap"><canvas id="chartTypes"></canvas></div></div>
     <div class="card"><div class="card-title">Jugadas vs No Jugadas</div><div class="chart-wrap"><canvas id="chartJugadas"></canvas></div></div>
   </div>
-  <div class="card"><div class="card-title">Profit Acumulado por Tipster</div><div class="chart-wrap-lg"><canvas id="chartAllTipsters"></canvas></div></div>
-  <div class="card"><div class="card-title">Yield Jugadas vs No Jugadas por Tipster</div><div class="chart-wrap"><canvas id="chartYieldComparison"></canvas></div></div>
+  <div class="card" id="cardAllTipsters"><div class="card-title">Profit Acumulado por Tipster</div><div class="chart-wrap-lg"><canvas id="chartAllTipsters"></canvas></div></div>
+  <div class="card" id="cardYieldComp"><div class="card-title">Yield Jugadas vs No Jugadas por Tipster</div><div class="chart-wrap"><canvas id="chartYieldComparison"></canvas></div></div>
+  <div class="card"><div class="card-title">ROI Mensual por Tipster</div><div class="chart-wrap-lg"><canvas id="chartROIMonthly"></canvas></div></div>
+  <div class="card"><div class="card-title">Cuota Media: Ganadas vs Perdidas</div><div class="chart-wrap"><canvas id="chartCuotaWL"></canvas></div></div>
 </div>
 
 </div><!-- /container -->
@@ -576,8 +602,8 @@ let etStakeTable = [];      // [{stake, monto}]
 let autoStakeOn = true;
 let betException = false;
 let betCuotaException = false;  // per-bet cuota override
-let chartFilter = 'all', chartTipster = 'all', chartPeriod = 'all', chartDateFrom = null, chartDateTo = null;
-let unitFilter = 'all', unitTipster = 'all';
+let chartFilter = 'all', chartTipsters = [], chartPeriod = 'all', chartDateFrom = null, chartDateTo = null; // chartTipsters=[] means 'all'
+let unitFilter = 'all', unitTipster = 'all', unitPeriod = 'all', unitDateFrom = null, unitDateTo = null;
 let tipsterSort = 'nombre';
 let tcId = null, tcPeriod = 'all', tcFilter = 'all', tcMetric = 'profit';
 let charts = {};
@@ -1387,24 +1413,100 @@ function updateUnitTipsterFilter() {
   el.innerHTML=`<button class="tf-btn ${unitTipster==='all'?'active':''}" onclick="setUnitTipster('all',this)">Todos</button>`+
     data.tipsters.map(t=>`<button class="tf-btn ${unitTipster==t.id?'active':''}" onclick="setUnitTipster(${t.id},this)">${t.name}</button>`).join('');
 }
+function setUnitPeriod(p) {
+  unitPeriod = p; unitDateFrom = null; unitDateTo = null;
+  document.querySelectorAll('[data-uperiod]').forEach(x=>x.classList.toggle('active', x.dataset.uperiod===p));
+  const lbl=document.getElementById('uDateRangeLabel'); if(lbl) lbl.textContent='';
+  const df=document.getElementById('uDateFrom'); if(df) df.value='';
+  const dt=document.getElementById('uDateTo'); if(dt) dt.value='';
+  renderUnidades();
+}
+function setUnitDateRange() {
+  const from=document.getElementById('uDateFrom')?.value;
+  const to=document.getElementById('uDateTo')?.value;
+  if(!from&&!to) return;
+  unitDateFrom=from||null; unitDateTo=to||null; unitPeriod='custom';
+  document.querySelectorAll('[data-uperiod]').forEach(x=>x.classList.remove('active'));
+  const lbl=document.getElementById('uDateRangeLabel');
+  if(lbl) lbl.textContent=(from||'inicio')+' → '+(to||'hoy');
+  renderUnidades();
+}
+function clearUnitDateRange() {
+  unitDateFrom=null; unitDateTo=null;
+  const df=document.getElementById('uDateFrom'); if(df) df.value='';
+  const dt=document.getElementById('uDateTo'); if(dt) dt.value='';
+  setUnitPeriod('all');
+}
+// Filter bets for units tab respecting custom date range
+function filterUnitPeriod(bets) {
+  if (unitPeriod==='custom') {
+    return bets.filter(b=>{
+      if(!b.fecha) return false;
+      if(unitDateFrom && b.fecha < unitDateFrom) return false;
+      if(unitDateTo   && b.fecha > unitDateTo)   return false;
+      return true;
+    });
+  }
+  return filterByPeriod(bets, unitPeriod);
+}
+// Correct streak calc: accumulates UNITS in continuous win/loss runs
+function calcStreaks(bets) {
+  let bestW=0, curW=0, bestL=0, curL=0;
+  bets.forEach(b=>{
+    const u = calcUnits(b);
+    if (u > 0) {
+      curW += u; bestW = Math.max(bestW, curW);
+      curL = 0;
+    } else if (u < 0) {
+      curL += Math.abs(u); bestL = Math.max(bestL, curL);
+      curW = 0;
+    } else {
+      curW = 0; curL = 0;
+    }
+  });
+  return { bestW, bestL };
+}
 function renderUnidades() {
   updateUnitTipsterFilter();
   const allTs=unitTipster==='all'?data.tipsters:data.tipsters.filter(t=>t.id==unitTipster);
-  const bp=allTs.flatMap(t=>t.bets.filter(b=>b.played&&b.stake&&b.result!=='pending'));
-  const bs=allTs.flatMap(t=>t.bets.filter(b=>!b.played&&b.stake&&b.result!=='pending'));
-  const pSt=bp.reduce((s,b)=>s+b.stake,0), pNet=bp.reduce((s,b)=>s+calcUnits(b),0);
-  const sSt=bs.reduce((s,b)=>s+b.stake,0), sNet=bs.reduce((s,b)=>s+calcUnits(b),0);
-  const pY=pSt>0?pNet/pSt*100:0, sY=sSt>0?sNet/sSt*100:0;
-  let streak=0,cur=0;
-  bp.sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')).forEach(b=>{if(calcUnits(b)>0){cur++;streak=Math.max(streak,cur);}else cur=0;});
+
+  // All bets with stake (no period filter) for all-time stats
+  const bpAll=allTs.flatMap(t=>t.bets.filter(b=>b.played&&b.stake&&b.result!=='pending'));
+  const bsAll=allTs.flatMap(t=>t.bets.filter(b=>!b.played&&b.stake&&b.result!=='pending'));
+
+  // Period-filtered bets for period stats + streaks + yield
+  const bp = filterUnitPeriod(bpAll.slice());
+  const bs = filterUnitPeriod(bsAll.slice());
+  const ball = [...bp, ...bs].sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
+
+  const pSt=bp.reduce((s,b)=>s+b.stake,0),  pNet=bp.reduce((s,b)=>s+calcUnits(b),0);
+  const sSt=bs.reduce((s,b)=>s+b.stake,0),  sNet=bs.reduce((s,b)=>s+calcUnits(b),0);
+  const aSt=pSt+sSt,                         aNet=pNet+sNet;
+  const pY=pSt>0?pNet/pSt*100:0;
+  const sY=sSt>0?sNet/sSt*100:0;
+  const aY=aSt>0?aNet/aSt*100:0;
+
+  // Streaks computed on combined sorted bets within period
+  const {bestW, bestL} = calcStreaks(ball);
+
+  // Period balance = net units in selected period (played only)
+  const periodNet = pNet;
+
   const se=(id,v,cls)=>{const e=document.getElementById(id);if(e){e.textContent=v;if(cls)e.className='stat-val '+cls;}};
-  se('u-staked',pSt.toFixed(1)+'u','purple');
-  se('u-net-p',fmtU(pNet),pNet>=0?'green':'red');
-  se('u-yield-p',pY.toFixed(1)+'%',pY>=0?'cyan':'red');
-  se('u-staked-s',sSt.toFixed(1)+'u','purple');
-  se('u-net-s',fmtU(sNet),sNet>=0?'pink':'red');
-  se('u-yield-s',sY.toFixed(1)+'%',sY>=0?'pink':'red');
-  se('u-streak',streak+' 🔥','gold');
+  // All-time staked counts use bpAll/bsAll
+  const pStAll=bpAll.reduce((s,b)=>s+b.stake,0);
+  const sStAll=bsAll.reduce((s,b)=>s+b.stake,0);
+  se('u-staked', pStAll.toFixed(1)+'u');
+  se('u-staked-s', sStAll.toFixed(1)+'u');
+  se('u-net-p',  fmtU(pNet),  pNet>=0?'green':'red');
+  se('u-yield-p',pY.toFixed(1)+'%', pY>=0?'cyan':'red');
+  se('u-net-s',  fmtU(sNet),  sNet>=0?'pink':'red');
+  se('u-yield-s',sY.toFixed(1)+'%', sY>=0?'pink':'red');
+  se('u-net-all', fmtU(aNet), aNet>=0?'purple':'red');
+  se('u-yield-all',aY.toFixed(1)+'%', aY>=0?'purple':'red');
+  se('u-streak',  '+'+bestW.toFixed(2)+'u', 'gold');
+  se('u-lstreak', '-'+bestL.toFixed(2)+'u', 'red');
+  se('u-period-net', fmtU(periodNet), periodNet>=0?'cyan':'red');
 
   let bets=allTs.flatMap(t=>t.bets.map(b=>({...b,tipsterName:t.name})));
   if(unitFilter==='played') bets=bets.filter(b=>b.played);
@@ -1440,7 +1542,17 @@ function cOpts(pre='',suf=''){
   return{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>{if(pre==='$')return(v<0?'-$'+Math.abs(v):'$'+v);return v+suf;}},grid:{color:'rgba(255,255,255,.04)'}}}};
 }
 function setChartFilter(f){chartFilter=f;['all','played','skipped'].forEach(x=>document.getElementById('flt-'+x).className='flt-btn'+(x===f?' a-'+x:''));renderCharts();}
-function setChartTipster(id,el){chartTipster=id;document.querySelectorAll('#chartTipsterFilter .tf-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderCharts();}
+function toggleChartTipster(id) {
+  if (id === 'all') {
+    chartTipsters = [];
+  } else {
+    const idx = chartTipsters.indexOf(id);
+    if (idx >= 0) chartTipsters.splice(idx, 1);
+    else chartTipsters.push(id);
+  }
+  updateChartTipsterFilter();
+  renderCharts();
+}
 function setPeriod(p){
   chartPeriod=p; chartDateFrom=null; chartDateTo=null;
   document.querySelectorAll('.period-btn').forEach(x=>x.classList.toggle('active',x.dataset&&x.dataset.period===p));
@@ -1468,11 +1580,19 @@ function clearDateRange(){
 }
 function updateChartTipsterFilter(){
   const el=document.getElementById('chartTipsterFilter');if(!el)return;
-  el.innerHTML=`<button class="tf-btn ${chartTipster==='all'?'active':''}" onclick="setChartTipster('all',this)">Todos</button>`+
-    data.tipsters.map(t=>`<button class="tf-btn ${chartTipster==t.id?'active':''}" onclick="setChartTipster(${t.id},this)">${t.name}</button>`).join('');
+  const isAll = chartTipsters.length === 0;
+  el.innerHTML = `<button class="tf-btn ${isAll?'active':''}" onclick="toggleChartTipster('all')">Todos</button>` +
+    data.tipsters.map((t,i) => {
+      const sel = chartTipsters.includes(t.id);
+      const col = COLORS[i % COLORS.length];
+      return `<button class="tipster-chip ${sel?'sel':''}" style="--tc:${col}" onclick="toggleChartTipster(${t.id})">${t.name}</button>`;
+    }).join('');
+}
+function getActiveTipsters(){
+  return chartTipsters.length===0 ? data.tipsters : data.tipsters.filter(t=>chartTipsters.includes(t.id));
 }
 function getFilteredBets(){
-  let ts=chartTipster==='all'?data.tipsters:data.tipsters.filter(t=>t.id==chartTipster);
+  let ts=getActiveTipsters();
   let bets=ts.flatMap(t=>t.bets.map(b=>({...b,tipsterName:t.name})));
   if(chartFilter==='played') bets=bets.filter(b=>b.played);
   else if(chartFilter==='skipped') bets=bets.filter(b=>!b.played);
@@ -1520,7 +1640,7 @@ function renderCharts(){
 
   // Jugadas comparison
   destroyChart('cJugadas');
-  let allB=filterByPeriodEx((chartTipster==='all'?data.tipsters:data.tipsters.filter(t=>t.id==chartTipster)).flatMap(t=>t.bets),chartPeriod).filter(b=>b.result!=='pending');
+  let allB=filterByPeriodEx(getActiveTipsters().flatMap(t=>t.bets),chartPeriod).filter(b=>b.result!=='pending');
   const pb2=allB.filter(b=>b.played),sb2=allB.filter(b=>!b.played);
   const pP=pb2.reduce((s,b)=>s+calcProfit(b),0),sP=sb2.reduce((s,b)=>s+calcProfit(b),0);
   const pI=pb2.reduce((s,b)=>s+(b.monto||0),0),sI=sb2.reduce((s,b)=>s+(b.monto||0),0);
@@ -1530,32 +1650,82 @@ function renderCharts(){
   const c4=document.getElementById('chartJugadas')?.getContext('2d');
   if(c4) charts.cJugadas=new Chart(c4,{type:'bar',data:{labels:['Profit ($)','Yield (%)','Win Rate (%)'],datasets:[{label:'✅ Jugadas',data:[parseFloat(pP.toFixed(2)),parseFloat(pY2.toFixed(1)),parseFloat(pWR.toFixed(1))],backgroundColor:pP>=0?'rgba(34,197,94,.65)':'rgba(239,68,68,.65)',borderColor:pP>=0?'#22c55e':'#ef4444',borderWidth:1},{label:'👁 No Jugadas',data:[parseFloat(sP.toFixed(2)),parseFloat(sY2.toFixed(1)),parseFloat(sWR.toFixed(1))],backgroundColor:sP>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)',borderColor:sP>=0?'#06b6d4':'#fb923c',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
 
-  // All tipsters cumulative
+  // Show/hide multi-tipster charts based on selection count
+  const activeTips = getActiveTipsters();
+  const multiMode = activeTips.length !== 1;
+  const cardAll = document.getElementById('cardAllTipsters');
+  const cardYield = document.getElementById('cardYieldComp');
+  if (cardAll)  cardAll.style.display  = multiMode ? 'block' : 'none';
+  if (cardYield) cardYield.style.display = multiMode ? 'block' : 'none';
+
+  // All tipsters cumulative (only in multi mode)
   destroyChart('cAll');
-  const allDates=new Set();
-  data.tipsters.forEach(t=>t.bets.forEach(b=>{if(b.fecha)allDates.add(b.fecha);}));
-  const allSortedDates=filterByPeriodEx([...allDates].sort().map(d=>({fecha:d})),chartPeriod).map(x=>x.fecha);
-  if(allSortedDates.length){
-    const datasets=data.tipsters.map((t,i)=>{
-      let b=t.bets.filter(x=>x.result!=='pending'&&x.fecha);
-      if(chartFilter==='played') b=b.filter(x=>x.played);
-      else if(chartFilter==='skipped') b=b.filter(x=>!x.played);
-      const dm={};b.forEach(x=>{if(!dm[x.fecha])dm[x.fecha]=0;dm[x.fecha]+=calcProfit(x);});
-      let r=0;
-      const dp=allSortedDates.map(d=>{r+=(dm[d]||0);return parseFloat(r.toFixed(2));});
-      return{label:t.name,data:dp,borderColor:COLORS[i%COLORS.length],backgroundColor:'transparent',tension:0.4,pointRadius:allSortedDates.length>60?0:3,pointHoverRadius:5};
-    });
-    const c5=document.getElementById('chartAllTipsters')?.getContext('2d');
-    if(c5) charts.cAll=new Chart(c5,{type:'line',data:{labels:allSortedDates,datasets},options:cOpts('$')});
+  if (multiMode) {
+    const allDates=new Set();
+    activeTips.forEach(t=>t.bets.forEach(b=>{if(b.fecha)allDates.add(b.fecha);}));
+    const allSortedDates=filterByPeriodEx([...allDates].sort().map(d=>({fecha:d})),chartPeriod).map(x=>x.fecha);
+    if(allSortedDates.length){
+      const datasets=activeTips.map((t,i)=>{
+        let b=t.bets.filter(x=>x.result!=='pending'&&x.fecha);
+        if(chartFilter==='played') b=b.filter(x=>x.played);
+        else if(chartFilter==='skipped') b=b.filter(x=>!x.played);
+        const dm={};b.forEach(x=>{if(!dm[x.fecha])dm[x.fecha]=0;dm[x.fecha]+=calcProfit(x);});
+        let r=0;
+        const dp=allSortedDates.map(d=>{r+=(dm[d]||0);return parseFloat(r.toFixed(2));});
+        const col=COLORS[data.tipsters.indexOf(t)%COLORS.length];
+        return{label:t.name,data:dp,borderColor:col,backgroundColor:'transparent',tension:0.4,pointRadius:allSortedDates.length>60?0:3,pointHoverRadius:5};
+      });
+      const c5=document.getElementById('chartAllTipsters')?.getContext('2d');
+      if(c5) charts.cAll=new Chart(c5,{type:'line',data:{labels:allSortedDates,datasets},options:cOpts('$')});
+    }
   }
 
-  // Yield comparison
+  // Yield comparison (multi only)
   destroyChart('cYield');
-  const rL=data.tipsters.map(t=>t.name);
-  const rP=data.tipsters.map(t=>parseFloat(calcStats(filterByPeriodEx(t.bets,chartPeriod),'played').yield_.toFixed(1)));
-  const rS=data.tipsters.map(t=>parseFloat(calcStats(filterByPeriodEx(t.bets,chartPeriod),'skipped').yield_.toFixed(1)));
-  const c6=document.getElementById('chartYieldComparison')?.getContext('2d');
-  if(c6) charts.cYield=new Chart(c6,{type:'bar',data:{labels:rL,datasets:[{label:'✅ Yield Jugadas',data:rP,backgroundColor:rP.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:rP.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1},{label:'👁 Yield No Jugadas',data:rS,backgroundColor:rS.map(v=>v>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)'),borderColor:rS.map(v=>v>=0?'#06b6d4':'#fb923c'),borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  if (multiMode) {
+    const rL=activeTips.map(t=>t.name);
+    const rP=activeTips.map(t=>parseFloat(calcStats(filterByPeriodEx(t.bets,chartPeriod),'played').yield_.toFixed(1)));
+    const rS=activeTips.map(t=>parseFloat(calcStats(filterByPeriodEx(t.bets,chartPeriod),'skipped').yield_.toFixed(1)));
+    const c6=document.getElementById('chartYieldComparison')?.getContext('2d');
+    if(c6) charts.cYield=new Chart(c6,{type:'bar',data:{labels:rL,datasets:[{label:'✅ Yield Jugadas',data:rP,backgroundColor:rP.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:rP.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1},{label:'👁 Yield No Jugadas',data:rS,backgroundColor:rS.map(v=>v>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)'),borderColor:rS.map(v=>v>=0?'#06b6d4':'#fb923c'),borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  }
+
+  // ROI mensual: jugadas / no jugadas / ambas
+  destroyChart('cROI');
+  const roiAllBets = filterByPeriodEx(activeTips.flatMap(t=>t.bets.map(b=>({...b,tName:t.name}))),chartPeriod)
+    .filter(b=>b.result!=='pending'&&b.fecha);
+  const roiMap={p:{},s:{},a:{}};
+  roiAllBets.forEach(b=>{
+    const m=b.fecha.substring(0,7);
+    const key=b.played?'p':'s';
+    if(!roiMap[key][m]) roiMap[key][m]={profit:0,invested:0};
+    if(!roiMap.a[m])    roiMap.a[m]   ={profit:0,invested:0};
+    roiMap[key][m].profit+=calcProfit(b); roiMap[key][m].invested+=b.monto||0;
+    roiMap.a[m].profit   +=calcProfit(b); roiMap.a[m].invested   +=b.monto||0;
+  });
+  const roiMonths=[...new Set(roiAllBets.map(b=>b.fecha.substring(0,7)))].sort();
+  const roiV=k=>roiMonths.map(m=>roiMap[k][m]&&roiMap[k][m].invested>0?parseFloat((roiMap[k][m].profit/roiMap[k][m].invested*100).toFixed(1)):null);
+  const roiP=roiV('p'), roiS=roiV('s'), roiA=roiV('a');
+  const c7=document.getElementById('chartROIMonthly')?.getContext('2d');
+  if(c7) charts.cROI=new Chart(c7,{type:'bar',data:{labels:roiMonths,datasets:[
+    {label:'✅ Jugadas',data:roiP,backgroundColor:'rgba(34,197,94,.55)',borderColor:'#22c55e',borderWidth:1,borderRadius:3},
+    {label:'👁 No Jugadas',data:roiS,backgroundColor:'rgba(232,121,249,.45)',borderColor:'#e879f9',borderWidth:1,borderRadius:3},
+    {label:'🔵 Ambas',data:roiA,backgroundColor:'rgba(108,99,255,.5)',borderColor:'#6c63ff',borderWidth:1,borderRadius:3}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:14},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'},stacked:false}}}});
+
+  // Cuota media: ganadas vs perdidas por tipster
+  destroyChart('cCuotaWL');
+  const cwL=activeTips.map(t=>t.name);
+  const cwWin=activeTips.map(t=>{
+    const b=filterByPeriodEx(t.bets,chartPeriod).filter(x=>x.result==='win'&&x.cuota);
+    return b.length?parseFloat((b.reduce((s,x)=>s+x.cuota,0)/b.length).toFixed(2)):0;
+  });
+  const cwLoss=activeTips.map(t=>{
+    const b=filterByPeriodEx(t.bets,chartPeriod).filter(x=>x.result==='loss'&&x.cuota);
+    return b.length?parseFloat((b.reduce((s,x)=>s+x.cuota,0)/b.length).toFixed(2)):0;
+  });
+  const c8=document.getElementById('chartCuotaWL')?.getContext('2d');
+  if(c8) charts.cCuotaWL=new Chart(c8,{type:'bar',data:{labels:cwL,datasets:[{label:'✅ Cuota media ganadas',data:cwWin,backgroundColor:'rgba(34,197,94,.6)',borderColor:'#22c55e',borderWidth:1},{label:'❌ Cuota media perdidas',data:cwLoss,backgroundColor:'rgba(239,68,68,.55)',borderColor:'#ef4444',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
 }
 
 // ============================================================
@@ -1620,9 +1790,12 @@ window.toggleAutoStake=toggleAutoStake;
 window.saveBet=saveBet;
 window.clearForm=clearForm;
 window.setChartFilter=setChartFilter;
-window.setChartTipster=setChartTipster;
+window.toggleChartTipster=toggleChartTipster;
 window.setPeriod=setPeriod;
 window.setUnitFilter=setUnitFilter;
+window.setUnitPeriod=setUnitPeriod;
+window.setUnitDateRange=setUnitDateRange;
+window.clearUnitDateRange=clearUnitDateRange;
 window.setUnitTipster=setUnitTipster;
 window.setDateRange=setDateRange;
 window.clearDateRange=clearDateRange;
