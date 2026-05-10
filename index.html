@@ -257,7 +257,13 @@ select option{background:var(--s2);}
         <input type="number" id="bStake" min="0.5" max="20" step="0.5" placeholder="5" oninput="onStakeInput()">
       </div>
       <div class="fg"><label>Dinero Apostado ($)</label><input type="number" id="bMonto" placeholder="100" oninput="onMontoInput()"></div>
-      <div class="fg"><label>Cuota / Odd</label><input type="number" id="bCuota" step="0.01" placeholder="2.10" oninput="updatePreview()"></div>
+      <div class="fg">
+        <label style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Cuota / Odd</span>
+          <span class="auto-badge on" id="autoCuotaBadge" onclick="toggleAutoCuota()" title="Auto: se pre-rellena con la cuota media del tipster">📐 Auto</span>
+        </label>
+        <input type="number" id="bCuota" step="0.01" placeholder="2.10" oninput="updatePreview()">
+      </div>
       <div class="fg"><label>Nº de Eventos</label><input type="number" id="bEventos" min="1" value="1" placeholder="1"></div>
       <div class="fg"><label>Deporte</label>
         <select id="bDeporte">
@@ -289,7 +295,7 @@ select option{background:var(--s2);}
 
     <!-- EXCEPCION AUTO-STAKE -->
     <div id="exceptionRow" style="display:none;margin-bottom:11px;padding:9px 11px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:8px;">
-      <span style="font-size:0.65rem;color:var(--gold);font-weight:700;">⚠️ Modo excepción activo para esta apuesta — los valores no se calcularán automáticamente.</span>
+      <span id="exceptionRowText" style="font-size:0.65rem;color:var(--gold);font-weight:700;">⚠️ Modo excepción activo para esta apuesta.</span>
     </div>
 
     <!-- JUGADA -->
@@ -508,6 +514,15 @@ select option{background:var(--s2);}
       <div style="font-size:0.6rem;color:var(--muted);margin-top:6px;">💡 Podés poner cualquier valor de stake. Al tipear un stake en el formulario, se busca la coincidencia exacta; si no hay, se usa el promedio histórico como fallback.</div>
     </div>
 
+    <!-- AUTO-CUOTA SETTING -->
+    <div style="margin-bottom:13px;">
+      <div class="fg" style="margin-bottom:8px;"><label>Auto-Cuota</label></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="auto-badge on" id="etAutoCuota" onclick="toggleETAutoCuota()">📐 Auto activado</button>
+        <span style="font-size:0.62rem;color:var(--muted);">Al seleccionar el tipster, la cuota se pre-rellena con su cuota media histórica. Desactivable por apuesta.</span>
+      </div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="saveEditTipster()">💾 Guardar</button>
       <button class="btn btn-ghost" onclick="closeEditTipsterModal()">Cancelar</button>
@@ -560,6 +575,7 @@ let etStakeMode = 'avg';    // 'off' | 'avg' | 'table'
 let etStakeTable = [];      // [{stake, monto}]
 let autoStakeOn = true;
 let betException = false;
+let betCuotaException = false;  // per-bet cuota override
 let chartFilter = 'all', chartTipster = 'all', chartPeriod = 'all', chartDateFrom = null, chartDateTo = null;
 let unitFilter = 'all', unitTipster = 'all';
 let tipsterSort = 'nombre';
@@ -672,6 +688,13 @@ function calcStats(bets, filter = 'all') {
   return { total:fb.length, closed:closed.length, won:won.length, invested, profit, yield_, wr, uNet, uStaked, uYield };
 }
 
+// Average cuota of closed bets (all, no filter)
+function avgCuota(bets) {
+  const b = bets.filter(x => x.cuota && x.cuota > 1 && x.result !== 'pending');
+  if (!b.length) return null;
+  return b.reduce((s,x) => s + x.cuota, 0) / b.length;
+}
+
 function avgStakeRatio(bets) {
   const b = bets.filter(x => x.played && x.stake && x.monto);
   if (!b.length) return null;
@@ -720,7 +743,7 @@ function addTipster() {
   const n = document.getElementById('newName').value.trim();
   if (!n) return showAlert('Ingresá un nombre');
   const bankroll = parseFloat(document.getElementById('newBankroll').value) || null;
-  data.tipsters.push({ id:Date.now(), name:n, bets:[], bankroll, autoStake:true, stakeMode:'avg', stakeTable:[] });
+  data.tipsters.push({ id:Date.now(), name:n, bets:[], bankroll, autoStake:true, stakeMode:'avg', stakeTable:[], autoCuota:true });
   document.getElementById('newName').value = '';
   document.getElementById('newBankroll').value = '';
   save(); renderAll();
@@ -802,6 +825,7 @@ function renderTipsterBody(t, s, sk, ratio, roi, color) {
       <div class="pbox"><div class="pbox-lbl">Yield</div><div class="pbox-val ${s.yield_>=0?'cyan':'red'}">${s.yield_.toFixed(2)}%</div></div>
       ${roi!==null?`<div class="pbox"><div class="pbox-lbl">ROI (bankroll)</div><div class="pbox-val ${roi>=0?'purple':'red'}">${roi.toFixed(2)}%</div></div>`:''}
       <div class="pbox"><div class="pbox-lbl">Win Rate</div><div class="pbox-val gold">${s.wr.toFixed(1)}%</div></div>
+      ${(()=>{const ac=avgCuota(t.bets.filter(b=>b.played));return ac!==null?`<div class="pbox"><div class="pbox-lbl">Cuota Media</div><div class="pbox-val gold">${ac.toFixed(2)}</div></div>`:''})()}
       <div class="pbox"><div class="pbox-lbl">U. Netas</div><div class="pbox-val ${s.uNet>=0?'green':'red'}">${fmtU(s.uNet)}</div></div>
       <div class="pbox"><div class="pbox-lbl">Yield (U)</div><div class="pbox-val ${s.uYield>=0?'cyan':'red'}">${s.uYield.toFixed(2)}%</div></div>
       ${ratio!==null?`<div class="pbox"><div class="pbox-lbl">$ / stake</div><div class="pbox-val purple">≈$${ratio.toFixed(0)}</div></div>`:''}
@@ -814,6 +838,7 @@ function renderTipsterBody(t, s, sk, ratio, roi, color) {
       <div class="pbox"><div class="pbox-lbl">Profit $</div><div class="pbox-val ${sk.profit>=0?'pink':'red'}">${fmt(sk.profit)}</div></div>
       <div class="pbox"><div class="pbox-lbl">Yield</div><div class="pbox-val ${sk.yield_>=0?'pink':'red'}">${sk.yield_.toFixed(2)}%</div></div>
       <div class="pbox"><div class="pbox-lbl">Win Rate</div><div class="pbox-val gold">${sk.wr.toFixed(1)}%</div></div>
+      ${(()=>{const ac=avgCuota(t.bets.filter(b=>!b.played));return ac!==null?`<div class="pbox"><div class="pbox-lbl">Cuota Media</div><div class="pbox-val gold">${ac.toFixed(2)}</div></div>`:''})()}
       <div class="pbox"><div class="pbox-lbl">U. Netas</div><div class="pbox-val ${sk.uNet>=0?'pink':'red'}">${fmtU(sk.uNet)}</div></div>
       <div class="pbox"><div class="pbox-lbl">Yield (U)</div><div class="pbox-val ${sk.uYield>=0?'pink':'red'}">${sk.uYield.toFixed(2)}%</div></div>
     </div>
@@ -946,7 +971,17 @@ function openEditTipsterModal(id) {
   etStakeTable = t.stakeTable || [];
   setETMode(mode);
   renderETTableRows(etStakeTable);
+  // autoCuota
+  const acBtn = document.getElementById('etAutoCuota');
+  const acOn = t.autoCuota !== false;
+  if (acBtn) { acBtn.className = 'auto-badge' + (acOn ? ' on' : ''); acBtn.textContent = acOn ? '📐 Auto activado' : '✏️ Manual'; }
   document.getElementById('editTipsterModal').style.display = 'flex';
+}
+function toggleETAutoCuota() {
+  const btn = document.getElementById('etAutoCuota');
+  const on = btn.classList.contains('on');
+  btn.className = 'auto-badge' + (on ? '' : ' on');
+  btn.textContent = on ? '✏️ Manual' : '📐 Auto activado';
 }
 function closeEditTipsterModal() { document.getElementById('editTipsterModal').style.display = 'none'; }
 function toggleETAutoStake() {} // kept for compat, no-op now
@@ -965,29 +1000,111 @@ function saveEditTipster() {
   } else {
     t.stakeTable = [];
   }
+  const acBtn = document.getElementById('etAutoCuota');
+  t.autoCuota = acBtn ? acBtn.classList.contains('on') : true;
   save(); renderAll(); closeEditTipsterModal(); showToast('✅ Tipster actualizado');
 }
 
 // ============================================================
 // BETS FORM
 // ============================================================
+function updateExceptionRow() {
+  const any = betException || betCuotaException;
+  const el = document.getElementById('exceptionRow');
+  if (!el) return;
+  el.style.display = any ? 'block' : 'none';
+  const parts = [];
+  if (betException) parts.push('stake/monto manual');
+  if (betCuotaException) parts.push('cuota manual');
+  const txt = document.getElementById('exceptionRowText');
+  if (txt) txt.textContent = '⚠️ Excepción activa: ' + (parts.join(' + ') || 'manual') + '.';
+}
+
+function prefillFromTipster(t) {
+  if (!t) return;
+  // Pre-fill stake + monto
+  const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
+  if (mode !== 'off' && !betException) {
+    // Use default stake: first row of table, or 1u
+    let defaultStake = 1;
+    if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
+      defaultStake = t.stakeTable[0].stake;
+    }
+    const monto = resolveMontoFromStake(t, defaultStake);
+    if (monto !== null) {
+      document.getElementById('bStake').value = defaultStake;
+      document.getElementById('bMonto').value = monto.toFixed(2);
+    }
+  }
+  // Pre-fill cuota
+  if (!betCuotaException && t.autoCuota !== false) {
+    const ac = avgCuota(t.bets);
+    if (ac !== null) {
+      document.getElementById('bCuota').value = ac.toFixed(2);
+    }
+  }
+  updatePreview();
+}
+
 function onTipsterChange() {
   betException = false;
-  document.getElementById('exceptionRow').style.display = 'none';
-  updatePreview();
+  betCuotaException = false;
+  updateExceptionRow();
+  // Reset badge states
+  const sb = document.getElementById('autoStakeBadge');
+  if (sb) { sb.className='auto-badge on'; sb.textContent='🔗 Auto'; }
+  const cb = document.getElementById('autoCuotaBadge');
+  if (cb) { cb.className='auto-badge on'; cb.textContent='📐 Auto'; }
+  // Clear fields first so prefill is obvious
+  document.getElementById('bStake').value = '';
+  document.getElementById('bMonto').value = '';
+  document.getElementById('bCuota').value = '';
+  document.getElementById('bPreview').style.display = 'none';
+  const t = getSelectedTipster();
+  prefillFromTipster(t);
 }
 
 function toggleAutoStake() {
   betException = !betException;
-  document.getElementById('exceptionRow').style.display = betException ? 'block' : 'none';
   const badge = document.getElementById('autoStakeBadge');
   if (betException) {
     badge.className = 'auto-badge';
-    badge.textContent = '✏️ Excepción';
+    badge.textContent = '✏️ Manual';
   } else {
     badge.className = 'auto-badge on';
     badge.textContent = '🔗 Auto';
+    // Re-apply stake/monto from tipster
+    const t = getSelectedTipster();
+    if (t) {
+      const stake = parseFloat(document.getElementById('bStake').value);
+      if (!isNaN(stake) && stake > 0) {
+        const monto = resolveMontoFromStake(t, stake);
+        if (monto !== null) document.getElementById('bMonto').value = monto.toFixed(2);
+      }
+    }
   }
+  updateExceptionRow();
+  updatePreview();
+}
+
+function toggleAutoCuota() {
+  betCuotaException = !betCuotaException;
+  const badge = document.getElementById('autoCuotaBadge');
+  if (betCuotaException) {
+    badge.className = 'auto-badge';
+    badge.textContent = '✏️ Manual';
+  } else {
+    badge.className = 'auto-badge on';
+    badge.textContent = '📐 Auto';
+    // Re-apply cuota from tipster
+    const t = getSelectedTipster();
+    if (t && t.autoCuota !== false) {
+      const ac = avgCuota(t.bets);
+      if (ac !== null) document.getElementById('bCuota').value = ac.toFixed(2);
+    }
+  }
+  updateExceptionRow();
+  updatePreview();
 }
 
 function getSelectedTipster() {
@@ -1127,6 +1244,10 @@ function clearForm() {
   document.getElementById('exceptionRow').style.display='none';
   document.getElementById('autoStakeBadge').className='auto-badge on';
   document.getElementById('autoStakeBadge').textContent='🔗 Auto';
+  document.getElementById('autoCuotaBadge').className='auto-badge on';
+  document.getElementById('autoCuotaBadge').textContent='📐 Auto';
+  betCuotaException = false;
+  updateExceptionRow();
 }
 
 function deleteBet(tid, bid) {
@@ -1476,6 +1597,8 @@ window.setEditJugada=setEditJugada;
 window.toggleEditChip=toggleEditChip;
 window.openEditTipsterModal=openEditTipsterModal;
 window.setETMode=setETMode;
+window.toggleETAutoCuota=toggleETAutoCuota;
+window.toggleAutoCuota=toggleAutoCuota;
 window.addETRow=addETRow;
 window.closeEditTipsterModal=closeEditTipsterModal;
 window.saveEditTipster=saveEditTipster;
