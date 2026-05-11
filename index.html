@@ -289,6 +289,7 @@ select option{background:var(--s2);}
       <div class="fg" style="margin-bottom:6px;"><label>Tipo de Apuesta</label></div>
       <div class="chip-row" id="betTypeChips">
         <div class="chip" data-val="Ganador" onclick="toggleChip(this)">🏆 Ganador</div>
+        <div class="chip" data-val="Doble Oportunidad" onclick="toggleChip(this)">🔀 Doble Oportunidad</div>
         <div class="chip" data-val="Ganador 1/2" onclick="toggleChip(this)">½ Mitad</div>
         <div class="chip" data-val="Goles" onclick="toggleChip(this)">⚽ Goles</div>
         <div class="chip" data-val="Asian Market" onclick="toggleChip(this)">🎌 AM</div>
@@ -450,10 +451,9 @@ select option{background:var(--s2);}
     <div class="card"><div class="card-title">Profit Acumulado</div><div class="chart-wrap"><canvas id="chartProfit"></canvas></div></div>
     <div class="card"><div class="card-title">Distribución Resultados</div><div class="chart-wrap"><canvas id="chartResults"></canvas></div></div>
   </div>
-  <div class="card"><div class="card-title">Profit por Tipo</div><div class="chart-wrap"><canvas id="chartTypes"></canvas></div></div>
   <div class="card" id="cardAllTipsters"><div class="card-title">Profit Acumulado por Tipster</div><div class="chart-wrap-lg"><canvas id="chartAllTipsters"></canvas></div></div>
   <div class="card" id="cardYieldComp"><div class="card-title">Yield Jugadas vs No Jugadas por Tipster</div><div class="chart-wrap"><canvas id="chartYieldComparison"></canvas></div></div>
-  <div class="card"><div class="card-title">ROI Mensual por Tipster</div><div class="chart-wrap-lg"><canvas id="chartROIMonthly"></canvas></div></div>
+  <div class="card"><div class="card-title">Yield Mensual Acumulado</div><div class="chart-wrap-lg"><canvas id="chartROIMonthly"></canvas></div></div>
   <div class="card"><div class="card-title">Cuota Media: Ganadas vs Perdidas</div><div class="chart-wrap"><canvas id="chartCuotaWL"></canvas></div></div>
 </div>
 
@@ -476,6 +476,7 @@ select option{background:var(--s2);}
       <div class="fg" style="margin-bottom:6px;"><label>Tipo</label></div>
       <div class="chip-row" id="editBetTypeChips">
         <div class="chip" data-val="Ganador" onclick="toggleEditChip(this)">🏆 Ganador</div>
+        <div class="chip" data-val="Doble Oportunidad" onclick="toggleEditChip(this)">🔀 Doble Oportunidad</div>
         <div class="chip" data-val="Ganador 1/2" onclick="toggleEditChip(this)">½ Mitad</div>
         <div class="chip" data-val="Goles" onclick="toggleEditChip(this)">⚽ Goles</div>
         <div class="chip" data-val="Asian Market" onclick="toggleEditChip(this)">🎌 AM</div>
@@ -781,17 +782,27 @@ function renderTypeTable(bets, containerId, metric='profit') {
     if (b.result !== 'void') map[key].notVoid++;
     if (b.stake) map[key].units += calcUnits(b);
   });
+  // Compute invested per type for yield
+  closed.forEach(b => {
+    const key = getTypeKey(b.types);
+    if (!map[key].invested) map[key].invested = 0;
+    map[key].invested += b.monto || 0;
+  });
   const rows = Object.entries(map).sort((a,b) => b[1][metric] - a[1][metric]);
   el.innerHTML = `<table class="bets-table"><thead><tr>
-    <th>Tipo / Combinación</th><th>Apuestas</th><th>Profit $</th><th>Unidades</th><th>Win Rate</th>
-  </tr></thead><tbody>${rows.map(([key, v]) => `
+    <th>Tipo / Combinación</th><th>Apuestas</th><th>Profit $</th><th>Unidades</th><th>Yield</th><th>Win Rate</th>
+  </tr></thead><tbody>${rows.map(([key, v]) => {
+    const yld = v.invested > 0 ? (v.profit / v.invested * 100) : 0;
+    const uYld = v.units !== 0 ? (v.units / (closed.filter(b=>getTypeKey(b.types)===key&&b.stake).reduce((s,b)=>s+(b.stake||0),0)||1) * 100) : 0;
+    return `
     <tr>
       <td><div class="types-tags">${key.split(' + ').map(t=>`<span class="type-tag">${t}</span>`).join('')}</div></td>
       <td>${v.count}</td>
       <td class="${v.profit>=0?'green':'red'}" style="font-family:'DM Mono',monospace;">${fmt(v.profit)}</td>
       <td class="${v.units>=0?'cyan':'red'}" style="font-family:'DM Mono',monospace;">${fmtU(v.units)}</td>
+      <td class="${yld>=0?'cyan':'red'}" style="font-family:'DM Mono',monospace;">${yld>=0?'+':''}${yld.toFixed(1)}%</td>
       <td class="gold" style="font-family:'DM Mono',monospace;">${v.notVoid>0?(v.won/v.notVoid*100).toFixed(0):0}%</td>
-    </tr>`).join('')}</tbody></table>`;
+    </tr>`;}).join('')}</tbody></table>`;
 }
 
 function avgCuota(bets) {
@@ -1784,14 +1795,6 @@ function renderCharts(){
   const c2=document.getElementById('chartResults')?.getContext('2d');
   if(c2) charts.cResults=new Chart(c2,{type:'doughnut',data:{labels:['Ganadas','Perdidas','Void'],datasets:[{data:[closed.filter(b=>b.result==='win').length,closed.filter(b=>b.result==='loss').length,closed.filter(b=>b.result==='void').length],backgroundColor:['#22c55e','#ef4444','#f59e0b'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}}}});
 
-  // Types
-  destroyChart('cTypes');
-  const typeMap={};
-  closed.forEach(b=>(b.types||['Sin tipo']).forEach(tp=>{if(!typeMap[tp])typeMap[tp]=0;typeMap[tp]+=calcProfit(b);}));
-  const tl=Object.keys(typeMap),tv=tl.map(l=>parseFloat(typeMap[l].toFixed(2)));
-  const c3=document.getElementById('chartTypes')?.getContext('2d');
-  if(c3) charts.cTypes=new Chart(c3,{type:'bar',data:{labels:tl,datasets:[{label:'Profit',data:tv,backgroundColor:tv.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:tv.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1}]},options:cOpts('$')});
-
   // Jugadas comparison
   destroyChart('cJugadas');
   let allB=filterByPeriodEx(getActiveTipsters().flatMap(t=>t.bets),chartPeriod).filter(b=>b.result!=='pending');
@@ -1844,28 +1847,35 @@ function renderCharts(){
     if(c6) charts.cYield=new Chart(c6,{type:'bar',data:{labels:rL,datasets:[{label:'✅ Yield Jugadas',data:rP,backgroundColor:rP.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:rP.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1},{label:'👁 Yield No Jugadas',data:rS,backgroundColor:rS.map(v=>v>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)'),borderColor:rS.map(v=>v>=0?'#06b6d4':'#fb923c'),borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'}}}}});
   }
 
-  // ROI mensual: jugadas / no jugadas / ambas
+  // Yield Mensual Acumulado: una línea por tipster (igual que Profit Acumulado)
   destroyChart('cROI');
-  const roiAllBets = filterByPeriodEx(activeTips.flatMap(t=>t.bets.map(b=>({...b,tName:t.name}))),chartPeriod)
-    .filter(b=>b.result!=='pending'&&b.fecha);
-  const roiMap={p:{},s:{},a:{}};
-  roiAllBets.forEach(b=>{
-    const m=b.fecha.substring(0,7);
-    const key=b.played?'p':'s';
-    if(!roiMap[key][m]) roiMap[key][m]={profit:0,invested:0};
-    if(!roiMap.a[m])    roiMap.a[m]   ={profit:0,invested:0};
-    roiMap[key][m].profit+=calcProfit(b); roiMap[key][m].invested+=b.monto||0;
-    roiMap.a[m].profit   +=calcProfit(b); roiMap.a[m].invested   +=b.monto||0;
-  });
-  const roiMonths=[...new Set(roiAllBets.map(b=>b.fecha.substring(0,7)))].sort();
-  const roiV=k=>roiMonths.map(m=>roiMap[k][m]&&roiMap[k][m].invested>0?parseFloat((roiMap[k][m].profit/roiMap[k][m].invested*100).toFixed(1)):null);
-  const roiP=roiV('p'), roiS=roiV('s'), roiA=roiV('a');
-  const c7=document.getElementById('chartROIMonthly')?.getContext('2d');
-  if(c7) charts.cROI=new Chart(c7,{type:'bar',data:{labels:roiMonths,datasets:[
-    {label:'✅ Jugadas',data:roiP,backgroundColor:'rgba(34,197,94,.55)',borderColor:'#22c55e',borderWidth:1,borderRadius:3},
-    {label:'👁 No Jugadas',data:roiS,backgroundColor:'rgba(232,121,249,.45)',borderColor:'#e879f9',borderWidth:1,borderRadius:3},
-    {label:'🔵 Ambas',data:roiA,backgroundColor:'rgba(108,99,255,.5)',borderColor:'#6c63ff',borderWidth:1,borderRadius:3}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:14},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'},stacked:false}}}});
+  const roiAllDates = new Set();
+  activeTips.forEach(t => t.bets.forEach(b => { if(b.fecha) roiAllDates.add(b.fecha.substring(0,7)); }));
+  const roiMonths = filterByPeriodEx([...roiAllDates].sort().map(m=>({fecha:m+'-01'})),chartPeriod).map(x=>x.fecha.substring(0,7));
+  if(roiMonths.length) {
+    const roiDatasets = activeTips.map((t,i) => {
+      let tb = t.bets.filter(b=>b.result!=='pending'&&b.fecha);
+      if(chartFilter==='played') tb=tb.filter(b=>b.played);
+      else if(chartFilter==='skipped') tb=tb.filter(b=>!b.played);
+      const mMap = {};
+      tb.forEach(b => {
+        const m = b.fecha.substring(0,7);
+        if(!mMap[m]) mMap[m]={profit:0,invested:0};
+        mMap[m].profit += calcProfit(b);
+        mMap[m].invested += b.monto||0;
+      });
+      let cumP=0, cumI=0;
+      const dp = roiMonths.map(m => {
+        cumP += mMap[m]?.profit||0;
+        cumI += mMap[m]?.invested||0;
+        return cumI>0 ? parseFloat((cumP/cumI*100).toFixed(1)) : null;
+      });
+      const col = COLORS[data.tipsters.indexOf(t)%COLORS.length];
+      return {label:t.name, data:dp, borderColor:col, backgroundColor:'transparent', tension:0.4, pointRadius:roiMonths.length>24?0:3, pointHoverRadius:5, borderWidth:2};
+    });
+    const c7=document.getElementById('chartROIMonthly')?.getContext('2d');
+    if(c7) charts.cROI=new Chart(c7,{type:'line',data:{labels:roiMonths,datasets:roiDatasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:14},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'}}}}}); 
+  }
 
   // Cuota media: ganadas vs perdidas por tipster
   destroyChart('cCuotaWL');
