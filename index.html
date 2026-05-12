@@ -876,8 +876,18 @@ function showToast(msg, ok=true) {
   clearTimeout(t._t); t._t = setTimeout(()=>t.style.opacity='0', 2200);
 }
 function showAlert(msg) {
-  const ov=document.createElement('div'); ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;display:flex;align-items:center;justify-content:center;padding:14px;';
-  ov.innerHTML=`<div style="background:#0d1018;border:1px solid #222736;border-radius:12px;padding:22px;max-width:320px;width:100%;text-align:center;"><div style="font-size:.92rem;margin-bottom:14px;">${msg}</div><button onclick="this.closest('div[style]').remove()" style="padding:8px 22px;background:#6c63ff;color:#fff;border:none;border-radius:8px;font-family:DM Sans,sans-serif;font-weight:700;cursor:pointer;">OK</button></div>`;
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;display:flex;align-items:center;justify-content:center;padding:14px;';
+  const box = document.createElement('div');
+  box.style.cssText = 'background:#0d1018;border:1px solid #222736;border-radius:12px;padding:22px;max-width:320px;width:100%;text-align:center;';
+  box.innerHTML = `<div style="font-size:.92rem;margin-bottom:14px;">${msg}</div>`;
+  const btn = document.createElement('button');
+  btn.textContent = 'OK';
+  btn.style.cssText = 'padding:8px 22px;background:#6c63ff;color:#fff;border:none;border-radius:8px;font-family:DM Sans,sans-serif;font-weight:700;cursor:pointer;';
+  btn.onclick = () => ov.remove();
+  ov.onclick = (e) => { if (e.target === ov) ov.remove(); };
+  box.appendChild(btn);
+  ov.appendChild(box);
   document.body.appendChild(ov);
 }
 function showConfirm(msg, onYes) {
