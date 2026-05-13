@@ -311,6 +311,7 @@ select option{background:var(--s2);}
         <div class="chip" data-val="Hándicap" onclick="toggleChip(this)">📐 Hándicap</div>
         <div class="chip" data-val="Over" onclick="toggleChip(this)">📈 Over</div>
         <div class="chip" data-val="Under" onclick="toggleChip(this)">📉 Under</div>
+        <div class="chip" data-val="Doble Oportunidad" onclick="toggleChip(this)">🔁 Doble Op.</div>
         <div class="chip" data-val="Live" onclick="toggleChip(this)">🔴 Live</div>
       </div>
     </div>
@@ -500,6 +501,7 @@ select option{background:var(--s2);}
         <div class="chip" data-val="Over/Under" onclick="toggleEditChip(this)">📊 O/U</div>
         <div class="chip" data-val="1X2" onclick="toggleEditChip(this)">3️⃣ 1X2</div>
         <div class="chip" data-val="Combo" onclick="toggleEditChip(this)">🔗 Combo</div>
+        <div class="chip" data-val="Doble Oportunidad" onclick="toggleEditChip(this)">🔁 Doble Op.</div>
         <div class="chip" data-val="Live" onclick="toggleEditChip(this)">🔴 Live</div>
       </div>
     </div>
@@ -620,15 +622,15 @@ select option{background:var(--s2);}
 let data = { tipsters: [] };
 let curResult = 'pending', curJugada = null;
 let editResult = 'pending', editJugada = null;
-let etAutoStakeOn = true;   // legacy compat
-let etStakeMode = 'avg';    // 'off' | 'avg' | 'table'
-let etStakeTable = [];      // [{stake, monto}]
+let etAutoStakeOn = true;
+let etStakeMode = 'avg';
+let etStakeTable = [];
 let autoStakeOn = true;
 let betException = false;
-let betCuotaException = false;  // per-bet cuota override
-let chartFilter = 'all', chartTipsters = [], chartPeriod = 'all', chartDateFrom = null, chartDateTo = null; // chartTipsters=[] means 'all'
+let betCuotaException = false;
+let chartFilter = 'all', chartTipsters = [], chartPeriod = 'all', chartDateFrom = null, chartDateTo = null;
 let unitFilter = 'all', unitTipster = 'all', unitPeriod = 'all', unitDateFrom = null, unitDateTo = null;
-let unitSports = []; // [] = all sports
+let unitSports = [];
 let tipsterSort = 'nombre';
 let tcId = null, tcPeriod = 'all', tcFilter = 'all', tcMetric = 'profit';
 let charts = {};
@@ -697,7 +699,6 @@ function fmt(n)  { return (n >= 0 ? '+' : '') + '$' + Math.abs(n).toFixed(2); }
 function fmtU(n) { return (n >= 0 ? '+' : '') + n.toFixed(2) + 'u'; }
 function resLabel(r) { return r==='win'?'✅ Ganada':r==='loss'?'❌ Perdida':r==='void'?'↩️ Void':'⏳ Pendiente'; }
 
-// Filter by quick period (no custom date range)
 function filterByPeriod(bets, p) {
   if (p === 'all' || p === 'custom') return bets;
   const now = new Date(), d = new Date(now);
@@ -710,7 +711,6 @@ function filterByPeriod(bets, p) {
   return bets.filter(b => b.fecha && new Date(b.fecha) >= d);
 }
 
-// Filter by period OR custom date range (used in charts tab where chartDateFrom/To may be set)
 function filterByPeriodEx(bets, p) {
   if (p === 'custom') {
     return bets.filter(b => {
@@ -739,15 +739,12 @@ function calcStats(bets, filter = 'all') {
   return { total:fb.length, closed:closed.length, won:won.length, invested, profit, yield_, wr, uNet, uStaked, uYield };
 }
 
-// Average cuota of closed bets (all, no filter)
-// Get canonical key for a bet's type combination (sorted, joined)
 function getTypeKey(types) {
   if (!types || !types.length) return 'Sin tipo';
   const sorted = [...types].sort();
   return sorted.length > 1 ? sorted.join(' + ') : sorted[0];
 }
 
-// Most frequent value in array
 function mostFrequent(arr) {
   if (!arr.length) return null;
   const freq = {};
@@ -755,7 +752,6 @@ function mostFrequent(arr) {
   return Object.entries(freq).sort((a,b) => b[1]-a[1])[0][0];
 }
 
-// Top N most frequent stakes from bet history
 function topStakes(bets, n=3) {
   const stakes = bets.filter(b => b.stake > 0).map(b => b.stake);
   if (!stakes.length) return [];
@@ -767,7 +763,6 @@ function topStakes(bets, n=3) {
     .map(e => parseFloat(e[0]));
 }
 
-// Render quick stake buttons below input
 function renderStakeQuickBtns(t) {
   const el = document.getElementById('stakeQuickBtns'); if (!el) return;
   if (!t) { el.innerHTML = ''; return; }
@@ -788,17 +783,14 @@ function renderStakeQuickBtns(t) {
   ).join('');
 }
 
-// Apply a quick stake button
 function applyQuickStake(stake) {
   document.getElementById('bStake').value = stake;
   onStakeInput();
-  // Update active state
   document.querySelectorAll('.stake-quick-btn').forEach(btn => {
     btn.classList.toggle('active', parseFloat(btn.textContent) === stake);
   });
 }
 
-// Map legacy sport values to new ones
 const SPORT_MAP = {
   'Fútbol': 'Fútbol Europeo',
   'Tennis': 'Tenis',
@@ -808,24 +800,20 @@ const SPORT_MAP = {
 };
 function normalizeSport(s) { return SPORT_MAP[s] || s; }
 
-// Most used sport for a tipster
 function mostUsedSport(bets) {
   const sports = bets.map(b => normalizeSport(b.deporte)).filter(Boolean);
   return mostFrequent(sports);
 }
 
-// Most used type keys for a tipster (returns array of individual type values, most-used combo)
 function mostUsedTypes(bets) {
   const keys = bets.map(b => b.types||[]).filter(t => t.length > 0);
   if (!keys.length) return [];
-  // Find most frequent combination
   const freq = {};
   keys.forEach(k => { const key = k.slice().sort().join('|||'); freq[key] = (freq[key]||0) + 1; });
   const best = Object.entries(freq).sort((a,b) => b[1]-a[1])[0][0];
   return best.split('|||');
 }
 
-// Render profit/units by type combination table
 function renderTypeTable(bets, containerId, metric='profit') {
   const el = document.getElementById(containerId); if (!el) return;
   const closed = bets.filter(b => b.result !== 'pending');
@@ -1137,7 +1125,6 @@ function openEditTipsterModal(id) {
   document.getElementById('etId').value = id;
   document.getElementById('etName').value = t.name;
   document.getElementById('etBankroll').value = t.bankroll || '';
-  // Detect mode from saved data (backwards compat)
   let mode = 'avg';
   if (t.stakeMode) mode = t.stakeMode;
   else if (t.autoStake === false) mode = 'off';
@@ -1145,7 +1132,6 @@ function openEditTipsterModal(id) {
   etStakeTable = t.stakeTable || [];
   setETMode(mode);
   renderETTableRows(etStakeTable);
-  // autoCuota
   const acBtn = document.getElementById('etAutoCuota');
   const acOn = t.autoCuota !== false;
   if (acBtn) { acBtn.className = 'auto-badge' + (acOn ? ' on' : ''); acBtn.textContent = acOn ? '📐 Auto activado' : '✏️ Manual'; }
@@ -1158,18 +1144,17 @@ function toggleETAutoCuota() {
   btn.textContent = on ? '✏️ Manual' : '📐 Auto activado';
 }
 function closeEditTipsterModal() { document.getElementById('editTipsterModal').style.display = 'none'; }
-function toggleETAutoStake() {} // kept for compat, no-op now
+function toggleETAutoStake() {}
 function saveEditTipster() {
   const id = parseInt(document.getElementById('etId').value);
   const t = data.tipsters.find(t=>t.id===id); if(!t) return;
   t.name = document.getElementById('etName').value.trim() || t.name;
   t.bankroll = parseFloat(document.getElementById('etBankroll').value) || null;
   t.stakeMode = etStakeMode;
-  t.autoStake = etStakeMode !== 'off';  // legacy compat
+  t.autoStake = etStakeMode !== 'off';
   if (etStakeMode === 'table') {
     const rows = getETTableRows();
     if (!rows.length) return showAlert('Agregá al menos una fila en la tabla de stakes.');
-    // sort by stake
     t.stakeTable = rows.sort((a,b) => a.stake - b.stake);
   } else {
     t.stakeTable = [];
@@ -1196,19 +1181,16 @@ function updateExceptionRow() {
 
 function prefillFromTipster(t) {
   if (!t) return;
-  // ── Stake + monto ──
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   if (mode !== 'off' && !betException) {
     let defaultStake = 1;
     if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
       defaultStake = t.stakeTable[0].stake;
     } else if (mode === 'avg') {
-      // Use most frequent stake from history as default
       const top = topStakes(t.bets, 1);
       if (top.length) defaultStake = top[0];
     }
     document.getElementById('bStake').value = defaultStake;
-    // Calculate monto from stake
     const ratio = avgStakeRatio(t.bets);
     if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
       const row = t.stakeTable.find(r => r.stake === defaultStake);
@@ -1218,19 +1200,15 @@ function prefillFromTipster(t) {
       document.getElementById('bMonto').value = (defaultStake * ratio).toFixed(2);
     }
   }
-  // ── Cuota ──
   if (!betCuotaException && t.autoCuota !== false) {
     const ac = avgCuota(t.bets);
     if (ac !== null) document.getElementById('bCuota').value = ac.toFixed(2);
   }
-  // ── Quick stake buttons ──
   renderStakeQuickBtns(t);
-  // ── Sport: most used ──
   const sport = mostUsedSport(t.bets);
   if (sport) {
     const sel = document.getElementById('bDeporte');
     if (sel) {
-      // Try exact match first, then normalized
       const opts = [...sel.options].map(o => o.value);
       if (opts.includes(sport)) sel.value = sport;
       else {
@@ -1239,7 +1217,6 @@ function prefillFromTipster(t) {
       }
     }
   }
-  // ── Types: most used combination ──
   document.querySelectorAll('#betTypeChips .chip').forEach(c => c.classList.remove('selected'));
   const types = mostUsedTypes(t.bets);
   if (types.length) {
@@ -1254,12 +1231,10 @@ function onTipsterChange() {
   betException = false;
   betCuotaException = false;
   updateExceptionRow();
-  // Reset badge states
   const sb = document.getElementById('autoStakeBadge');
   if (sb) { sb.className='auto-badge on'; sb.textContent='🔗 Auto'; }
   const cb = document.getElementById('autoCuotaBadge');
   if (cb) { cb.className='auto-badge on'; cb.textContent='📐 Auto'; }
-  // Clear fields first so prefill is obvious
   document.getElementById('bStake').value = '';
   document.getElementById('bMonto').value = '';
   document.getElementById('bCuota').value = '';
@@ -1277,7 +1252,6 @@ function toggleAutoStake() {
   } else {
     badge.className = 'auto-badge on';
     badge.textContent = '🔗 Auto';
-    // Re-apply stake/monto from tipster
     const t = getSelectedTipster();
     if (t) {
       const stake = parseFloat(document.getElementById('bStake').value);
@@ -1300,7 +1274,6 @@ function toggleAutoCuota() {
   } else {
     badge.className = 'auto-badge on';
     badge.textContent = '📐 Auto';
-    // Re-apply cuota from tipster
     const t = getSelectedTipster();
     if (t && t.autoCuota !== false) {
       const ac = avgCuota(t.bets);
@@ -1324,28 +1297,23 @@ function isAutoActive() {
   return mode !== 'off';
 }
 
-// Returns the monto for a given stake based on tipster's stakeMode
 function resolveMontoFromStake(t, stake) {
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   if (mode === 'off') return null;
   if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
     const row = t.stakeTable.find(r => r.stake === stake);
     if (row) return row.monto;
-    // fallback to avg if no exact match
   }
-  // avg mode (or table fallback)
   const ratio = avgStakeRatio(t.bets);
   return ratio ? stake * ratio : null;
 }
 
-// Returns the stake for a given monto (reverse lookup)
 function resolveStakeFromMonto(t, monto) {
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   if (mode === 'off') return null;
   if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
     const row = t.stakeTable.find(r => r.monto === monto);
     if (row) return row.stake;
-    // fallback to avg
   }
   const ratio = avgStakeRatio(t.bets);
   return ratio ? monto / ratio : null;
@@ -1362,7 +1330,6 @@ function onStakeInput() {
       }
     }
   }
-  // Sync active state on quick buttons
   const curStake = parseFloat(document.getElementById('bStake').value);
   document.querySelectorAll('.stake-quick-btn').forEach(btn => {
     btn.classList.toggle('active', parseFloat(btn.textContent) === curStake);
@@ -1439,7 +1406,6 @@ function saveBet() {
     exception: betException
   });
   save(); renderAll();
-  // Reset per-bet fields, then re-prefill from tipster with updated averages
   document.getElementById('bDesc').value='';
   document.getElementById('bEventos').value='1';
   curResult='pending'; curJugada=null; betException=false; betCuotaException=false;
@@ -1634,7 +1600,6 @@ function clearUnitDateRange() {
   const dt=document.getElementById('uDateTo'); if(dt) dt.value='';
   setUnitPeriod('all');
 }
-// Filter bets for units tab respecting custom date range
 function filterUnitPeriod(bets) {
   if (unitPeriod==='custom') {
     return bets.filter(b=>{
@@ -1646,7 +1611,6 @@ function filterUnitPeriod(bets) {
   }
   return filterByPeriod(bets, unitPeriod);
 }
-// Correct streak calc: accumulates UNITS in continuous win/loss runs
 function calcStreaks(bets) {
   let bestW=0, curW=0, bestL=0, curL=0;
   bets.forEach(b=>{
@@ -1692,11 +1656,9 @@ function renderUnidades() {
   updateUnitTipsterFilter();
   const allTs=unitTipster==='all'?data.tipsters:data.tipsters.filter(t=>t.id==unitTipster);
 
-  // All bets with stake (no period filter) for all-time stats
   const bpAll=allTs.flatMap(t=>t.bets.filter(b=>b.played&&b.stake&&b.result!=='pending'));
   const bsAll=allTs.flatMap(t=>t.bets.filter(b=>!b.played&&b.stake&&b.result!=='pending'));
 
-  // Period-filtered bets for period stats + streaks + yield
   const bp = filterUnitPeriod(bpAll.slice());
   const bs = filterUnitPeriod(bsAll.slice());
   const ball = [...bp, ...bs].sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
@@ -1708,14 +1670,10 @@ function renderUnidades() {
   const sY=sSt>0?sNet/sSt*100:0;
   const aY=aSt>0?aNet/aSt*100:0;
 
-  // Streaks computed on combined sorted bets within period
   const {bestW, bestL} = calcStreaks(ball);
-
-  // Period balance = net units in selected period (played only)
   const periodNet = pNet;
 
   const se=(id,v,cls)=>{const e=document.getElementById(id);if(e){e.textContent=v;if(cls)e.className='stat-val '+cls;}};
-  // All-time staked counts use bpAll/bsAll
   const pStAll=bpAll.reduce((s,b)=>s+b.stake,0);
   const sStAll=bsAll.reduce((s,b)=>s+b.stake,0);
   se('u-staked', pStAll.toFixed(1)+'u');
@@ -1748,7 +1706,6 @@ function renderUnidades() {
   const c2=document.getElementById('chartUnidadesTipster')?.getContext('2d');
   if(c2) charts.chartUT=new Chart(c2,{type:'bar',data:{labels:tL,datasets:[{label:'✅ Jugadas',data:tP,backgroundColor:'rgba(34,197,94,.55)',borderColor:'#22c55e',borderWidth:1},{label:'👁 No Jugadas',data:tS,backgroundColor:'rgba(232,121,249,.45)',borderColor:'#e879f9',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'u'},grid:{color:'rgba(255,255,255,.04)'}}}}});
 
-  // Sport filter UI + profit/units by type table
   updateUnitSportFilter(allTs);
   const allBetsForType=allTs.flatMap(t=>t.bets.map(b=>({...b})));
   const filtForType=unitFilter==='played'?allBetsForType.filter(b=>b.played):unitFilter==='skipped'?allBetsForType.filter(b=>!b.played):allBetsForType;
@@ -1842,7 +1799,6 @@ function renderCharts(){
   se('cs-wr',wr.toFixed(0)+'%','gold');
   se('cs-stake',avgSt.toFixed(1)+'u');
 
-  // Profit evolution
   destroyChart('cProfit');
   const sc=closed.filter(b=>b.fecha).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const dateMap={};
@@ -1851,14 +1807,12 @@ function renderCharts(){
   let cum=0;const lb=[],vl=[];
   sortedDays.forEach(d=>{cum+=dateMap[d];lb.push(d);vl.push(parseFloat(cum.toFixed(2)));});
   const c1=document.getElementById('chartProfit')?.getContext('2d');
-  if(c1) charts.cProfit=new Chart(c1,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado',data:vl,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,.12)',fill:true,tension:0.4,pointRadius:vl.length>60?0:4,pointHoverRadius:6,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444'),pointBorderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}},tooltip:{callbacks:{label:ctx=>{const v=ctx.parsed.y;return(v>=0?'+$':'-$')+Math.abs(v).toFixed(2);}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v<0?'-$'+Math.abs(v):'$'+v},grid:{color:'rgba(255,255,255,.04)'}}}}}); 
+  if(c1) charts.cProfit=new Chart(c1,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado',data:vl,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,.12)',fill:true,tension:0.4,pointRadius:vl.length>60?0:4,pointHoverRadius:6,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444'),pointBorderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}},tooltip:{callbacks:{label:ctx=>{const v=ctx.parsed.y;return(v>=0?'+$':'-$')+Math.abs(v).toFixed(2);}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v<0?'-$'+Math.abs(v):'$'+v},grid:{color:'rgba(255,255,255,.04)'}}}}});
 
-  // Donut
   destroyChart('cResults');
   const c2=document.getElementById('chartResults')?.getContext('2d');
   if(c2) charts.cResults=new Chart(c2,{type:'doughnut',data:{labels:['Ganadas','Perdidas','Void'],datasets:[{data:[closed.filter(b=>b.result==='win').length,closed.filter(b=>b.result==='loss').length,closed.filter(b=>b.result==='void').length],backgroundColor:['#22c55e','#ef4444','#f59e0b'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}}}});
 
-  // Types
   destroyChart('cTypes');
   const typeMap={};
   closed.forEach(b=>(b.types||['Sin tipo']).forEach(tp=>{if(!typeMap[tp])typeMap[tp]=0;typeMap[tp]+=calcProfit(b);}));
@@ -1866,7 +1820,6 @@ function renderCharts(){
   const c3=document.getElementById('chartTypes')?.getContext('2d');
   if(c3) charts.cTypes=new Chart(c3,{type:'bar',data:{labels:tl,datasets:[{label:'Profit',data:tv,backgroundColor:tv.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:tv.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1}]},options:cOpts('$')});
 
-  // Jugadas comparison
   destroyChart('cJugadas');
   let allB=filterByPeriodEx(getActiveTipsters().flatMap(t=>t.bets),chartPeriod).filter(b=>b.result!=='pending');
   const pb2=allB.filter(b=>b.played),sb2=allB.filter(b=>!b.played);
@@ -1878,7 +1831,6 @@ function renderCharts(){
   const c4=document.getElementById('chartJugadas')?.getContext('2d');
   if(c4) charts.cJugadas=new Chart(c4,{type:'bar',data:{labels:['Profit ($)','Yield (%)','Win Rate (%)'],datasets:[{label:'✅ Jugadas',data:[parseFloat(pP.toFixed(2)),parseFloat(pY2.toFixed(1)),parseFloat(pWR.toFixed(1))],backgroundColor:pP>=0?'rgba(34,197,94,.65)':'rgba(239,68,68,.65)',borderColor:pP>=0?'#22c55e':'#ef4444',borderWidth:1},{label:'👁 No Jugadas',data:[parseFloat(sP.toFixed(2)),parseFloat(sY2.toFixed(1)),parseFloat(sWR.toFixed(1))],backgroundColor:sP>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)',borderColor:sP>=0?'#06b6d4':'#fb923c',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
 
-  // Show/hide multi-tipster charts based on selection count
   const activeTips = getActiveTipsters();
   const multiMode = activeTips.length !== 1;
   const cardAll = document.getElementById('cardAllTipsters');
@@ -1886,7 +1838,6 @@ function renderCharts(){
   if (cardAll)  cardAll.style.display  = multiMode ? 'block' : 'none';
   if (cardYield) cardYield.style.display = multiMode ? 'block' : 'none';
 
-  // All tipsters cumulative (only in multi mode)
   destroyChart('cAll');
   if (multiMode) {
     const allDates=new Set();
@@ -1908,7 +1859,6 @@ function renderCharts(){
     }
   }
 
-  // Yield comparison (multi only)
   destroyChart('cYield');
   if (multiMode) {
     const rL=activeTips.map(t=>t.name);
@@ -1918,7 +1868,6 @@ function renderCharts(){
     if(c6) charts.cYield=new Chart(c6,{type:'bar',data:{labels:rL,datasets:[{label:'✅ Yield Jugadas',data:rP,backgroundColor:rP.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:rP.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1},{label:'👁 Yield No Jugadas',data:rS,backgroundColor:rS.map(v=>v>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)'),borderColor:rS.map(v=>v>=0?'#06b6d4':'#fb923c'),borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'}}}}});
   }
 
-  // ROI mensual: jugadas / no jugadas / ambas
   destroyChart('cROI');
   const roiAllBets = filterByPeriodEx(activeTips.flatMap(t=>t.bets.map(b=>({...b,tName:t.name}))),chartPeriod)
     .filter(b=>b.result!=='pending'&&b.fecha);
@@ -1941,7 +1890,6 @@ function renderCharts(){
     {label:'🔵 Ambas',data:roiA,backgroundColor:'rgba(108,99,255,.5)',borderColor:'#6c63ff',borderWidth:1,borderRadius:3}
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:14},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'},stacked:false}}}});
 
-  // Cuota media: ganadas vs perdidas por tipster
   destroyChart('cCuotaWL');
   const cwL=activeTips.map(t=>t.name);
   const cwWin=activeTips.map(t=>{
