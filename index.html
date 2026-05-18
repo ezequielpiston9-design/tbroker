@@ -175,24 +175,38 @@ select option{background:var(--s2);}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-.stake-quick-btn{
-  padding:6px 13px;
-  border-radius:8px;
-  font-size:0.75rem;
-  font-weight:700;
-  cursor:pointer;
-  border:1px solid var(--border);
-  background:var(--s2);
-  color:var(--muted2);
-  font-family:'DM Mono',monospace;
-  transition:all .15s;
-  white-space:nowrap;
-}
+.stake-quick-btn{padding:6px 13px;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);font-family:'DM Mono',monospace;transition:all .15s;white-space:nowrap;}
 .stake-quick-btn:hover{border-color:var(--accent);color:var(--accent);}
 .stake-quick-btn.active{border-color:var(--accent);background:rgba(108,99,255,.18);color:var(--accent);}
 .tipster-chip{padding:6px 14px;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;border:2px solid var(--tc,var(--border));background:transparent;color:var(--muted2);transition:all .18s;font-family:'DM Sans',sans-serif;}
 .tipster-chip.sel{background:var(--tc,var(--accent));color:#fff;box-shadow:0 2px 12px color-mix(in srgb,var(--tc,var(--accent)) 40%,transparent);}
 .tipster-chip:hover{background:color-mix(in srgb,var(--tc,var(--accent)) 20%,transparent);color:var(--text);}
+
+/* ===== BALANCE TAB STYLES ===== */
+.balance-saldos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px;}
+.saldo-box{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.saldo-box.saldo-actual{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.05);}
+.saldo-box.saldo-invertido{border-color:rgba(108,99,255,.35);background:rgba(108,99,255,.05);}
+.saldo-box.saldo-retirado{border-color:rgba(6,182,212,.35);background:rgba(6,182,212,.05);}
+.saldo-lbl{font-size:0.52rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px;}
+.saldo-val{font-family:'DM Mono',monospace;font-size:1.25rem;font-weight:500;margin-bottom:8px;}
+.saldo-input-wrap{display:flex;align-items:center;gap:5px;}
+.saldo-input{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);padding:6px 9px;border-radius:7px;font-family:'DM Mono',monospace;font-size:0.8rem;outline:none;}
+.saldo-input:focus{border-color:var(--accent);}
+.saldo-save-btn{padding:5px 9px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.65rem;cursor:pointer;white-space:nowrap;}
+.balance-ranking{margin-top:0;}
+.ranking-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--s2);border-radius:9px;margin-bottom:6px;border:1px solid var(--border);}
+.ranking-pos{font-family:'Unbounded',sans-serif;font-size:0.7rem;font-weight:900;width:22px;text-align:center;flex-shrink:0;}
+.ranking-name{flex:1;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;}
+.ranking-profit{font-family:'DM Mono',monospace;font-size:0.85rem;font-weight:500;text-align:right;}
+.ranking-yield{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--muted2);text-align:right;min-width:45px;}
+.balance-top20-table{width:100%;border-collapse:collapse;font-size:0.7rem;overflow-x:auto;display:block;}
+.balance-top20-table th{padding:5px 7px;text-align:left;font-size:0.54rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
+.balance-top20-table td{padding:7px 7px;border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap;vertical-align:middle;}
+.balance-top20-table tr:last-child td{border-bottom:none;}
+.rank-medal-1{color:#f59e0b;}
+.rank-medal-2{color:#94a3b8;}
+.rank-medal-3{color:#cd7c2f;}
 </style>
 </head>
 <body>
@@ -230,6 +244,7 @@ select option{background:var(--s2);}
   <button class="tab" onclick="switchTab('nueva')">➕ Nueva Apuesta</button>
   <button class="tab" onclick="switchTab('unidades')">📐 Unidades</button>
   <button class="tab" onclick="switchTab('graficas')">📊 Gráficas</button>
+  <button class="tab" onclick="switchTab('balance')">💰 Balance</button>
 </div>
 
 <!-- ===== TAB TIPSTERS ===== -->
@@ -306,7 +321,11 @@ select option{background:var(--s2);}
       <div class="chip-row" id="betTypeChips">
         <div class="chip" data-val="Ganador" onclick="toggleChip(this)">🏆 Ganador</div>
         <div class="chip" data-val="Ganador 1/2" onclick="toggleChip(this)">½ Mitad</div>
+        <div class="chip" data-val="Clasifica" onclick="toggleChip(this)">🎯 Clasifica</div>
         <div class="chip" data-val="Goles" onclick="toggleChip(this)">⚽ Goles</div>
+        <div class="chip" data-val="Corners" onclick="toggleChip(this)">🚩 Corners</div>
+        <div class="chip" data-val="Amarillas" onclick="toggleChip(this)">🟨 Amarillas</div>
+        <div class="chip" data-val="Tiros" onclick="toggleChip(this)">🎯 Tiros</div>
         <div class="chip" data-val="Asian Market" onclick="toggleChip(this)">🎌 AM</div>
         <div class="chip" data-val="Hándicap" onclick="toggleChip(this)">📐 Hándicap</div>
         <div class="chip" data-val="Over" onclick="toggleChip(this)">📈 Over</div>
@@ -474,6 +493,71 @@ select option{background:var(--s2);}
   <div class="card"><div class="card-title">Cuota Media: Ganadas vs Perdidas</div><div class="chart-wrap"><canvas id="chartCuotaWL"></canvas></div></div>
 </div>
 
+<!-- ===== TAB BALANCE ===== -->
+<div id="tab-balance" class="tab-content">
+
+  <!-- SALDOS -->
+  <div class="balance-saldos">
+    <div class="saldo-box saldo-actual">
+      <div class="saldo-lbl">💰 Saldo Actual</div>
+      <div class="saldo-val green" id="bal-actual">$0.00</div>
+      <div style="font-size:0.58rem;color:var(--muted);margin-top:2px;">Se calcula automáticamente</div>
+    </div>
+    <div class="saldo-box saldo-invertido">
+      <div class="saldo-lbl">📥 Saldo Inicial / Invertido</div>
+      <div class="saldo-val purple" id="bal-invertido-display">$0.00</div>
+      <div class="saldo-input-wrap" style="margin-top:6px;">
+        <input class="saldo-input" type="number" id="bal-invertido-input" placeholder="Monto inicial..." step="0.01">
+        <button class="saldo-save-btn" onclick="saveBalanceSaldo('invertido')">✓</button>
+      </div>
+    </div>
+    <div class="saldo-box saldo-retirado">
+      <div class="saldo-lbl">📤 Saldo Retirado</div>
+      <div class="saldo-val cyan" id="bal-retirado-display">$0.00</div>
+      <div class="saldo-input-wrap" style="margin-top:6px;">
+        <input class="saldo-input" type="number" id="bal-retirado-input" placeholder="Total retirado..." step="0.01">
+        <button class="saldo-save-btn" onclick="saveBalanceSaldo('retirado')">✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRAFICA SALDO -->
+  <div class="card" style="margin-bottom:11px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:11px;">
+      <div class="card-title" style="margin-bottom:0;">Evolución del Saldo</div>
+      <div class="period-bar">
+        <button class="period-btn active" data-balperiod="all" onclick="setBalancePeriod('all')">Todo</button>
+        <button class="period-btn" data-balperiod="1y" onclick="setBalancePeriod('1y')">1 Año</button>
+        <button class="period-btn" data-balperiod="6m" onclick="setBalancePeriod('6m')">6 Meses</button>
+        <button class="period-btn" data-balperiod="3m" onclick="setBalancePeriod('3m')">3 Meses</button>
+        <button class="period-btn" data-balperiod="1m" onclick="setBalancePeriod('1m')">1 Mes</button>
+        <button class="period-btn" data-balperiod="1w" onclick="setBalancePeriod('1w')">1 Semana</button>
+      </div>
+    </div>
+    <div style="margin-bottom:9px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <input type="date" id="balDateFrom" style="width:130px;padding:5px 9px;font-size:0.72rem;" onchange="setBalanceDateRange()">
+      <span style="color:var(--muted);font-size:0.75rem;">→</span>
+      <input type="date" id="balDateTo" style="width:130px;padding:5px 9px;font-size:0.72rem;" onchange="setBalanceDateRange()">
+      <button class="period-btn" onclick="clearBalanceDateRange()" style="padding:4px 9px;">✕</button>
+      <span id="balDateRangeLabel" style="font-size:0.65rem;color:var(--cyan);font-family:'DM Mono',monospace;"></span>
+    </div>
+    <div class="chart-wrap" style="height:270px;"><canvas id="chartBalance"></canvas></div>
+  </div>
+
+  <!-- ULTIMAS 20 APUESTAS DEL PERIODO -->
+  <div class="card" style="margin-bottom:11px;">
+    <div class="card-title">Últimas 20 Apuestas del Período (mayor ganancia → peor)</div>
+    <div id="balanceTop20"></div>
+  </div>
+
+  <!-- RANKING TIPSTERS -->
+  <div class="card">
+    <div class="card-title">🏆 Ranking de Tipsters — Período Seleccionado</div>
+    <div id="balanceRanking" class="balance-ranking"></div>
+  </div>
+
+</div><!-- /tab-balance -->
+
 </div><!-- /container -->
 
 <!-- MODAL EDITAR APUESTA -->
@@ -494,7 +578,11 @@ select option{background:var(--s2);}
       <div class="chip-row" id="editBetTypeChips">
         <div class="chip" data-val="Ganador" onclick="toggleEditChip(this)">🏆 Ganador</div>
         <div class="chip" data-val="Ganador 1/2" onclick="toggleEditChip(this)">½ Mitad</div>
+        <div class="chip" data-val="Clasifica" onclick="toggleEditChip(this)">🎯 Clasifica</div>
         <div class="chip" data-val="Goles" onclick="toggleEditChip(this)">⚽ Goles</div>
+        <div class="chip" data-val="Corners" onclick="toggleEditChip(this)">🚩 Corners</div>
+        <div class="chip" data-val="Amarillas" onclick="toggleEditChip(this)">🟨 Amarillas</div>
+        <div class="chip" data-val="Tiros" onclick="toggleEditChip(this)">🎯 Tiros</div>
         <div class="chip" data-val="Asian Market" onclick="toggleEditChip(this)">🎌 AM</div>
         <div class="chip" data-val="Hándicap" onclick="toggleEditChip(this)">📐 Hándicap</div>
         <div class="chip" data-val="BTTS" onclick="toggleEditChip(this)">🥅 BTTS</div>
@@ -537,8 +625,6 @@ select option{background:var(--s2);}
       <div class="fg"><label>Nombre</label><input type="text" id="etName"></div>
       <div class="fg"><label>Bankroll inicial <span class="opt">(para calcular ROI)</span></label><input type="number" id="etBankroll" placeholder="ej: 1000"></div>
     </div>
-
-    <!-- STAKE MODE SELECTOR -->
     <div style="margin-bottom:13px;">
       <div class="fg" style="margin-bottom:8px;"><label>Modo Auto-Stake</label></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;" id="etStakeModeBar">
@@ -548,8 +634,6 @@ select option{background:var(--s2);}
       </div>
       <div id="etModeDesc" style="font-size:0.62rem;color:var(--muted);margin-top:6px;"></div>
     </div>
-
-    <!-- TABLA MANUAL DE STAKES (visible solo en modo table) -->
     <div id="etTableSection" style="display:none;margin-bottom:13px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <span style="font-size:0.62rem;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Tabla Stake → Monto</span>
@@ -565,8 +649,6 @@ select option{background:var(--s2);}
       </div>
       <div style="font-size:0.6rem;color:var(--muted);margin-top:6px;">💡 Podés poner cualquier valor de stake. Al tipear un stake en el formulario, se busca la coincidencia exacta; si no hay, se usa el promedio histórico como fallback.</div>
     </div>
-
-    <!-- AUTO-CUOTA SETTING -->
     <div style="margin-bottom:13px;">
       <div class="fg" style="margin-bottom:8px;"><label>Auto-Cuota</label></div>
       <div style="display:flex;align-items:center;gap:10px;">
@@ -574,7 +656,6 @@ select option{background:var(--s2);}
         <span style="font-size:0.62rem;color:var(--muted);">Al seleccionar el tipster, la cuota se pre-rellena con su cuota media histórica. Desactivable por apuesta.</span>
       </div>
     </div>
-
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="saveEditTipster()">💾 Guardar</button>
       <button class="btn btn-ghost" onclick="closeEditTipsterModal()">Cancelar</button>
@@ -619,7 +700,7 @@ select option{background:var(--s2);}
 // ============================================================
 // STATE
 // ============================================================
-let data = { tipsters: [] };
+let data = { tipsters: [], balance: { invertido: 0, retirado: 0 } };
 let curResult = 'pending', curJugada = null;
 let editResult = 'pending', editJugada = null;
 let etAutoStakeOn = true;
@@ -633,6 +714,7 @@ let unitFilter = 'all', unitTipster = 'all', unitPeriod = 'all', unitDateFrom = 
 let unitSports = [];
 let tipsterSort = 'nombre';
 let tcId = null, tcPeriod = 'all', tcFilter = 'all', tcMetric = 'profit';
+let balancePeriod = 'all', balanceDateFrom = null, balanceDateTo = null;
 let charts = {};
 let fbListening = false;
 const COLORS = ['#6c63ff','#22c55e','#06b6d4','#f59e0b','#e879f9','#ef4444','#f97316','#84cc16','#14b8a6','#a78bfa'];
@@ -643,7 +725,7 @@ const COLORS = ['#6c63ff','#22c55e','#06b6d4','#f59e0b','#e879f9','#ef4444','#f9
 function initApp() {
   document.getElementById('bFecha').value = new Date().toISOString().split('T')[0];
   const ls = localStorage.getItem('tipsterbook_v4');
-  if (ls) { try { data = JSON.parse(ls); } catch(e){} }
+  if (ls) { try { const parsed = JSON.parse(ls); data = parsed; if (!data.balance) data.balance = { invertido: 0, retirado: 0 }; } catch(e){} }
   renderAll();
   setSyncStatus('connecting');
   if (window._fbReady) startFB();
@@ -657,6 +739,7 @@ function startFB() {
   window._fbListen(remote => {
     if (remote.tipsters && remote.tipsters.length > 0) {
       data = remote;
+      if (!data.balance) data.balance = { invertido: 0, retirado: 0 };
       localStorage.setItem('tipsterbook_v4', JSON.stringify(data));
       renderAll();
     }
@@ -723,6 +806,18 @@ function filterByPeriodEx(bets, p) {
   return filterByPeriod(bets, p);
 }
 
+function filterByBalancePeriod(bets) {
+  if (balancePeriod === 'custom') {
+    return bets.filter(b => {
+      if (!b.fecha) return false;
+      if (balanceDateFrom && b.fecha < balanceDateFrom) return false;
+      if (balanceDateTo   && b.fecha > balanceDateTo)   return false;
+      return true;
+    });
+  }
+  return filterByPeriod(bets, balancePeriod);
+}
+
 function calcStats(bets, filter = 'all') {
   const fb = filter==='all' ? bets : bets.filter(b => filter==='played' ? b.played : !b.played);
   const closed = fb.filter(b => b.result !== 'pending');
@@ -768,7 +863,6 @@ function renderStakeQuickBtns(t) {
   if (!t) { el.innerHTML = ''; return; }
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   if (mode === 'off') { el.innerHTML = ''; return; }
-  
   let stakes = [];
   if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
     stakes = t.stakeTable.slice(0, 3).map(r => r.stake);
@@ -776,7 +870,6 @@ function renderStakeQuickBtns(t) {
     stakes = topStakes(t.bets, 3);
   }
   if (!stakes.length) { el.innerHTML = ''; return; }
-
   const curStake = parseFloat(document.getElementById('bStake').value);
   el.innerHTML = stakes.map(s =>
     `<button class="stake-quick-btn${s === curStake ? ' active' : ''}" onclick="applyQuickStake(${s})">${s}u</button>`
@@ -791,13 +884,7 @@ function applyQuickStake(stake) {
   });
 }
 
-const SPORT_MAP = {
-  'Fútbol': 'Fútbol Europeo',
-  'Tennis': 'Tenis',
-  'NFL': 'Otro',
-  'Hockey': 'Otro',
-  'Baseball': 'Otro',
-};
+const SPORT_MAP = { 'Fútbol': 'Fútbol Europeo', 'Tennis': 'Tenis', 'NFL': 'Otro', 'Hockey': 'Otro', 'Baseball': 'Otro' };
 function normalizeSport(s) { return SPORT_MAP[s] || s; }
 
 function mostUsedSport(bets) {
@@ -893,9 +980,10 @@ function switchTab(id) {
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
-  ['tipsters','nueva','unidades','graficas'].forEach((x,i)=>{ if(x===id) document.querySelectorAll('.tab')[i]?.classList.add('active'); });
+  ['tipsters','nueva','unidades','graficas','balance'].forEach((x,i)=>{ if(x===id) document.querySelectorAll('.tab')[i]?.classList.add('active'); });
   if (id==='graficas') { updateChartTipsterFilter(); renderCharts(); }
   if (id==='unidades') { updateUnitTipsterFilter(); renderUnidades(); }
+  if (id==='balance')  { renderBalance(); }
 }
 
 // ============================================================
@@ -1228,8 +1316,7 @@ function prefillFromTipster(t) {
 }
 
 function onTipsterChange() {
-  betException = false;
-  betCuotaException = false;
+  betException = false; betCuotaException = false;
   updateExceptionRow();
   const sb = document.getElementById('autoStakeBadge');
   if (sb) { sb.className='auto-badge on'; sb.textContent='🔗 Auto'; }
@@ -1246,12 +1333,9 @@ function onTipsterChange() {
 function toggleAutoStake() {
   betException = !betException;
   const badge = document.getElementById('autoStakeBadge');
-  if (betException) {
-    badge.className = 'auto-badge';
-    badge.textContent = '✏️ Manual';
-  } else {
-    badge.className = 'auto-badge on';
-    badge.textContent = '🔗 Auto';
+  if (betException) { badge.className='auto-badge'; badge.textContent='✏️ Manual'; }
+  else {
+    badge.className='auto-badge on'; badge.textContent='🔗 Auto';
     const t = getSelectedTipster();
     if (t) {
       const stake = parseFloat(document.getElementById('bStake').value);
@@ -1261,27 +1345,22 @@ function toggleAutoStake() {
       }
     }
   }
-  updateExceptionRow();
-  updatePreview();
+  updateExceptionRow(); updatePreview();
 }
 
 function toggleAutoCuota() {
   betCuotaException = !betCuotaException;
   const badge = document.getElementById('autoCuotaBadge');
-  if (betCuotaException) {
-    badge.className = 'auto-badge';
-    badge.textContent = '✏️ Manual';
-  } else {
-    badge.className = 'auto-badge on';
-    badge.textContent = '📐 Auto';
+  if (betCuotaException) { badge.className='auto-badge'; badge.textContent='✏️ Manual'; }
+  else {
+    badge.className='auto-badge on'; badge.textContent='📐 Auto';
     const t = getSelectedTipster();
     if (t && t.autoCuota !== false) {
       const ac = avgCuota(t.bets);
       if (ac !== null) document.getElementById('bCuota').value = ac.toFixed(2);
     }
   }
-  updateExceptionRow();
-  updatePreview();
+  updateExceptionRow(); updatePreview();
 }
 
 function getSelectedTipster() {
@@ -1291,8 +1370,7 @@ function getSelectedTipster() {
 
 function isAutoActive() {
   if (betException) return false;
-  const t = getSelectedTipster();
-  if (!t) return false;
+  const t = getSelectedTipster(); if (!t) return false;
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   return mode !== 'off';
 }
@@ -1391,7 +1469,6 @@ function saveBet() {
   const cuota = parseFloat(document.getElementById('bCuota').value);
   if (!cuota||cuota<=1) return showAlert('La cuota debe ser mayor a 1');
   if (curJugada===null) return showAlert('Indicá si la jugaste');
-
   t.bets.push({
     id: Date.now(),
     desc: document.getElementById('bDesc').value.trim() || '—',
@@ -1559,6 +1636,207 @@ function updateGlobalStats() {
 }
 
 // ============================================================
+// BALANCE TAB
+// ============================================================
+function saveBalanceSaldo(tipo) {
+  if (!data.balance) data.balance = { invertido: 0, retirado: 0 };
+  const input = document.getElementById('bal-'+tipo+'-input');
+  const val = parseFloat(input.value);
+  if (isNaN(val) || val < 0) return showAlert('Ingresá un monto válido');
+  data.balance[tipo] = val;
+  save();
+  renderBalance();
+  showToast('✅ Saldo actualizado');
+}
+
+function calcSaldoActual() {
+  if (!data.balance) return 0;
+  const invertido = data.balance.invertido || 0;
+  const retirado  = data.balance.retirado  || 0;
+  // Profit total de apuestas jugadas y cerradas
+  let profitTotal = 0;
+  data.tipsters.forEach(t => {
+    t.bets.filter(b => b.played && b.result !== 'pending').forEach(b => {
+      profitTotal += calcProfit(b);
+    });
+  });
+  return invertido + profitTotal - retirado;
+}
+
+function setBalancePeriod(p) {
+  balancePeriod = p; balanceDateFrom = null; balanceDateTo = null;
+  document.querySelectorAll('[data-balperiod]').forEach(x => x.classList.toggle('active', x.dataset.balperiod === p));
+  const lbl = document.getElementById('balDateRangeLabel'); if (lbl) lbl.textContent = '';
+  const df = document.getElementById('balDateFrom'); if (df) df.value = '';
+  const dt = document.getElementById('balDateTo'); if (dt) dt.value = '';
+  renderBalance();
+}
+
+function setBalanceDateRange() {
+  const from = document.getElementById('balDateFrom')?.value;
+  const to   = document.getElementById('balDateTo')?.value;
+  if (!from && !to) return;
+  balanceDateFrom = from || null; balanceDateTo = to || null; balancePeriod = 'custom';
+  document.querySelectorAll('[data-balperiod]').forEach(x => x.classList.remove('active'));
+  const lbl = document.getElementById('balDateRangeLabel');
+  if (lbl) lbl.textContent = (from || 'inicio') + ' → ' + (to || 'hoy');
+  renderBalance();
+}
+
+function clearBalanceDateRange() {
+  balanceDateFrom = null; balanceDateTo = null;
+  const df = document.getElementById('balDateFrom'); if (df) df.value = '';
+  const dt = document.getElementById('balDateTo'); if (dt) dt.value = '';
+  setBalancePeriod('all');
+}
+
+function renderBalance() {
+  if (!data.balance) data.balance = { invertido: 0, retirado: 0 };
+
+  // Saldos display
+  const saldoActual = calcSaldoActual();
+  const elActual = document.getElementById('bal-actual');
+  if (elActual) { elActual.textContent = '$' + saldoActual.toFixed(2); elActual.className = 'saldo-val ' + (saldoActual >= 0 ? 'green' : 'red'); }
+  const elInvDisp = document.getElementById('bal-invertido-display');
+  if (elInvDisp) elInvDisp.textContent = '$' + (data.balance.invertido || 0).toFixed(2);
+  const elRetDisp = document.getElementById('bal-retirado-display');
+  if (elRetDisp) elRetDisp.textContent = '$' + (data.balance.retirado || 0).toFixed(2);
+  const elInvInput = document.getElementById('bal-invertido-input');
+  if (elInvInput && !elInvInput.value) elInvInput.placeholder = (data.balance.invertido || 0).toFixed(2);
+  const elRetInput = document.getElementById('bal-retirado-input');
+  if (elRetInput && !elRetInput.value) elRetInput.placeholder = (data.balance.retirado || 0).toFixed(2);
+
+  // Todas las apuestas jugadas del período con resultado
+  const allPlayedBets = data.tipsters.flatMap(t =>
+    t.bets.filter(b => b.played && b.result !== 'pending' && b.fecha)
+      .map(b => ({ ...b, tipsterName: t.name }))
+  );
+  const periodBets = filterByBalancePeriod(allPlayedBets).sort((a,b) => (a.fecha||'').localeCompare(b.fecha||''));
+
+  // Gráfica: evolución del saldo (saldo inicial + profit acumulado)
+  destroyChart('cBalance');
+  const invertido = data.balance.invertido || 0;
+  let cumProfit = 0;
+  const balLabels = [], balVals = [];
+  // agrupar por fecha
+  const byDate = {};
+  periodBets.forEach(b => {
+    if (!byDate[b.fecha]) byDate[b.fecha] = 0;
+    byDate[b.fecha] += calcProfit(b);
+  });
+  const sortedDates = Object.keys(byDate).sort();
+  if (sortedDates.length > 0) {
+    balLabels.push(sortedDates[0]); balVals.push(parseFloat((invertido).toFixed(2)));
+    sortedDates.forEach(d => {
+      cumProfit += byDate[d];
+      balLabels.push(d);
+      balVals.push(parseFloat((invertido + cumProfit).toFixed(2)));
+    });
+    // deduplicate start
+    if (balLabels.length > 1 && balLabels[0] === balLabels[1]) { balLabels.shift(); balVals.shift(); }
+  }
+
+  const ctx = document.getElementById('chartBalance')?.getContext('2d');
+  if (ctx) {
+    charts.cBalance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: balLabels,
+        datasets: [{
+          label: 'Saldo',
+          data: balVals,
+          borderColor: '#22c55e',
+          backgroundColor: 'rgba(34,197,94,.10)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: balVals.length > 60 ? 0 : 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: balVals.map(v => v >= invertido ? '#22c55e' : '#ef4444'),
+          pointBorderColor: 'transparent'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#e2e8f0', font: { family: 'DM Sans' } } },
+          tooltip: { callbacks: { label: ctx => { const v = ctx.parsed.y; return '$' + v.toFixed(2); } } }
+        },
+        scales: {
+          x: { ticks: { color: '#6b7694', maxTicksLimit: 12 }, grid: { color: 'rgba(255,255,255,.04)' } },
+          y: { ticks: { color: '#6b7694', callback: v => '$' + v }, grid: { color: 'rgba(255,255,255,.04)' } }
+        }
+      }
+    });
+  }
+
+  // Top 20 apuestas del período, de mayor ganancia a peor
+  const top20El = document.getElementById('balanceTop20');
+  if (top20El) {
+    const sorted20 = [...periodBets].sort((a, b) => calcProfit(b) - calcProfit(a)).slice(0, 20);
+    if (!sorted20.length) {
+      top20El.innerHTML = '<div class="no-bets">Sin apuestas jugadas en el período seleccionado.</div>';
+    } else {
+      top20El.innerHTML = `<table class="balance-top20-table">
+        <thead><tr>
+          <th>#</th><th>Tipster</th><th>Fecha</th><th>Descripción</th><th>Tipo</th><th>Monto</th><th>Cuota</th><th>Resultado</th><th>Profit $</th>
+        </tr></thead>
+        <tbody>
+        ${sorted20.map((b, i) => {
+          const p = calcProfit(b);
+          const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+          return `<tr>
+            <td style="font-family:'DM Mono',monospace;font-weight:700;">${medal}</td>
+            <td style="font-weight:700;">${b.tipsterName || '—'}</td>
+            <td>${b.fecha || '—'}</td>
+            <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;">${b.desc || '—'}</td>
+            <td><div class="types-tags">${(b.types||[]).map(tp=>`<span class="type-tag">${tp}</span>`).join('')||'—'}</div></td>
+            <td>$${(b.monto||0).toFixed(0)}</td>
+            <td>${(b.cuota||0).toFixed(2)}</td>
+            <td><span class="badge badge-${b.result}">${resLabel(b.result)}</span></td>
+            <td class="${p>=0?'green':'red'}" style="font-family:'DM Mono',monospace;font-weight:600;">${fmt(p)}</td>
+          </tr>`;
+        }).join('')}
+        </tbody>
+      </table>`;
+    }
+  }
+
+  // Ranking tipsters del período
+  const rankingEl = document.getElementById('balanceRanking');
+  if (rankingEl) {
+    if (!data.tipsters.length) {
+      rankingEl.innerHTML = '<div class="no-bets">Sin tipsters registrados.</div>';
+    } else {
+      const tipsterStats = data.tipsters.map((t, i) => {
+        const betsInPeriod = filterByBalancePeriod(
+          t.bets.filter(b => b.played && b.result !== 'pending' && b.fecha)
+        );
+        const profit = betsInPeriod.reduce((s, b) => s + calcProfit(b), 0);
+        const invested = betsInPeriod.reduce((s, b) => s + (b.monto || 0), 0);
+        const yield_ = invested > 0 ? profit / invested * 100 : 0;
+        const color = COLORS[i % COLORS.length];
+        return { name: t.name, profit, yield_, invested, count: betsInPeriod.length, color };
+      }).sort((a, b) => b.profit - a.profit);
+
+      const medals = ['🥇', '🥈', '🥉'];
+      rankingEl.innerHTML = tipsterStats.map((ts, i) => {
+        const posLabel = medals[i] || `${i + 1}`;
+        const isPos = ts.profit >= 0;
+        return `<div class="ranking-row">
+          <div class="ranking-pos">${posLabel}</div>
+          <div style="width:8px;height:8px;border-radius:50%;background:${ts.color};flex-shrink:0;"></div>
+          <div class="ranking-name">${ts.name}</div>
+          <div style="font-size:0.62rem;color:var(--muted);font-family:'DM Mono',monospace;min-width:55px;text-align:right;">${ts.count} apuestas</div>
+          <div class="ranking-yield ${isPos?'green':'red'}">${ts.yield_.toFixed(1)}%</div>
+          <div class="ranking-profit ${isPos?'green':'red'}">${fmt(ts.profit)}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+// ============================================================
 // UNITS TAB
 // ============================================================
 function setUnitFilter(f) {
@@ -1615,15 +1893,9 @@ function calcStreaks(bets) {
   let bestW=0, curW=0, bestL=0, curL=0;
   bets.forEach(b=>{
     const u = calcUnits(b);
-    if (u > 0) {
-      curW += u; bestW = Math.max(bestW, curW);
-      curL = 0;
-    } else if (u < 0) {
-      curL += Math.abs(u); bestL = Math.max(bestL, curL);
-      curW = 0;
-    } else {
-      curW = 0; curL = 0;
-    }
+    if (u > 0) { curW += u; bestW = Math.max(bestW, curW); curL = 0; }
+    else if (u < 0) { curL += Math.abs(u); bestL = Math.max(bestL, curL); curW = 0; }
+    else { curW = 0; curL = 0; }
   });
   return { bestW, bestL };
 }
@@ -1655,27 +1927,19 @@ function filterBySport(bets) {
 function renderUnidades() {
   updateUnitTipsterFilter();
   const allTs=unitTipster==='all'?data.tipsters:data.tipsters.filter(t=>t.id==unitTipster);
-
   const bpAll=allTs.flatMap(t=>t.bets.filter(b=>b.played&&b.stake&&b.result!=='pending'));
   const bsAll=allTs.flatMap(t=>t.bets.filter(b=>!b.played&&b.stake&&b.result!=='pending'));
-
   const bp = filterUnitPeriod(bpAll.slice());
   const bs = filterUnitPeriod(bsAll.slice());
   const ball = [...bp, ...bs].sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
-
   const pSt=bp.reduce((s,b)=>s+b.stake,0),  pNet=bp.reduce((s,b)=>s+calcUnits(b),0);
   const sSt=bs.reduce((s,b)=>s+b.stake,0),  sNet=bs.reduce((s,b)=>s+calcUnits(b),0);
-  const aSt=pSt+sSt,                         aNet=pNet+sNet;
-  const pY=pSt>0?pNet/pSt*100:0;
-  const sY=sSt>0?sNet/sSt*100:0;
-  const aY=aSt>0?aNet/aSt*100:0;
-
+  const aSt=pSt+sSt, aNet=pNet+sNet;
+  const pY=pSt>0?pNet/pSt*100:0, sY=sSt>0?sNet/sSt*100:0, aY=aSt>0?aNet/aSt*100:0;
   const {bestW, bestL} = calcStreaks(ball);
   const periodNet = pNet;
-
   const se=(id,v,cls)=>{const e=document.getElementById(id);if(e){e.textContent=v;if(cls)e.className='stat-val '+cls;}};
-  const pStAll=bpAll.reduce((s,b)=>s+b.stake,0);
-  const sStAll=bsAll.reduce((s,b)=>s+b.stake,0);
+  const pStAll=bpAll.reduce((s,b)=>s+b.stake,0), sStAll=bsAll.reduce((s,b)=>s+b.stake,0);
   se('u-staked', pStAll.toFixed(1)+'u');
   se('u-staked-s', sStAll.toFixed(1)+'u');
   se('u-net-p',  fmtU(pNet),  pNet>=0?'green':'red');
@@ -1687,30 +1951,25 @@ function renderUnidades() {
   se('u-streak',  '+'+bestW.toFixed(2)+'u', 'gold');
   se('u-lstreak', '-'+bestL.toFixed(2)+'u', 'red');
   se('u-period-net', fmtU(periodNet), periodNet>=0?'cyan':'red');
-
   let bets=allTs.flatMap(t=>t.bets.map(b=>({...b,tipsterName:t.name})));
   if(unitFilter==='played') bets=bets.filter(b=>b.played);
   else if(unitFilter==='skipped') bets=bets.filter(b=>!b.played);
   bets=bets.filter(b=>b.stake&&b.result!=='pending').sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
-
   destroyChart('chartU');
   let cum=0; const lbs=[],vls=[];
   bets.forEach(b=>{cum+=calcUnits(b);lbs.push(b.fecha||'');vls.push(parseFloat(cum.toFixed(3)));});
   const c1=document.getElementById('chartUnidades')?.getContext('2d');
   if(c1) charts.chartU=new Chart(c1,{type:'line',data:{labels:lbs,datasets:[{label:'U. Acumuladas',data:vls,borderColor:'#06b6d4',backgroundColor:'rgba(6,182,212,.08)',fill:true,tension:0.3,pointRadius:vls.length>40?0:3,pointBackgroundColor:vls.map(v=>v>=0?'#22c55e':'#ef4444')}]},options:cOpts('','u')});
-
   destroyChart('chartUT');
   const tL=data.tipsters.map(t=>t.name);
   const tP=data.tipsters.map(t=>parseFloat(t.bets.filter(b=>b.played&&b.stake&&b.result!=='pending').reduce((s,b)=>s+calcUnits(b),0).toFixed(2)));
   const tS=data.tipsters.map(t=>parseFloat(t.bets.filter(b=>!b.played&&b.stake&&b.result!=='pending').reduce((s,b)=>s+calcUnits(b),0).toFixed(2)));
   const c2=document.getElementById('chartUnidadesTipster')?.getContext('2d');
   if(c2) charts.chartUT=new Chart(c2,{type:'bar',data:{labels:tL,datasets:[{label:'✅ Jugadas',data:tP,backgroundColor:'rgba(34,197,94,.55)',borderColor:'#22c55e',borderWidth:1},{label:'👁 No Jugadas',data:tS,backgroundColor:'rgba(232,121,249,.45)',borderColor:'#e879f9',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'u'},grid:{color:'rgba(255,255,255,.04)'}}}}});
-
   updateUnitSportFilter(allTs);
   const allBetsForType=allTs.flatMap(t=>t.bets.map(b=>({...b})));
   const filtForType=unitFilter==='played'?allBetsForType.filter(b=>b.played):unitFilter==='skipped'?allBetsForType.filter(b=>!b.played):allBetsForType;
   renderTypeTable(filterBySport(filterUnitPeriod(filtForType)),'unidadesByType','units');
-
   const tEl=document.getElementById('unidadesTable'); if(!tEl) return;
   if(!bets.length){tEl.innerHTML='<div class="no-bets">Sin apuestas con stake.</div>';return;}
   let r=0; const rows=bets.map(b=>{r+=calcUnits(b);return{b,cum:parseFloat(r.toFixed(3))};});
@@ -1728,15 +1987,13 @@ function cOpts(pre='',suf=''){
 }
 function setChartFilter(f){chartFilter=f;['all','played','skipped'].forEach(x=>document.getElementById('flt-'+x).className='flt-btn'+(x===f?' a-'+x:''));renderCharts();}
 function toggleChartTipster(id) {
-  if (id === 'all') {
-    chartTipsters = [];
-  } else {
+  if (id === 'all') { chartTipsters = []; }
+  else {
     const idx = chartTipsters.indexOf(id);
     if (idx >= 0) chartTipsters.splice(idx, 1);
     else chartTipsters.push(id);
   }
-  updateChartTipsterFilter();
-  renderCharts();
+  updateChartTipsterFilter(); renderCharts();
 }
 function setPeriod(p){
   chartPeriod=p; chartDateFrom=null; chartDateTo=null;
@@ -1798,7 +2055,6 @@ function renderCharts(){
   se('cs-yield',yield_.toFixed(1)+'%',yield_>=0?'cyan':'red');
   se('cs-wr',wr.toFixed(0)+'%','gold');
   se('cs-stake',avgSt.toFixed(1)+'u');
-
   destroyChart('cProfit');
   const sc=closed.filter(b=>b.fecha).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const dateMap={};
@@ -1808,36 +2064,21 @@ function renderCharts(){
   sortedDays.forEach(d=>{cum+=dateMap[d];lb.push(d);vl.push(parseFloat(cum.toFixed(2)));});
   const c1=document.getElementById('chartProfit')?.getContext('2d');
   if(c1) charts.cProfit=new Chart(c1,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado',data:vl,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,.12)',fill:true,tension:0.4,pointRadius:vl.length>60?0:4,pointHoverRadius:6,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444'),pointBorderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}},tooltip:{callbacks:{label:ctx=>{const v=ctx.parsed.y;return(v>=0?'+$':'-$')+Math.abs(v).toFixed(2);}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v<0?'-$'+Math.abs(v):'$'+v},grid:{color:'rgba(255,255,255,.04)'}}}}});
-
   destroyChart('cResults');
   const c2=document.getElementById('chartResults')?.getContext('2d');
   if(c2) charts.cResults=new Chart(c2,{type:'doughnut',data:{labels:['Ganadas','Perdidas','Void'],datasets:[{data:[closed.filter(b=>b.result==='win').length,closed.filter(b=>b.result==='loss').length,closed.filter(b=>b.result==='void').length],backgroundColor:['#22c55e','#ef4444','#f59e0b'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}}}});
-
   destroyChart('cTypes');
   const typeMap={};
   closed.forEach(b=>(b.types||['Sin tipo']).forEach(tp=>{if(!typeMap[tp])typeMap[tp]=0;typeMap[tp]+=calcProfit(b);}));
   const tl=Object.keys(typeMap),tv=tl.map(l=>parseFloat(typeMap[l].toFixed(2)));
   const c3=document.getElementById('chartTypes')?.getContext('2d');
   if(c3) charts.cTypes=new Chart(c3,{type:'bar',data:{labels:tl,datasets:[{label:'Profit',data:tv,backgroundColor:tv.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:tv.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1}]},options:cOpts('$')});
-
-  destroyChart('cJugadas');
-  let allB=filterByPeriodEx(getActiveTipsters().flatMap(t=>t.bets),chartPeriod).filter(b=>b.result!=='pending');
-  const pb2=allB.filter(b=>b.played),sb2=allB.filter(b=>!b.played);
-  const pP=pb2.reduce((s,b)=>s+calcProfit(b),0),sP=sb2.reduce((s,b)=>s+calcProfit(b),0);
-  const pI=pb2.reduce((s,b)=>s+(b.monto||0),0),sI=sb2.reduce((s,b)=>s+(b.monto||0),0);
-  const pY2=pI>0?pP/pI*100:0,sY2=sI>0?sP/sI*100:0;
-  const pWR=pb2.filter(b=>b.result!=='void').length>0?pb2.filter(b=>b.result==='win').length/pb2.filter(b=>b.result!=='void').length*100:0;
-  const sWR=sb2.filter(b=>b.result!=='void').length>0?sb2.filter(b=>b.result==='win').length/sb2.filter(b=>b.result!=='void').length*100:0;
-  const c4=document.getElementById('chartJugadas')?.getContext('2d');
-  if(c4) charts.cJugadas=new Chart(c4,{type:'bar',data:{labels:['Profit ($)','Yield (%)','Win Rate (%)'],datasets:[{label:'✅ Jugadas',data:[parseFloat(pP.toFixed(2)),parseFloat(pY2.toFixed(1)),parseFloat(pWR.toFixed(1))],backgroundColor:pP>=0?'rgba(34,197,94,.65)':'rgba(239,68,68,.65)',borderColor:pP>=0?'#22c55e':'#ef4444',borderWidth:1},{label:'👁 No Jugadas',data:[parseFloat(sP.toFixed(2)),parseFloat(sY2.toFixed(1)),parseFloat(sWR.toFixed(1))],backgroundColor:sP>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)',borderColor:sP>=0?'#06b6d4':'#fb923c',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
-
   const activeTips = getActiveTipsters();
   const multiMode = activeTips.length !== 1;
   const cardAll = document.getElementById('cardAllTipsters');
   const cardYield = document.getElementById('cardYieldComp');
   if (cardAll)  cardAll.style.display  = multiMode ? 'block' : 'none';
   if (cardYield) cardYield.style.display = multiMode ? 'block' : 'none';
-
   destroyChart('cAll');
   if (multiMode) {
     const allDates=new Set();
@@ -1858,7 +2099,6 @@ function renderCharts(){
       if(c5) charts.cAll=new Chart(c5,{type:'line',data:{labels:allSortedDates,datasets},options:cOpts('$')});
     }
   }
-
   destroyChart('cYield');
   if (multiMode) {
     const rL=activeTips.map(t=>t.name);
@@ -1867,10 +2107,8 @@ function renderCharts(){
     const c6=document.getElementById('chartYieldComparison')?.getContext('2d');
     if(c6) charts.cYield=new Chart(c6,{type:'bar',data:{labels:rL,datasets:[{label:'✅ Yield Jugadas',data:rP,backgroundColor:rP.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:rP.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1},{label:'👁 Yield No Jugadas',data:rS,backgroundColor:rS.map(v=>v>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)'),borderColor:rS.map(v=>v>=0?'#06b6d4':'#fb923c'),borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'}}}}});
   }
-
   destroyChart('cROI');
-  const roiAllBets = filterByPeriodEx(activeTips.flatMap(t=>t.bets.map(b=>({...b,tName:t.name}))),chartPeriod)
-    .filter(b=>b.result!=='pending'&&b.fecha);
+  const roiAllBets = filterByPeriodEx(activeTips.flatMap(t=>t.bets.map(b=>({...b,tName:t.name}))),chartPeriod).filter(b=>b.result!=='pending'&&b.fecha);
   const roiMap={p:{},s:{},a:{}};
   roiAllBets.forEach(b=>{
     const m=b.fecha.substring(0,7);
@@ -1889,17 +2127,10 @@ function renderCharts(){
     {label:'👁 No Jugadas',data:roiS,backgroundColor:'rgba(232,121,249,.45)',borderColor:'#e879f9',borderWidth:1,borderRadius:3},
     {label:'🔵 Ambas',data:roiA,backgroundColor:'rgba(108,99,255,.5)',borderColor:'#6c63ff',borderWidth:1,borderRadius:3}
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:14},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'},stacked:false}}}});
-
   destroyChart('cCuotaWL');
   const cwL=activeTips.map(t=>t.name);
-  const cwWin=activeTips.map(t=>{
-    const b=filterByPeriodEx(t.bets,chartPeriod).filter(x=>x.result==='win'&&x.cuota);
-    return b.length?parseFloat((b.reduce((s,x)=>s+x.cuota,0)/b.length).toFixed(2)):0;
-  });
-  const cwLoss=activeTips.map(t=>{
-    const b=filterByPeriodEx(t.bets,chartPeriod).filter(x=>x.result==='loss'&&x.cuota);
-    return b.length?parseFloat((b.reduce((s,x)=>s+x.cuota,0)/b.length).toFixed(2)):0;
-  });
+  const cwWin=activeTips.map(t=>{const b=filterByPeriodEx(t.bets,chartPeriod).filter(x=>x.result==='win'&&x.cuota);return b.length?parseFloat((b.reduce((s,x)=>s+x.cuota,0)/b.length).toFixed(2)):0;});
+  const cwLoss=activeTips.map(t=>{const b=filterByPeriodEx(t.bets,chartPeriod).filter(x=>x.result==='loss'&&x.cuota);return b.length?parseFloat((b.reduce((s,x)=>s+x.cuota,0)/b.length).toFixed(2)):0;});
   const c8=document.getElementById('chartCuotaWL')?.getContext('2d');
   if(c8) charts.cCuotaWL=new Chart(c8,{type:'bar',data:{labels:cwL,datasets:[{label:'✅ Cuota media ganadas',data:cwWin,backgroundColor:'rgba(34,197,94,.6)',borderColor:'#22c55e',borderWidth:1},{label:'❌ Cuota media perdidas',data:cwLoss,backgroundColor:'rgba(239,68,68,.55)',borderColor:'#ef4444',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
 }
@@ -1915,7 +2146,7 @@ function exportData(){
 function importData(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=e=>{try{data=JSON.parse(e.target.result);save();renderAll();showToast('✅ Datos importados');}catch{showToast('❌ Archivo inválido',false);}};
+  r.onload=e=>{try{data=JSON.parse(e.target.result);if(!data.balance)data.balance={invertido:0,retirado:0};save();renderAll();showToast('✅ Datos importados');}catch{showToast('❌ Archivo inválido',false);}};
   r.readAsText(f);ev.target.value='';
 }
 
@@ -1981,6 +2212,11 @@ window.setDateRange=setDateRange;
 window.clearDateRange=clearDateRange;
 window.exportData=exportData;
 window.importData=importData;
+window.saveBalanceSaldo=saveBalanceSaldo;
+window.setBalancePeriod=setBalancePeriod;
+window.setBalanceDateRange=setBalanceDateRange;
+window.clearBalanceDateRange=clearBalanceDateRange;
+window.renderBalance=renderBalance;
 </script>
 </body>
 </html>
