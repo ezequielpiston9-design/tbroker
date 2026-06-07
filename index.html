@@ -233,206 +233,624 @@ select option{background:var(--s2);}
   <div class="stat-box"><div class="stat-lbl">Yield (jug)</div><div class="stat-val cyan" id="g-yield">0%</div></div>
   <div class="stat-box"><div class="stat-lbl">WR (jug)</div><div class="stat-val gold" id="g-wr">0%</div></div>
   <div class="stat-box"><div class="stat-lbl">Profit (no jug)</div><div class="stat-val pink" id="g-profit-skip">$0</div></div>
-  <div class="stat-box"><div cl  };
-  window._fbReady = true;
-  window.dispatchEvent(new Event('fb-ready'));
-</script>
+  <div class="stat-box"><div class="stat-lbl">Yield (no jug)</div><div class="stat-val pink" id="g-yield-skip">0%</div></div>
+  <div class="stat-box"><div class="stat-lbl">WR (no jug)</div><div class="stat-val gold" id="g-wr-skip">0%</div></div>
+  <div class="stat-box"><div class="stat-lbl">Jugadas / Total</div><div class="stat-val purple" id="g-bets">0/0</div></div>
+</div>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Unbounded:wght@400;700;900&family=DM+Sans:wght@400;500;700&display=swap');
-:root{--bg:#060810;--s1:#0d1018;--s2:#131720;--s3:#1a1f2c;--border:#222736;--accent:#6c63ff;--green:#22c55e;--red:#ef4444;--gold:#f59e0b;--cyan:#06b6d4;--pink:#e879f9;--text:#e2e8f0;--muted:#4a5270;--muted2:#6b7694;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
-header{background:linear-gradient(135deg,#0d1018,#131028);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:100;}
-header h1{font-family:'Unbounded',sans-serif;font-size:1rem;font-weight:900;color:var(--accent);}
-.hbadge{background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.3);color:var(--accent);padding:3px 9px;border-radius:20px;font-size:0.6rem;font-family:'DM Mono',monospace;letter-spacing:1px;}
-#syncStatus{font-size:0.62rem;font-family:'DM Mono',monospace;color:var(--muted2);}
-.hactions{margin-left:auto;display:flex;gap:5px;}
-.hbtn{padding:6px 11px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:0.7rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all .15s;}
-.hbtn:hover{color:var(--accent);border-color:var(--accent);}
-.container{max-width:1320px;margin:0 auto;padding:16px 12px;}
-.tabs{display:flex;gap:3px;background:var(--s1);border-radius:10px;padding:4px;border:1px solid var(--border);margin-bottom:16px;overflow-x:auto;}
-.tab{flex:1;padding:8px 10px;background:transparent;border:none;color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:0.73rem;font-weight:700;cursor:pointer;border-radius:7px;transition:all .2s;white-space:nowrap;min-width:max-content;}
-.tab.active{background:var(--s3);color:var(--accent);border:1px solid var(--border);}
-.tab-content{display:none;}.tab-content.active{display:block;}
-/* STATS */
-.stats-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:16px;}
-.stat-box{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:11px 12px;}
-.stat-lbl{font-size:0.52rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:4px;}
-.stat-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;}
-.green{color:var(--green);}.red{color:var(--red);}.gold{color:var(--gold);}.cyan{color:var(--cyan);}.purple{color:var(--accent);}.pink{color:var(--pink);}
-/* CARDS */
-.card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:15px;margin-bottom:11px;}
-.card-title{font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:11px;}
-/* FORMS */
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin-bottom:11px;}
-.fg label{display:block;font-size:0.68rem;color:var(--muted2);margin-bottom:4px;font-weight:700;}
-.fg label .opt{color:var(--muted);font-weight:400;font-size:0.58rem;}
-input[type=text],input[type=number],input[type=date],select{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:8px;font-family:'DM Mono',monospace;font-size:0.78rem;outline:none;transition:border-color .2s;}
-input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(108,99,255,.12);}
-select option{background:var(--s2);}
-/* CHIPS */
-.chip-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;}
-.chip{padding:4px 10px;border-radius:20px;font-size:0.68rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all .15s;user-select:none;}
-.chip.selected{background:rgba(108,99,255,.2);border-color:var(--accent);color:var(--accent);}
-/* JUGADA */
-.jugada-section{background:rgba(108,99,255,.06);border:1px solid rgba(108,99,255,.2);border-radius:10px;padding:11px;margin-bottom:11px;}
-.jugada-section .slabel{font-size:0.62rem;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:7px;}
-.jugada-toggle{display:flex;gap:6px;}
-.jt-btn{flex:1;padding:10px;border:2px solid var(--border);border-radius:9px;background:var(--s2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all .18s;text-align:center;}
-.jt-btn.played{border-color:var(--green);background:rgba(34,197,94,.12);color:var(--green);}
-.jt-btn.skipped{border-color:var(--pink);background:rgba(232,121,249,.12);color:var(--pink);}
-/* RESULT */
-.result-toggle{display:flex;gap:5px;flex-wrap:wrap;}
-.rt-btn{flex:1;min-width:75px;padding:7px;border:1px solid var(--border);border-radius:8px;background:var(--s2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all .18s;text-align:center;}
-.rt-btn.win{border-color:var(--green);background:rgba(34,197,94,.12);color:var(--green);}
-.rt-btn.loss{border-color:var(--red);background:rgba(239,68,68,.12);color:var(--red);}
-.rt-btn.void{border-color:var(--gold);background:rgba(245,158,11,.12);color:var(--gold);}
-/* BUTTONS */
-.btn{padding:8px 15px;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.78rem;cursor:pointer;transition:all .18s;}
-.btn-primary{background:var(--accent);color:#fff;}.btn-primary:hover{background:#7c75ff;transform:translateY(-1px);}
-.btn-ghost{background:var(--s2);color:var(--text);border:1px solid var(--border);}.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
-.btn-del{background:transparent;border:1px solid rgba(239,68,68,.3);color:var(--red);padding:4px 9px;font-size:0.65rem;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;transition:all .15s;}
-.btn-del:hover{background:rgba(239,68,68,.15);}
-.btn-edit{background:transparent;border:1px solid rgba(108,99,255,.3);color:var(--accent);padding:4px 9px;font-size:0.65rem;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;transition:all .15s;}
-.btn-edit:hover{background:rgba(108,99,255,.1);}
-.btn-sm{padding:4px 9px;font-size:0.65rem;border-radius:6px;}
-/* TIPSTER CARDS */
-.tipster-list{display:flex;flex-direction:column;gap:8px;}
-.tipster-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .2s;}
-.tipster-card:hover{border-color:rgba(108,99,255,.4);}
-.tipster-header{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;background:var(--s2);flex-wrap:wrap;gap:7px;}
-.tipster-left{display:flex;align-items:center;gap:9px;}
-.avatar{width:33px;height:33px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:0.58rem;font-weight:900;color:#fff;flex-shrink:0;}
-.tipster-name{font-family:'Unbounded',sans-serif;font-size:0.75rem;font-weight:700;}
-.tipster-right{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
-.tip-stat{text-align:right;}
-.tip-stat-lbl{font-size:0.5rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;}
-.tip-stat-val{font-family:'DM Mono',monospace;font-size:0.8rem;font-weight:500;}
-.chevron{color:var(--muted);font-size:0.68rem;transition:transform .2s;user-select:none;}
-.chevron.open{transform:rotate(180deg);}
-.tipster-body{display:none;padding:13px;}.tipster-body.open{display:block;}
-/* PBOXES */
-.pboxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px;margin-bottom:11px;}
-.pbox{background:var(--s2);border-radius:8px;padding:9px;text-align:center;border:1px solid var(--border);}
-.pbox-lbl{font-size:0.5rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:3px;}
-.pbox-val{font-family:'DM Mono',monospace;font-size:0.86rem;font-weight:500;}
-/* TABLE */
-.bets-table{width:100%;border-collapse:collapse;font-size:0.7rem;margin-bottom:11px;overflow-x:auto;display:block;}
-.bets-table th{padding:5px 7px;text-align:left;font-size:0.54rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
-.bets-table td{padding:6px 7px;border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap;vertical-align:middle;}
-.bets-table tr:last-child td{border-bottom:none;}
-.bets-table tr.row-skipped td{opacity:.5;}
-.badge{display:inline-block;padding:2px 5px;border-radius:4px;font-size:0.55rem;font-weight:700;}
-.badge-win{background:rgba(34,197,94,.15);color:var(--green);}
-.badge-loss{background:rgba(239,68,68,.15);color:var(--red);}
-.badge-void{background:rgba(245,158,11,.15);color:var(--gold);}
-.badge-pending{background:rgba(108,99,255,.15);color:var(--accent);}
-.badge-played{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.3);}
-.badge-skipped{background:rgba(232,121,249,.12);color:var(--pink);border:1px solid rgba(232,121,249,.3);}
-.types-tags{display:flex;flex-wrap:wrap;gap:3px;}
-.type-tag{background:rgba(108,99,255,.12);color:var(--accent);border:1px solid rgba(108,99,255,.2);padding:1px 4px;border-radius:4px;font-size:0.54rem;font-weight:700;}
-/* CHARTS */
-.chart-wrap{position:relative;height:255px;margin-top:11px;}
-.chart-wrap-lg{position:relative;height:310px;}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
-@media(max-width:640px){.two-col{grid-template-columns:1fr;}}
-/* FILTER/SORT BARS */
-.filter-bar{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
-.flbl{font-size:0.6rem;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;}
-.flt-btn{padding:4px 11px;border-radius:20px;font-size:0.68rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all .15s;font-family:'DM Sans',sans-serif;}
-.flt-btn.a-all{border-color:var(--accent);background:rgba(108,99,255,.15);color:var(--accent);}
-.flt-btn.a-played{border-color:var(--green);background:rgba(34,197,94,.12);color:var(--green);}
-.flt-btn.a-skipped{border-color:var(--pink);background:rgba(232,121,249,.12);color:var(--pink);}
-.period-bar{display:flex;gap:4px;flex-wrap:wrap;}
-.period-btn{padding:4px 9px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all .15s;font-family:'DM Sans',sans-serif;}
-.period-btn.active{border-color:var(--cyan);background:rgba(6,182,212,.12);color:var(--cyan);}
-.tf-btn{padding:4px 9px;border-radius:6px;font-size:0.64rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all .15s;font-family:'DM Sans',sans-serif;}
-.tf-btn.active{border-color:var(--accent);background:rgba(108,99,255,.15);color:var(--accent);}
-.sort-btn{padding:4px 9px;border-radius:6px;font-size:0.64rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all .15s;font-family:'DM Sans',sans-serif;}
-.sort-btn.active{border-color:var(--gold);background:rgba(245,158,11,.12);color:var(--gold);}
-/* MISC */
-.section-divider{font-size:0.56rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:11px 0 7px;padding-bottom:5px;border-bottom:1px solid var(--border);}
-.info-pill{display:inline-flex;align-items:center;gap:4px;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);color:var(--cyan);padding:3px 9px;border-radius:20px;font-size:0.62rem;font-weight:700;}
-.preview-box{background:var(--s2);border:1px solid rgba(108,99,255,.3);border-radius:10px;padding:11px;margin:9px 0;display:none;}
-.preview-title{font-size:0.58rem;color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:7px;}
-.preview-row{display:flex;justify-content:space-between;font-size:0.76rem;padding:3px 0;}
-.section-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;}
-.winrate-bar{height:4px;background:var(--s3);border-radius:3px;overflow:hidden;margin-top:2px;}
-.winrate-fill{height:100%;background:var(--green);border-radius:3px;transition:width .5s;}
-.empty{text-align:center;padding:32px 16px;color:var(--muted2);}
-.empty-icon{font-size:2rem;margin-bottom:7px;}
-.no-bets{text-align:center;padding:11px;color:var(--muted);font-size:0.76rem;}
-/* AUTO-STAKE TOGGLE */
-.auto-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:0.62rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all .15s;user-select:none;}
-.auto-badge.on{border-color:var(--cyan);background:rgba(6,182,212,.12);color:var(--cyan);}
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:flex;align-items:center;justify-content:center;padding:14px;}
-.modal-box{background:var(--s1);border:1px solid var(--border);border-radius:13px;padding:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
-.modal-title{font-family:'Unbounded',sans-serif;font-size:0.82rem;font-weight:700;margin-bottom:14px;color:var(--accent);}
-.modal-actions{display:flex;gap:7px;margin-top:14px;}
-::-webkit-scrollbar{width:4px;height:4px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-.stake-quick-btn{padding:6px 13px;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);font-family:'DM Mono',monospace;transition:all .15s;white-space:nowrap;}
-.stake-quick-btn:hover{border-color:var(--accent);color:var(--accent);}
-.stake-quick-btn.active{border-color:var(--accent);background:rgba(108,99,255,.18);color:var(--accent);}
-.tipster-chip{padding:6px 14px;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;border:2px solid var(--tc,var(--border));background:transparent;color:var(--muted2);transition:all .18s;font-family:'DM Sans',sans-serif;}
-.tipster-chip.sel{background:var(--tc,var(--accent));color:#fff;box-shadow:0 2px 12px color-mix(in srgb,var(--tc,var(--accent)) 40%,transparent);}
-.tipster-chip:hover{background:color-mix(in srgb,var(--tc,var(--accent)) 20%,transparent);color:var(--text);}
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('tipsters')">👤 Tipsters</button>
+  <button class="tab" onclick="switchTab('nueva')">➕ Nueva Apuesta</button>
+  <button class="tab" onclick="switchTab('unidades')">📐 Unidades</button>
+  <button class="tab" onclick="switchTab('graficas')">📊 Gráficas</button>
+  <button class="tab" onclick="switchTab('balance')">💰 Balance</button>
+</div>
 
-/* ===== BALANCE TAB STYLES ===== */
-.balance-saldos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px;}
-.saldo-box{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px;}
-.saldo-box.saldo-actual{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.05);}
-.saldo-box.saldo-invertido{border-color:rgba(108,99,255,.35);background:rgba(108,99,255,.05);}
-.saldo-box.saldo-retirado{border-color:rgba(6,182,212,.35);background:rgba(6,182,212,.05);}
-.saldo-lbl{font-size:0.52rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px;}
-.saldo-val{font-family:'DM Mono',monospace;font-size:1.25rem;font-weight:500;margin-bottom:8px;}
-.saldo-input-wrap{display:flex;align-items:center;gap:5px;}
-.saldo-input{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);padding:6px 9px;border-radius:7px;font-family:'DM Mono',monospace;font-size:0.8rem;outline:none;}
-.saldo-input:focus{border-color:var(--accent);}
-.saldo-save-btn{padding:5px 9px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.65rem;cursor:pointer;white-space:nowrap;}
-.balance-ranking{margin-top:0;}
-.ranking-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--s2);border-radius:9px;margin-bottom:6px;border:1px solid var(--border);}
-.ranking-pos{font-family:'Unbounded',sans-serif;font-size:0.7rem;font-weight:900;width:22px;text-align:center;flex-shrink:0;}
-.ranking-name{flex:1;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;}
-.ranking-profit{font-family:'DM Mono',monospace;font-size:0.85rem;font-weight:500;text-align:right;}
-.ranking-yield{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--muted2);text-align:right;min-width:45px;}
-.balance-top20-table{width:100%;border-collapse:collapse;font-size:0.7rem;overflow-x:auto;display:block;}
-.balance-top20-table th{padding:5px 7px;text-align:left;font-size:0.54rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
-.balance-top20-table td{padding:7px 7px;border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap;vertical-align:middle;}
-.balance-top20-table tr:last-child td{border-bottom:none;}
-.rank-medal-1{color:#f59e0b;}
-.rank-medal-2{color:#94a3b8;}
-.rank-medal-3{color:#cd7c2f;}
-</style>
-</head>
-<body>
-
-<header>
-  <h1>🎯 TipsterBook</h1>
-  <span class="hbadge">PRO</span>
-  <span id="syncStatus">🔄 Conectando...</span>
-  <div class="hactions">
-    <button class="hbtn" onclick="exportData()">⬇ Exportar</button>
-    <button class="hbtn" onclick="document.getElementById('importFile').click()">⬆ Importar</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+<!-- ===== TAB TIPSTERS ===== -->
+<div id="tab-tipsters" class="tab-content active">
+  <div class="card">
+    <div class="card-title">Agregar Tipster</div>
+    <div class="form-grid" style="margin-bottom:0;">
+      <div class="fg"><label>Nombre</label><input type="text" id="newName" placeholder="Nombre del tipster..." onkeydown="if(event.key==='Enter')addTipster()"></div>
+      <div class="fg"><label>Bankroll inicial <span class="opt">(opcional — para calcular ROI)</span></label><input type="number" id="newBankroll" placeholder="ej: 1000"></div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="addTipster()">+ Agregar</button>
+    </div>
   </div>
-</header>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;flex-wrap:wrap;">
+    <span class="flbl">Ordenar:</span>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;" id="tipsterSortBar">
+      <button class="sort-btn active" onclick="setTipsterSort('nombre',this)">Nombre</button>
+      <button class="sort-btn" onclick="setTipsterSort('profit',this)">Profit</button>
+      <button class="sort-btn" onclick="setTipsterSort('yield',this)">Yield</button>
+      <button class="sort-btn" onclick="setTipsterSort('unidades',this)">Unidades</button>
+      <button class="sort-btn" onclick="setTipsterSort('wr',this)">Win Rate</button>
+      <button class="sort-btn" onclick="setTipsterSort('apuestas',this)">Apuestas</button>
+    </div>
+  </div>
+  <div id="tipsterList" class="tipster-list">
+    <div class="empty"><div class="empty-icon">⚽</div><p>Sin tipsters. Agrega el primero.</p></div>
+  </div>
+</div>
 
-<div class="container">
+<!-- ===== TAB NUEVA APUESTA ===== -->
+<div id="tab-nueva" class="tab-content">
+  <div class="card">
+    <div class="card-title">Registrar Apuesta</div>
+    <div class="form-grid">
+      <div class="fg"><label>Tipster</label><select id="bTipster" onchange="onTipsterChange()"><option value="">— Seleccionar —</option></select></div>
+      <div class="fg"><label>Descripción <span class="opt">(opcional)</span></label><input type="text" id="bDesc" placeholder="Ej: Real Madrid vs Barça"></div>
+      <div class="fg" style="grid-column:span 1;">
+        <label style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Stake (unidades)</span>
+          <span class="auto-badge on" id="autoStakeBadge" onclick="toggleAutoStake()" title="Auto: el monto se calcula solo">🔗 Auto</span>
+        </label>
+        <input type="number" id="bStake" min="0.5" max="20" step="0.5" placeholder="5" oninput="onStakeInput()">
+        <div id="stakeQuickBtns" style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="fg"><label>Dinero Apostado ($)</label><input type="number" id="bMonto" placeholder="100" oninput="onMontoInput()"></div>
+      <div class="fg">
+        <label style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Cuota / Odd</span>
+          <span class="auto-badge on" id="autoCuotaBadge" onclick="toggleAutoCuota()" title="Auto: se pre-rellena con la cuota media del tipster">📐 Auto</span>
+        </label>
+        <input type="number" id="bCuota" step="0.01" placeholder="2.10" oninput="updatePreview()">
+      </div>
+      <div class="fg"><label>Nº de Eventos</label><input type="number" id="bEventos" min="1" value="1" placeholder="1"></div>
+      <div class="fg"><label>Deporte</label>
+        <select id="bDeporte" onchange="onDeporteChange()">
+          <option value="Fútbol Europeo">⚽ Fútbol Europeo</option>
+          <option value="Fútbol Latino">⚽ Fútbol Latino</option>
+          <option value="Fútbol Otro">⚽ Fútbol Otro</option>
+          <option value="Basketball">🏀 Basketball</option>
+          <option value="Tenis">🎾 Tenis</option>
+          <option value="Boxeo">🥊 Boxeo</option>
+          <option value="LoL">🎮 LoL</option>
+          <option value="CS:GO/Valo">🎮 CS:GO/Valo</option>
+          <option value="Otro">🎯 Otro</option>
+        </select>
+      </div>
+      <div class="fg"><label>Fecha</label><input type="date" id="bFecha"></div>
+    </div>
 
-<!-- GLOBAL STATS -->
-<div class="stats-strip" id="globalStats">
-  <div class="stat-box"><div class="stat-lbl">Tipsters</div><div class="stat-val purple" id="g-tipsters">0</div></div>
-  <div class="stat-box"><div class="stat-lbl">Apostado (jug)</div><div class="stat-val" id="g-inv">$0</div></div>
-  <div class="stat-box"><div class="stat-lbl">Apostado (no jug)</div><div class="stat-val" id="g-inv-skip">$0</div></div>
-  <div class="stat-box"><div class="stat-lbl">Profit (jug)</div><div class="stat-val green" id="g-profit">$0</div></div>
-  <div class="stat-box"><div class="stat-lbl">Yield (jug)</div><div class="stat-val cyan" id="g-yield">0%</div></div>
-  <div class="stat-box"><div class="stat-lbl">WR (jug)</div><div class="stat-val gold" id="g-wr">0%</div></div>
-  <div class="stat-box"><div class="stat-lbl">Profit (no jug)</div><div class="stat-val pink" id="g-profit-skip">$0</div></div>
-  <div class="stat-box"><div clonst stakes = bets.filter(b => b.stake > 0).map(b => b.stake);
+    <!-- TIPO -->
+    <div style="margin-bottom:11px;">
+      <div class="fg" style="margin-bottom:6px;"><label>Tipo de Apuesta</label></div>
+      <div class="chip-row" id="betTypeChips">
+        <div class="chip" data-val="Ganador" onclick="toggleChip(this)">🏆 Ganador</div>
+        <div class="chip" data-val="Ganador P0" onclick="toggleChip(this)">🥅 Ganador P0</div>
+        <div class="chip" data-val="Ganador 1/2" onclick="toggleChip(this)">½ Mitad</div>
+        <div class="chip" data-val="Clasifica" onclick="toggleChip(this)">🎯 Clasifica</div>
+        <div class="chip" data-val="Goles" onclick="toggleChip(this)">⚽ Goles</div>
+        <div class="chip" data-val="Corners" onclick="toggleChip(this)">🚩 Corners</div>
+        <div class="chip" data-val="Amarillas" onclick="toggleChip(this)">🟨 Amarillas</div>
+        <div class="chip" data-val="Tiros" onclick="toggleChip(this)">🎯 Tiros</div>
+        <div class="chip" data-val="Asian Market" onclick="toggleChip(this)">🎌 AM</div>
+        <div class="chip" data-val="Hándicap" onclick="toggleChip(this)">📐 Hándicap</div>
+        <div class="chip" data-val="Over" onclick="toggleChip(this)">📈 Over</div>
+        <div class="chip" data-val="Under" onclick="toggleChip(this)">📉 Under</div>
+        <div class="chip" data-val="Doble Oportunidad" onclick="toggleChip(this)">🔁 Doble Op.</div>
+        <div class="chip" data-val="Live" onclick="toggleChip(this)">🔴 Live</div>
+      </div>
+    </div>
+
+    <!-- EXCEPCION AUTO-STAKE -->
+    <div id="exceptionRow" style="display:none;margin-bottom:11px;padding:9px 11px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:8px;">
+      <span id="exceptionRowText" style="font-size:0.65rem;color:var(--gold);font-weight:700;">⚠️ Modo excepción activo para esta apuesta.</span>
+    </div>
+
+    <!-- JUGADA -->
+    <div class="jugada-section">
+      <div class="slabel">¿La jugaste vos?</div>
+      <div class="jugada-toggle">
+        <button class="jt-btn" id="jt-played" onclick="setJugada(true)">✅ Sí, la jugué</button>
+        <button class="jt-btn" id="jt-skipped" onclick="setJugada(false)">👁 No, solo registro</button>
+      </div>
+      <div style="font-size:0.6rem;color:var(--muted);margin-top:5px;">Las "no jugadas" analizan el rendimiento real del tipster sin afectar tu profit.</div>
+    </div>
+
+    <!-- RESULTADO -->
+    <div style="margin-bottom:11px;">
+      <div class="fg" style="margin-bottom:6px;"><label>Resultado</label></div>
+      <div class="result-toggle">
+        <button class="rt-btn" id="rt-win" onclick="setResult('win')">✅ Ganada</button>
+        <button class="rt-btn" id="rt-loss" onclick="setResult('loss')">❌ Perdida</button>
+        <button class="rt-btn" id="rt-void" onclick="setResult('void')">↩️ Void</button>
+        <button class="rt-btn" id="rt-pending" onclick="setResult('pending')">⏳ Pendiente</button>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="preview-box" id="bPreview">
+      <div class="preview-title">Vista Previa</div>
+      <div class="preview-row"><span>Monto apostado</span><span id="prev-monto">—</span></div>
+      <div class="preview-row"><span>Retorno bruto si gana</span><span id="prev-retorno">—</span></div>
+      <div class="preview-row"><span>Profit neto si gana</span><span id="prev-profit" style="color:var(--green)">—</span></div>
+      <div class="preview-row"><span>Pérdida si pierde</span><span id="prev-loss" style="color:var(--red)">—</span></div>
+      <div class="preview-row" id="prev-units-row" style="display:none"><span>Unidades (gana / pierde)</span><span id="prev-units">—</span></div>
+    </div>
+
+    <div class="section-actions">
+      <button class="btn btn-primary" onclick="saveBet()">💾 Guardar Apuesta</button>
+      <button class="btn btn-ghost" onclick="clearForm()">🗑 Limpiar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB UNIDADES ===== -->
+<div id="tab-unidades" class="tab-content">
+  <div class="stats-strip">
+    <div class="stat-box"><div class="stat-lbl">U. Net (jug)</div><div class="stat-val green" id="u-net-p">+0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">Yield U. (jug)</div><div class="stat-val cyan" id="u-yield-p">0%</div></div>
+    <div class="stat-box"><div class="stat-lbl">U. Net (no jug)</div><div class="stat-val pink" id="u-net-s">+0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">Yield U. (no jug)</div><div class="stat-val pink" id="u-yield-s">0%</div></div>
+    <div class="stat-box"><div class="stat-lbl">U. Net (ambas)</div><div class="stat-val purple" id="u-net-all">+0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">Yield U. (ambas)</div><div class="stat-val purple" id="u-yield-all">0%</div></div>
+    <div class="stat-box"><div class="stat-lbl">Mejor racha 🔥</div><div class="stat-val gold" id="u-streak">+0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">Peor racha 📉</div><div class="stat-val red" id="u-lstreak">-0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">Balance período</div><div class="stat-val cyan" id="u-period-net">+0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">U. Stakeadas (jug)</div><div class="stat-val muted" id="u-staked">0u</div></div>
+    <div class="stat-box"><div class="stat-lbl">U. Stakeadas (no jug)</div><div class="stat-val muted" id="u-staked-s">0u</div></div>
+  </div>
+  <div class="card" style="margin-bottom:11px;">
+    <div class="card-title">Filtros</div>
+    <div style="margin-bottom:8px;"><span class="flbl">Tipster:</span>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="uTipsterFilter"><button class="tf-btn active" onclick="setUnitTipster('all',this)">Todos</button></div>
+    </div>
+    <div style="margin-top:9px;"><span class="flbl">Período:</span>
+      <div class="period-bar" style="margin-top:5px;">
+        <button class="period-btn active" data-uperiod="all" onclick="setUnitPeriod('all')">Todo</button>
+        <button class="period-btn" data-uperiod="1y" onclick="setUnitPeriod('1y')">1 Año</button>
+        <button class="period-btn" data-uperiod="6m" onclick="setUnitPeriod('6m')">6 Meses</button>
+        <button class="period-btn" data-uperiod="3m" onclick="setUnitPeriod('3m')">3 Meses</button>
+        <button class="period-btn" data-uperiod="1m" onclick="setUnitPeriod('1m')">1 Mes</button>
+        <button class="period-btn" data-uperiod="1w" onclick="setUnitPeriod('1w')">1 Semana</button>
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <input type="date" id="uDateFrom" style="width:130px;padding:5px 9px;font-size:0.72rem;" onchange="setUnitDateRange()">
+        <span style="color:var(--muted);font-size:0.75rem;">→</span>
+        <input type="date" id="uDateTo" style="width:130px;padding:5px 9px;font-size:0.72rem;" onchange="setUnitDateRange()">
+        <button class="period-btn" onclick="clearUnitDateRange()" style="padding:4px 9px;">✕</button>
+        <span id="uDateRangeLabel" style="font-size:0.65rem;color:var(--cyan);font-family:'DM Mono',monospace;"></span>
+      </div>
+    </div>
+    <div style="margin-top:9px;"><span class="flbl">Ver:</span>
+      <div class="filter-bar" style="margin-top:5px;">
+        <button class="flt-btn a-all" id="uflt-all" onclick="setUnitFilter('all')">🔵 Todas</button>
+        <button class="flt-btn" id="uflt-played" onclick="setUnitFilter('played')">✅ Jugadas</button>
+        <button class="flt-btn" id="uflt-skipped" onclick="setUnitFilter('skipped')">👁 No Jugadas</button>
+      </div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="card"><div class="card-title">Unidades Acumuladas</div><div class="chart-wrap"><canvas id="chartUnidades"></canvas></div></div>
+    <div class="card"><div class="card-title">U. Netas por Tipster</div><div class="chart-wrap"><canvas id="chartUnidadesTipster"></canvas></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Profit / Unidades por Tipo de Apuesta</div>
+    <div style="margin-bottom:10px;">
+      <span class="flbl">Deporte:</span>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="uSportFilter"></div>
+    </div>
+    <div id="unidadesByType"></div>
+  </div>
+  <div class="card"><div class="card-title">Detalle por Apuesta</div><div id="unidadesTable"></div></div>
+</div>
+
+<!-- ===== TAB GRAFICAS ===== -->
+<div id="tab-graficas" class="tab-content">
+  <div class="card" style="margin-bottom:11px;">
+    <div class="card-title">Filtros</div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <div><span class="flbl">Apuestas:</span>
+        <div class="filter-bar" style="margin-top:5px;">
+          <button class="flt-btn a-all" id="flt-all" onclick="setChartFilter('all')">🔵 Todas</button>
+          <button class="flt-btn" id="flt-played" onclick="setChartFilter('played')">✅ Jugadas</button>
+          <button class="flt-btn" id="flt-skipped" onclick="setChartFilter('skipped')">👁 No Jugadas</button>
+        </div>
+      </div>
+      <div><span class="flbl">Tipsters:</span>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="chartTipsterFilter"></div>
+      </div>
+      <div>
+        <span class="flbl">Período rápido:</span>
+        <div class="period-bar" style="margin-top:5px;">
+          <button class="period-btn active" data-period="all" onclick="setPeriod('all')">Todo</button>
+          <button class="period-btn" data-period="1y" onclick="setPeriod('1y')">1 Año</button>
+          <button class="period-btn" data-period="6m" onclick="setPeriod('6m')">6 Meses</button>
+          <button class="period-btn" data-period="3m" onclick="setPeriod('3m')">3 Meses</button>
+          <button class="period-btn" data-period="1m" onclick="setPeriod('1m')">1 Mes</button>
+          <button class="period-btn" data-period="1w" onclick="setPeriod('1w')">1 Semana</button>
+          <button class="period-btn" data-period="1d" onclick="setPeriod('1d')">Hoy</button>
+        </div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="flbl">Rango personalizado:</span>
+          <input type="date" id="dateFrom" style="width:140px;padding:5px 9px;font-size:0.72rem;" onchange="setDateRange()">
+          <span style="color:var(--muted);font-size:0.75rem;">→</span>
+          <input type="date" id="dateTo" style="width:140px;padding:5px 9px;font-size:0.72rem;" onchange="setDateRange()">
+          <button class="period-btn" onclick="clearDateRange()" style="padding:4px 9px;">✕ Limpiar</button>
+          <span id="dateRangeLabel" style="font-size:0.65rem;color:var(--cyan);font-family:'DM Mono',monospace;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="stats-strip">
+    <div class="stat-box"><div class="stat-lbl">Apuestas</div><div class="stat-val purple" id="cs-bets">0</div></div>
+    <div class="stat-box"><div class="stat-lbl">Profit</div><div class="stat-val green" id="cs-profit">$0</div></div>
+    <div class="stat-box"><div class="stat-lbl">Yield</div><div class="stat-val cyan" id="cs-yield">0%</div></div>
+    <div class="stat-box"><div class="stat-lbl">Win Rate</div><div class="stat-val gold" id="cs-wr">0%</div></div>
+    <div class="stat-box"><div class="stat-lbl">Stake prom.</div><div class="stat-val" id="cs-stake">0u</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card"><div class="card-title">Profit Acumulado</div><div class="chart-wrap"><canvas id="chartProfit"></canvas></div></div>
+    <div class="card"><div class="card-title">Distribución Resultados</div><div class="chart-wrap"><canvas id="chartResults"></canvas></div></div>
+  </div>
+  <div class="card"><div class="card-title">Profit por Tipo</div><div class="chart-wrap"><canvas id="chartTypes"></canvas></div></div>
+  <div class="card" id="cardAllTipsters"><div class="card-title">Profit Acumulado por Tipster</div><div class="chart-wrap-lg"><canvas id="chartAllTipsters"></canvas></div></div>
+  <div class="card" id="cardYieldComp"><div class="card-title">Yield Jugadas vs No Jugadas por Tipster</div><div class="chart-wrap"><canvas id="chartYieldComparison"></canvas></div></div>
+  <div class="card"><div class="card-title">ROI Mensual por Tipster</div><div class="chart-wrap-lg"><canvas id="chartROIMonthly"></canvas></div></div>
+  <div class="card"><div class="card-title">Cuota Media: Ganadas vs Perdidas</div><div class="chart-wrap"><canvas id="chartCuotaWL"></canvas></div></div>
+</div>
+
+<!-- ===== TAB BALANCE ===== -->
+<div id="tab-balance" class="tab-content">
+
+  <!-- SALDOS -->
+  <div class="balance-saldos">
+    <div class="saldo-box saldo-actual">
+      <div class="saldo-lbl">💰 Saldo Actual</div>
+      <div class="saldo-val green" id="bal-actual">$0.00</div>
+      <div style="font-size:0.58rem;color:var(--muted);margin-top:2px;">Se calcula automáticamente</div>
+    </div>
+    <div class="saldo-box saldo-invertido">
+      <div class="saldo-lbl">📥 Saldo Inicial / Invertido</div>
+      <div class="saldo-val purple" id="bal-invertido-display">$0.00</div>
+      <div class="saldo-input-wrap" style="margin-top:6px;">
+        <input class="saldo-input" type="number" id="bal-invertido-input" placeholder="Monto inicial..." step="0.01">
+        <button class="saldo-save-btn" onclick="saveBalanceSaldo('invertido')">✓</button>
+      </div>
+    </div>
+    <div class="saldo-box saldo-retirado">
+      <div class="saldo-lbl">📤 Saldo Retirado</div>
+      <div class="saldo-val cyan" id="bal-retirado-display">$0.00</div>
+      <div class="saldo-input-wrap" style="margin-top:6px;">
+        <input class="saldo-input" type="number" id="bal-retirado-input" placeholder="Total retirado..." step="0.01">
+        <button class="saldo-save-btn" onclick="saveBalanceSaldo('retirado')">✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRAFICA SALDO -->
+  <div class="card" style="margin-bottom:11px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:11px;">
+      <div class="card-title" style="margin-bottom:0;">Evolución del Saldo</div>
+      <div class="period-bar">
+        <button class="period-btn active" data-balperiod="all" onclick="setBalancePeriod('all')">Todo</button>
+        <button class="period-btn" data-balperiod="1y" onclick="setBalancePeriod('1y')">1 Año</button>
+        <button class="period-btn" data-balperiod="6m" onclick="setBalancePeriod('6m')">6 Meses</button>
+        <button class="period-btn" data-balperiod="3m" onclick="setBalancePeriod('3m')">3 Meses</button>
+        <button class="period-btn" data-balperiod="1m" onclick="setBalancePeriod('1m')">1 Mes</button>
+        <button class="period-btn" data-balperiod="1w" onclick="setBalancePeriod('1w')">1 Semana</button>
+      </div>
+    </div>
+    <div style="margin-bottom:9px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <input type="date" id="balDateFrom" style="width:130px;padding:5px 9px;font-size:0.72rem;" onchange="setBalanceDateRange()">
+      <span style="color:var(--muted);font-size:0.75rem;">→</span>
+      <input type="date" id="balDateTo" style="width:130px;padding:5px 9px;font-size:0.72rem;" onchange="setBalanceDateRange()">
+      <button class="period-btn" onclick="clearBalanceDateRange()" style="padding:4px 9px;">✕</button>
+      <span id="balDateRangeLabel" style="font-size:0.65rem;color:var(--cyan);font-family:'DM Mono',monospace;"></span>
+    </div>
+    <div class="chart-wrap" style="height:270px;"><canvas id="chartBalance"></canvas></div>
+  </div>
+
+  <!-- ULTIMAS 20 APUESTAS DEL PERIODO -->
+  <div class="card" style="margin-bottom:11px;">
+    <div class="card-title">Últimas 20 Apuestas del Período (mayor ganancia → peor)</div>
+    <div id="balanceTop20"></div>
+  </div>
+
+  <!-- RANKING TIPSTERS -->
+  <div class="card">
+    <div class="card-title">🏆 Ranking de Tipsters — Período Seleccionado</div>
+    <div id="balanceRanking" class="balance-ranking"></div>
+  </div>
+
+</div><!-- /tab-balance -->
+
+</div><!-- /container -->
+
+<!-- MODAL EDITAR APUESTA -->
+<div class="modal-overlay" id="editModal" style="display:none;" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Editar Apuesta</div>
+    <input type="hidden" id="editBetId"><input type="hidden" id="editTipsterId">
+    <div class="form-grid">
+      <div class="fg"><label>Descripción <span class="opt">(opcional)</span></label><input type="text" id="eDesc"></div>
+      <div class="fg"><label>Stake</label><input type="number" id="eStake" step="0.5"></div>
+      <div class="fg"><label>Monto ($)</label><input type="number" id="eMonto"></div>
+      <div class="fg"><label>Cuota</label><input type="number" id="eCuota" step="0.01"></div>
+      <div class="fg"><label>Nº Eventos</label><input type="number" id="eEventos" min="1"></div>
+      <div class="fg"><label>Fecha</label><input type="date" id="eFecha"></div>
+    </div>
+    <div style="margin-bottom:11px;">
+      <div class="fg" style="margin-bottom:6px;"><label>Tipo</label></div>
+      <div class="chip-row" id="editBetTypeChips">
+        <div class="chip" data-val="Ganador" onclick="toggleEditChip(this)">🏆 Ganador</div>
+        <div class="chip" data-val="Ganador P0" onclick="toggleEditChip(this)">🥅 Ganador P0</div>
+        <div class="chip" data-val="Ganador 1/2" onclick="toggleEditChip(this)">½ Mitad</div>
+        <div class="chip" data-val="Clasifica" onclick="toggleEditChip(this)">🎯 Clasifica</div>
+        <div class="chip" data-val="Goles" onclick="toggleEditChip(this)">⚽ Goles</div>
+        <div class="chip" data-val="Corners" onclick="toggleEditChip(this)">🚩 Corners</div>
+        <div class="chip" data-val="Amarillas" onclick="toggleEditChip(this)">🟨 Amarillas</div>
+        <div class="chip" data-val="Tiros" onclick="toggleEditChip(this)">🎯 Tiros</div>
+        <div class="chip" data-val="Asian Market" onclick="toggleEditChip(this)">🎌 AM</div>
+        <div class="chip" data-val="Hándicap" onclick="toggleEditChip(this)">📐 Hándicap</div>
+        <div class="chip" data-val="BTTS" onclick="toggleEditChip(this)">🥅 BTTS</div>
+        <div class="chip" data-val="Over/Under" onclick="toggleEditChip(this)">📊 O/U</div>
+        <div class="chip" data-val="1X2" onclick="toggleEditChip(this)">3️⃣ 1X2</div>
+        <div class="chip" data-val="Combo" onclick="toggleEditChip(this)">🔗 Combo</div>
+        <div class="chip" data-val="Doble Oportunidad" onclick="toggleEditChip(this)">🔁 Doble Op.</div>
+        <div class="chip" data-val="Live" onclick="toggleEditChip(this)">🔴 Live</div>
+      </div>
+    </div>
+    <div class="jugada-section" style="margin-bottom:11px;">
+      <div class="slabel">¿La jugaste?</div>
+      <div class="jugada-toggle">
+        <button class="jt-btn" id="ejt-played" onclick="setEditJugada(true)">✅ Sí</button>
+        <button class="jt-btn" id="ejt-skipped" onclick="setEditJugada(false)">👁 No</button>
+      </div>
+    </div>
+    <div style="margin-bottom:11px;">
+      <div class="fg" style="margin-bottom:6px;"><label>Resultado</label></div>
+      <div class="result-toggle">
+        <button class="rt-btn" id="ert-win" onclick="setEditResult('win')">✅ Ganada</button>
+        <button class="rt-btn" id="ert-loss" onclick="setEditResult('loss')">❌ Perdida</button>
+        <button class="rt-btn" id="ert-void" onclick="setEditResult('void')">↩️ Void</button>
+        <button class="rt-btn" id="ert-pending" onclick="setEditResult('pending')">⏳ Pendiente</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="saveEditBet()">💾 Guardar</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR TIPSTER -->
+<div class="modal-overlay" id="editTipsterModal" style="display:none;" onclick="if(event.target===this)closeEditTipsterModal()">
+  <div class="modal-box" style="max-width:600px;">
+    <div class="modal-title">⚙️ Configurar Tipster</div>
+    <input type="hidden" id="etId">
+    <div class="form-grid">
+      <div class="fg"><label>Nombre</label><input type="text" id="etName"></div>
+      <div class="fg"><label>Bankroll inicial <span class="opt">(para calcular ROI)</span></label><input type="number" id="etBankroll" placeholder="ej: 1000"></div>
+    </div>
+    <div style="margin-bottom:13px;">
+      <div class="fg" style="margin-bottom:8px;"><label>Modo Auto-Stake</label></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;" id="etStakeModeBar">
+        <button class="rt-btn" id="etMode-off"    onclick="setETMode('off')"    style="flex:1;min-width:110px;">🚫 Desactivado</button>
+        <button class="rt-btn" id="etMode-avg"    onclick="setETMode('avg')"    style="flex:1;min-width:110px;">📊 Promedio histórico</button>
+        <button class="rt-btn" id="etMode-table"  onclick="setETMode('table')"  style="flex:1;min-width:110px;">📋 Tabla manual</button>
+      </div>
+      <div id="etModeDesc" style="font-size:0.62rem;color:var(--muted);margin-top:6px;"></div>
+    </div>
+    <div id="etTableSection" style="display:none;margin-bottom:13px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:0.62rem;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Tabla Stake → Monto</span>
+        <button class="btn-edit" style="font-size:0.65rem;" onclick="addETRow()">+ Agregar fila</button>
+      </div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 36px;gap:0;border-bottom:1px solid var(--border);padding:5px 10px;">
+          <span style="font-size:0.54rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;">Stake (u)</span>
+          <span style="font-size:0.54rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;">Monto ($)</span>
+          <span></span>
+        </div>
+        <div id="etTableRows"></div>
+      </div>
+      <div style="font-size:0.6rem;color:var(--muted);margin-top:6px;">💡 Podés poner cualquier valor de stake. Al tipear un stake en el formulario, se busca la coincidencia exacta; si no hay, se usa el promedio histórico como fallback.</div>
+    </div>
+    <div style="margin-bottom:13px;">
+      <div class="fg" style="margin-bottom:8px;"><label>Auto-Cuota</label></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="auto-badge on" id="etAutoCuota" onclick="toggleETAutoCuota()">📐 Auto activado</button>
+        <span style="font-size:0.62rem;color:var(--muted);">Al seleccionar el tipster, la cuota se pre-rellena con su cuota media histórica. Desactivable por apuesta.</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="saveEditTipster()">💾 Guardar</button>
+      <button class="btn btn-ghost" onclick="closeEditTipsterModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GRAFICA TIPSTER INDIVIDUAL -->
+<div class="modal-overlay" id="tipsterChartModal" style="display:none;" onclick="if(event.target===this)closeTipsterChart()">
+  <div class="modal-box" style="max-width:780px;">
+    <div class="modal-title" id="tcModalTitle">📊 Tipster</div>
+    <div style="margin-bottom:9px;"><span class="flbl">Período:</span>
+      <div class="period-bar" style="margin-top:5px;">
+        <button class="period-btn active" id="tcp-all" onclick="setTCPeriod('all')">Todo</button>
+        <button class="period-btn" id="tcp-1y" onclick="setTCPeriod('1y')">1 Año</button>
+        <button class="period-btn" id="tcp-6m" onclick="setTCPeriod('6m')">6 Meses</button>
+        <button class="period-btn" id="tcp-3m" onclick="setTCPeriod('3m')">3 Meses</button>
+        <button class="period-btn" id="tcp-1m" onclick="setTCPeriod('1m')">1 Mes</button>
+        <button class="period-btn" id="tcp-1w" onclick="setTCPeriod('1w')">1 Semana</button>
+        <button class="period-btn" id="tcp-1d" onclick="setTCPeriod('1d')">Hoy</button>
+      </div>
+    </div>
+    <div style="margin-bottom:9px;"><span class="flbl">Ver:</span>
+      <div class="filter-bar" style="margin-top:5px;">
+        <button class="flt-btn a-all" id="tcf-all" onclick="setTCFilter('all')">🔵 Todas</button>
+        <button class="flt-btn" id="tcf-played" onclick="setTCFilter('played')">✅ Jugadas</button>
+        <button class="flt-btn" id="tcf-skipped" onclick="setTCFilter('skipped')">👁 No Jugadas</button>
+      </div>
+    </div>
+    <div style="margin-bottom:11px;"><span class="flbl">Métrica:</span>
+      <div class="period-bar" style="margin-top:5px;">
+        <button class="period-btn active" id="tcm-profit" onclick="setTCMetric('profit')">💰 Profit ($)</button>
+        <button class="period-btn" id="tcm-units" onclick="setTCMetric('units')">📐 Unidades</button>
+      </div>
+    </div>
+    <div class="chart-wrap-lg" style="height:275px;"><canvas id="chartTipsterIndividual"></canvas></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeTipsterChart()">Cerrar</button></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let data = { tipsters: [], balance: { invertido: 0, retirado: 0 } };
+let curResult = 'pending', curJugada = null;
+let editResult = 'pending', editJugada = null;
+let etAutoStakeOn = true;
+let etStakeMode = 'avg';
+let etStakeTable = [];
+let autoStakeOn = true;
+let betException = false;
+let betCuotaException = false;
+let chartFilter = 'all', chartTipsters = [], chartPeriod = 'all', chartDateFrom = null, chartDateTo = null;
+let unitFilter = 'all', unitTipster = 'all', unitPeriod = 'all', unitDateFrom = null, unitDateTo = null;
+let unitSports = [];
+let tipsterSort = 'nombre';
+let tcId = null, tcPeriod = 'all', tcFilter = 'all', tcMetric = 'profit';
+let balancePeriod = 'all', balanceDateFrom = null, balanceDateTo = null;
+let charts = {};
+let fbListening = false;
+const COLORS = ['#6c63ff','#22c55e','#06b6d4','#f59e0b','#e879f9','#ef4444','#f97316','#84cc16','#14b8a6','#a78bfa'];
+
+// ============================================================
+// FIREBASE + INIT
+// ============================================================
+function initApp() {
+  document.getElementById('bFecha').value = new Date().toISOString().split('T')[0];
+  const ls = localStorage.getItem('tipsterbook_v4');
+  if (ls) { try { const parsed = JSON.parse(ls); data = parsed; if (!data.balance) data.balance = { invertido: 0, retirado: 0 }; } catch(e){} }
+  renderAll();
+  setSyncStatus('connecting');
+  if (window._fbReady) startFB();
+  else window.addEventListener('fb-ready', startFB, { once: true });
+}
+
+function startFB() {
+  if (fbListening) return;
+  fbListening = true;
+  setSyncStatus('syncing');
+  window._fbListen(remote => {
+    if (remote.tipsters && remote.tipsters.length > 0) {
+      data = remote;
+      if (!data.balance) data.balance = { invertido: 0, retirado: 0 };
+      localStorage.setItem('tipsterbook_v4', JSON.stringify(data));
+      renderAll();
+    }
+    setSyncStatus('ok');
+  });
+}
+
+function save() {
+  localStorage.setItem('tipsterbook_v4', JSON.stringify(data));
+  if (window._fbSave) {
+    setSyncStatus('saving');
+    window._fbSave(data).then(() => setSyncStatus('ok'));
+  }
+}
+
+function setSyncStatus(s) {
+  const el = document.getElementById('syncStatus'); if (!el) return;
+  const m = { connecting:'🔄 Conectando...', syncing:'🔄 Sincronizando...', saving:'💾 Guardando...', ok:'☁️ Sincronizado' };
+  const c = { connecting:'#6b7694', syncing:'#06b6d4', saving:'#f59e0b', ok:'#22c55e' };
+  el.textContent = m[s]; el.style.color = c[s];
+}
+
+window.onload = initApp;
+
+// ============================================================
+// HELPERS
+// ============================================================
+function calcProfit(b) {
+  if (b.result === 'win')  return (b.monto * b.cuota) - b.monto;
+  if (b.result === 'loss') return -b.monto;
+  return 0;
+}
+function calcUnits(b) {
+  if (!b.stake) return null;
+  if (b.result === 'win')  return b.stake * (b.cuota - 1);
+  if (b.result === 'loss') return -b.stake;
+  return 0;
+}
+function fmt(n)  { return (n >= 0 ? '+' : '') + '$' + Math.abs(n).toFixed(2); }
+function fmtU(n) { return (n >= 0 ? '+' : '') + n.toFixed(2) + 'u'; }
+function resLabel(r) { return r==='win'?'✅ Ganada':r==='loss'?'❌ Perdida':r==='void'?'↩️ Void':'⏳ Pendiente'; }
+
+function filterByPeriod(bets, p) {
+  if (p === 'all' || p === 'custom') return bets;
+  const now = new Date(), d = new Date(now);
+  if (p==='1y') d.setFullYear(now.getFullYear()-1);
+  else if (p==='6m') d.setMonth(now.getMonth()-6);
+  else if (p==='3m') d.setMonth(now.getMonth()-3);
+  else if (p==='1m') d.setMonth(now.getMonth()-1);
+  else if (p==='1w') d.setDate(now.getDate()-7);
+  else if (p==='1d') d.setDate(now.getDate()-1);
+  return bets.filter(b => b.fecha && new Date(b.fecha) >= d);
+}
+
+function filterByPeriodEx(bets, p) {
+  if (p === 'custom') {
+    return bets.filter(b => {
+      if (!b.fecha) return false;
+      if (chartDateFrom && b.fecha < chartDateFrom) return false;
+      if (chartDateTo   && b.fecha > chartDateTo)   return false;
+      return true;
+    });
+  }
+  return filterByPeriod(bets, p);
+}
+
+function filterByBalancePeriod(bets) {
+  if (balancePeriod === 'custom') {
+    return bets.filter(b => {
+      if (!b.fecha) return false;
+      if (balanceDateFrom && b.fecha < balanceDateFrom) return false;
+      if (balanceDateTo   && b.fecha > balanceDateTo)   return false;
+      return true;
+    });
+  }
+  return filterByPeriod(bets, balancePeriod);
+}
+
+function calcStats(bets, filter = 'all') {
+  const fb = filter==='all' ? bets : bets.filter(b => filter==='played' ? b.played : !b.played);
+  const closed = fb.filter(b => b.result !== 'pending');
+  const won = closed.filter(b => b.result === 'win');
+  const notVoid = closed.filter(b => b.result !== 'void');
+  const invested = closed.reduce((s,b) => s + (b.monto||0), 0);
+  const profit  = closed.reduce((s,b) => s + calcProfit(b), 0);
+  const yield_  = invested > 0 ? profit / invested * 100 : 0;
+  const wr      = notVoid.length > 0 ? won.length / notVoid.length * 100 : 0;
+  const ws = closed.filter(b => b.stake);
+  const uStaked = ws.reduce((s,b) => s + b.stake, 0);
+  const uNet    = ws.reduce((s,b) => s + calcUnits(b), 0);
+  const uYield  = uStaked > 0 ? uNet / uStaked * 100 : 0;
+  return { total:fb.length, closed:closed.length, won:won.length, invested, profit, yield_, wr, uNet, uStaked, uYield };
+}
+
+function getTypeKey(types) {
+  if (!types || !types.length) return 'Sin tipo';
+  const sorted = [...types].sort();
+  return sorted.length > 1 ? sorted.join(' + ') : sorted[0];
+}
+
+function mostFrequent(arr) {
+  if (!arr.length) return null;
+  const freq = {};
+  arr.forEach(v => freq[v] = (freq[v]||0) + 1);
+  return Object.entries(freq).sort((a,b) => b[1]-a[1])[0][0];
+}
+
+function topStakes(bets, n=3) {
+  const stakes = bets.filter(b => b.stake > 0).map(b => b.stake);
   if (!stakes.length) return [];
   const freq = {};
   stakes.forEach(s => freq[s] = (freq[s]||0) + 1);
