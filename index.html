@@ -32,7 +32,7 @@
     onValue(r, snap => {
       const v = snap.val();
       if(v && v.p){ try{ cb(JSON.parse(v.p)); }catch(e){} }
-      else cb({tipsters:[]});
+      else cb({tipsters:[], retos:[]});
     });
   };
   window._fbReady = true;
@@ -175,38 +175,34 @@ select option{background:var(--s2);}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-.stake-quick-btn{padding:6px 13px;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);font-family:'DM Mono',monospace;transition:all .15s;white-space:nowrap;}
+.stake-quick-btn{
+  padding:6px 13px;
+  border-radius:8px;
+  font-size:0.75rem;
+  font-weight:700;
+  cursor:pointer;
+  border:1px solid var(--border);
+  background:var(--s2);
+  color:var(--muted2);
+  font-family:'DM Mono',monospace;
+  transition:all .15s;
+  white-space:nowrap;
+}
 .stake-quick-btn:hover{border-color:var(--accent);color:var(--accent);}
 .stake-quick-btn.active{border-color:var(--accent);background:rgba(108,99,255,.18);color:var(--accent);}
 .tipster-chip{padding:6px 14px;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;border:2px solid var(--tc,var(--border));background:transparent;color:var(--muted2);transition:all .18s;font-family:'DM Sans',sans-serif;}
 .tipster-chip.sel{background:var(--tc,var(--accent));color:#fff;box-shadow:0 2px 12px color-mix(in srgb,var(--tc,var(--accent)) 40%,transparent);}
 .tipster-chip:hover{background:color-mix(in srgb,var(--tc,var(--accent)) 20%,transparent);color:var(--text);}
-
-/* ===== BALANCE TAB STYLES ===== */
-.balance-saldos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px;}
-.saldo-box{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px;}
-.saldo-box.saldo-actual{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.05);}
-.saldo-box.saldo-invertido{border-color:rgba(108,99,255,.35);background:rgba(108,99,255,.05);}
-.saldo-box.saldo-retirado{border-color:rgba(6,182,212,.35);background:rgba(6,182,212,.05);}
-.saldo-lbl{font-size:0.52rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px;}
-.saldo-val{font-family:'DM Mono',monospace;font-size:1.25rem;font-weight:500;margin-bottom:8px;}
-.saldo-input-wrap{display:flex;align-items:center;gap:5px;}
-.saldo-input{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);padding:6px 9px;border-radius:7px;font-family:'DM Mono',monospace;font-size:0.8rem;outline:none;}
-.saldo-input:focus{border-color:var(--accent);}
-.saldo-save-btn{padding:5px 9px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.65rem;cursor:pointer;white-space:nowrap;}
-.balance-ranking{margin-top:0;}
-.ranking-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--s2);border-radius:9px;margin-bottom:6px;border:1px solid var(--border);}
-.ranking-pos{font-family:'Unbounded',sans-serif;font-size:0.7rem;font-weight:900;width:22px;text-align:center;flex-shrink:0;}
-.ranking-name{flex:1;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;}
-.ranking-profit{font-family:'DM Mono',monospace;font-size:0.85rem;font-weight:500;text-align:right;}
-.ranking-yield{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--muted2);text-align:right;min-width:45px;}
-.balance-top20-table{width:100%;border-collapse:collapse;font-size:0.7rem;overflow-x:auto;display:block;}
-.balance-top20-table th{padding:5px 7px;text-align:left;font-size:0.54rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
-.balance-top20-table td{padding:7px 7px;border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap;vertical-align:middle;}
-.balance-top20-table tr:last-child td{border-bottom:none;}
-.rank-medal-1{color:#f59e0b;}
-.rank-medal-2{color:#94a3b8;}
-.rank-medal-3{color:#cd7c2f;}
+/* RISK PANEL */
+.pbox-val-lg{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:700;}
+.semaforo-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 16px;border-radius:24px;font-family:'Unbounded',sans-serif;font-weight:700;font-size:0.8rem;}
+.semaforo-badge.sem-green{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);color:var(--green);}
+.semaforo-badge.sem-yellow{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.4);color:var(--gold);}
+.semaforo-badge.sem-red{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:var(--red);}
+/* RETO MODE */
+.reto-mode-btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:var(--s2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;text-align:left;transition:all .15s;}
+.reto-mode-btn:hover{border-color:var(--accent);background:rgba(108,99,255,.1);}
+.reto-mode-desc{font-size:0.62rem;color:var(--muted2);font-weight:400;}
 </style>
 </head>
 <body>
@@ -244,7 +240,7 @@ select option{background:var(--s2);}
   <button class="tab" onclick="switchTab('nueva')">➕ Nueva Apuesta</button>
   <button class="tab" onclick="switchTab('unidades')">📐 Unidades</button>
   <button class="tab" onclick="switchTab('graficas')">📊 Gráficas</button>
-  <button class="tab" onclick="switchTab('balance')">💰 Balance</button>
+  <button class="tab" onclick="switchTab('retos')">🎯 Retos</button>
 </div>
 
 <!-- ===== TAB TIPSTERS ===== -->
@@ -312,7 +308,57 @@ select option{background:var(--s2);}
           <option value="Otro">🎯 Otro</option>
         </select>
       </div>
-      <div class="fg"><label>Fecha</label><input type="date" id="bFecha"></div>
+      <div class="fg"><label>Fecha</label><input type="date" id="bFecha" onchange="updateRiskPanel()"></div>
+    </div>
+
+    <!-- MODO RETO TOGGLE -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px;flex-wrap:wrap;">
+      <button class="auto-badge" id="retoModeBadge" onclick="toggleRetoMode()" style="font-size:0.72rem;padding:6px 13px;">🎯 Modo Reto: OFF</button>
+      <span style="font-size:0.6rem;color:var(--muted);">Apostá según el modo elegido (mitad, escalera, etc.) hasta ganar o perder el reto.</span>
+    </div>
+
+    <!-- PANEL RETO ACTIVO -->
+    <div class="card" id="retoInfoPanel" style="display:none;background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.25);margin-bottom:11px;">
+      <div class="card-title" style="color:var(--gold);">🎯 Reto Activo</div>
+      <div class="pboxes">
+        <div class="pbox"><div class="pbox-lbl">Modo</div><div class="pbox-val gold" id="rp-mode">—</div></div>
+        <div class="pbox"><div class="pbox-lbl">Bank Inicial</div><div class="pbox-val" id="rp-bankini">$0</div></div>
+        <div class="pbox"><div class="pbox-lbl">Bank Actual</div><div class="pbox-val cyan" id="rp-bankcur">$0</div></div>
+        <div class="pbox"><div class="pbox-lbl">Próx. Apuesta</div><div class="pbox-val purple" id="rp-next">$0</div></div>
+        <div class="pbox"><div class="pbox-lbl">% del bank</div><div class="pbox-val gold" id="rp-pct">0%</div></div>
+        <div class="pbox"><div class="pbox-lbl">Progreso</div><div class="pbox-val" id="rp-step">—</div></div>
+        <div class="pbox"><div class="pbox-lbl">Win Rate (al iniciar)</div><div class="pbox-val gold" id="rp-winrate">N/A</div></div>
+        <div class="pbox"><div class="pbox-lbl">Cuota Media (al iniciar)</div><div class="pbox-val gold" id="rp-cuotamedia">N/A</div></div>
+      </div>
+      <div class="section-actions">
+        <button class="btn btn-ghost btn-sm" onclick="finalizeReto()">✅ Finalizar reto (ganado)</button>
+      </div>
+    </div>
+
+    <!-- CALCULADORA DE RIESGO EN VIVO -->
+    <div class="card" id="riskPanel" style="display:none;margin-bottom:11px;">
+      <div class="card-title">⚠️ Calculadora de Riesgo en Vivo</div>
+      <div id="riskNoBank" class="no-bets" style="display:none;">Configurá el bankroll del tipster (⚙️) para activar el panel de riesgo.</div>
+      <div id="riskContent">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px;flex-wrap:wrap;">
+          <span class="semaforo-badge" id="riskSemaforo">⏳ —</span>
+        </div>
+        <div class="pboxes">
+          <div class="pbox"><div class="pbox-lbl">% del Bank (esta apuesta)</div><div class="pbox-val-lg" id="rk-stakepct">0%</div></div>
+          <div class="pbox" id="rk-exp-box"><div class="pbox-lbl" id="rk-exp-lbl">Exposición Total Hoy</div><div class="pbox-val-lg" id="rk-exppct">0%</div></div>
+          <div class="pbox"><div class="pbox-lbl">Bank si Pierde</div><div class="pbox-val" id="rk-bankpierde">$0</div></div>
+          <div class="pbox"><div class="pbox-lbl">Retorno desde el Inicio</div><div class="pbox-val" id="rk-retorno">0%</div></div>
+          <div class="pbox"><div class="pbox-lbl">Drawdown desde el Pico</div><div class="pbox-val" id="rk-ddpico">0%</div></div>
+          <div class="pbox"><div class="pbox-lbl">Prob. perder 2 seguidas</div><div class="pbox-val" id="rk-prob2">0%</div></div>
+        </div>
+        <div class="section-divider">🎲 Simulación a Futuro (100 apuestas, 2000 escenarios)</div>
+        <div class="pboxes">
+          <div class="pbox"><div class="pbox-lbl">Drawdown 60%+</div><div class="pbox-val gold" id="rk-sim60">0%</div></div>
+          <div class="pbox"><div class="pbox-lbl">Drawdown 80%+</div><div class="pbox-val red" id="rk-sim80">0%</div></div>
+          <div class="pbox"><div class="pbox-lbl">Ruina Total</div><div class="pbox-val red" id="rk-simruin">0%</div></div>
+        </div>
+        <div style="font-size:0.58rem;color:var(--muted);margin-top:6px;">⚠️ Esto es una advertencia, no un bloqueo. La decisión final es tuya.</div>
+      </div>
     </div>
 
     <!-- TIPO -->
@@ -320,13 +366,8 @@ select option{background:var(--s2);}
       <div class="fg" style="margin-bottom:6px;"><label>Tipo de Apuesta</label></div>
       <div class="chip-row" id="betTypeChips">
         <div class="chip" data-val="Ganador" onclick="toggleChip(this)">🏆 Ganador</div>
-        <div class="chip" data-val="Ganador P0" onclick="toggleChip(this)">🥅 Ganador P0</div>
         <div class="chip" data-val="Ganador 1/2" onclick="toggleChip(this)">½ Mitad</div>
-        <div class="chip" data-val="Clasifica" onclick="toggleChip(this)">🎯 Clasifica</div>
         <div class="chip" data-val="Goles" onclick="toggleChip(this)">⚽ Goles</div>
-        <div class="chip" data-val="Corners" onclick="toggleChip(this)">🚩 Corners</div>
-        <div class="chip" data-val="Amarillas" onclick="toggleChip(this)">🟨 Amarillas</div>
-        <div class="chip" data-val="Tiros" onclick="toggleChip(this)">🎯 Tiros</div>
         <div class="chip" data-val="Asian Market" onclick="toggleChip(this)">🎌 AM</div>
         <div class="chip" data-val="Hándicap" onclick="toggleChip(this)">📐 Hándicap</div>
         <div class="chip" data-val="Over" onclick="toggleChip(this)">📈 Over</div>
@@ -334,6 +375,12 @@ select option{background:var(--s2);}
         <div class="chip" data-val="Doble Oportunidad" onclick="toggleChip(this)">🔁 Doble Op.</div>
         <div class="chip" data-val="Live" onclick="toggleChip(this)">🔴 Live</div>
       </div>
+    </div>
+
+    <!-- SOÑADORA (independiente del Tipo de Apuesta) -->
+    <div style="margin-bottom:11px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <button class="auto-badge" id="sonadoraBadge" onclick="toggleSonadora()" style="font-size:0.72rem;padding:6px 13px;">🌙 Soñadora: OFF</button>
+      <span style="font-size:0.6rem;color:var(--muted);">Marcala a mano para apuestas de cuota alta (referencia: 6, 10, 40, 900+).</span>
     </div>
 
     <!-- EXCEPCION AUTO-STAKE -->
@@ -441,6 +488,13 @@ select option{background:var(--s2);}
 
 <!-- ===== TAB GRAFICAS ===== -->
 <div id="tab-graficas" class="tab-content">
+  <div class="tabs subtabs" style="margin-bottom:11px;">
+    <button class="tab subtab active" id="gst-apuestas" onclick="setGraficasSubView('apuestas')">📊 Apuestas</button>
+    <button class="tab subtab" id="gst-retos" onclick="setGraficasSubView('retos')">🎯 Retos</button>
+    <button class="tab subtab" id="gst-sonadoras" onclick="setGraficasSubView('sonadoras')">🌙 Soñadoras</button>
+  </div>
+
+  <div id="gsv-apuestas">
   <div class="card" style="margin-bottom:11px;">
     <div class="card-title">Filtros</div>
     <div style="display:flex;flex-direction:column;gap:9px;">
@@ -492,72 +546,68 @@ select option{background:var(--s2);}
   <div class="card" id="cardYieldComp"><div class="card-title">Yield Jugadas vs No Jugadas por Tipster</div><div class="chart-wrap"><canvas id="chartYieldComparison"></canvas></div></div>
   <div class="card"><div class="card-title">ROI Mensual por Tipster</div><div class="chart-wrap-lg"><canvas id="chartROIMonthly"></canvas></div></div>
   <div class="card"><div class="card-title">Cuota Media: Ganadas vs Perdidas</div><div class="chart-wrap"><canvas id="chartCuotaWL"></canvas></div></div>
+  </div>
+
+  <!-- SUB-VISTA: RETOS -->
+  <div id="gsv-retos" style="display:none;">
+    <div class="stats-strip">
+      <div class="stat-box"><div class="stat-lbl">Retos Archivados</div><div class="stat-val purple" id="gr-total">0</div></div>
+      <div class="stat-box"><div class="stat-lbl">Win Rate</div><div class="stat-val gold" id="gr-wr">0%</div></div>
+      <div class="stat-box"><div class="stat-lbl">Yield Promedio</div><div class="stat-val cyan" id="gr-yield">0%</div></div>
+      <div class="stat-box"><div class="stat-lbl">Ganados/Completados</div><div class="stat-val green" id="gr-ganados">0</div></div>
+      <div class="stat-box"><div class="stat-lbl">Perdidos</div><div class="stat-val red" id="gr-perdidos">0</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card"><div class="card-title">Win Rate por Modo de Reto</div><div class="chart-wrap"><canvas id="chartRetoModoWR"></canvas></div></div>
+      <div class="card"><div class="card-title">Win Rate por Tipster (Retos)</div><div class="chart-wrap"><canvas id="chartRetoTipsterWR"></canvas></div></div>
+    </div>
+    <div class="card"><div class="card-title">Desglose por Modo de Reto</div><div id="gr-by-mode"></div></div>
+    <div class="card"><div class="card-title">Desglose por Tipster</div><div id="gr-by-tipster"></div></div>
+  </div>
+
+  <!-- SUB-VISTA: SOÑADORAS -->
+  <div id="gsv-sonadoras" style="display:none;">
+    <div class="stats-strip">
+      <div class="stat-box"><div class="stat-lbl">Apuestas</div><div class="stat-val purple" id="gs-total">0</div></div>
+      <div class="stat-box"><div class="stat-lbl">Profit</div><div class="stat-val green" id="gs-profit">$0</div></div>
+      <div class="stat-box"><div class="stat-lbl">Yield</div><div class="stat-val cyan" id="gs-yield">0%</div></div>
+      <div class="stat-box"><div class="stat-lbl">Win Rate</div><div class="stat-val gold" id="gs-wr">0%</div></div>
+      <div class="stat-box"><div class="stat-lbl">Cuota Media</div><div class="stat-val gold" id="gs-cuota">N/A</div></div>
+    </div>
+    <div class="card"><div class="card-title">Profit Acumulado (Soñadoras)</div><div class="chart-wrap"><canvas id="chartSonadoras"></canvas></div></div>
+    <div class="card"><div class="card-title">Desglose por Tipster</div><div id="gs-by-tipster"></div></div>
+  </div>
 </div>
 
-<!-- ===== TAB BALANCE ===== -->
-<div id="tab-balance" class="tab-content">
 
-  <!-- SALDOS -->
-  <div class="balance-saldos">
-    <div class="saldo-box saldo-actual">
-      <div class="saldo-lbl">💰 Saldo Actual</div>
-      <div class="saldo-val green" id="bal-actual">$0.00</div>
-      <div style="font-size:0.58rem;color:var(--muted);margin-top:2px;">Se calcula automáticamente</div>
-    </div>
-    <div class="saldo-box saldo-invertido">
-      <div class="saldo-lbl">📥 Saldo Inicial / Invertido</div>
-      <div class="saldo-val purple" id="bal-invertido-display">$0.00</div>
-      <div class="saldo-input-wrap" style="margin-top:6px;">
-        <input class="saldo-input" type="number" id="bal-invertido-input" placeholder="Monto inicial..." step="0.01">
-        <button class="saldo-save-btn" onclick="saveBalanceSaldo('invertido')">✓</button>
-      </div>
-    </div>
-    <div class="saldo-box saldo-retirado">
-      <div class="saldo-lbl">📤 Saldo Retirado</div>
-      <div class="saldo-val cyan" id="bal-retirado-display">$0.00</div>
-      <div class="saldo-input-wrap" style="margin-top:6px;">
-        <input class="saldo-input" type="number" id="bal-retirado-input" placeholder="Total retirado..." step="0.01">
-        <button class="saldo-save-btn" onclick="saveBalanceSaldo('retirado')">✓</button>
-      </div>
-    </div>
+<!-- ===== TAB RETOS ===== -->
+<div id="tab-retos" class="tab-content">
+  <div class="stats-strip">
+    <div class="stat-box"><div class="stat-lbl">Retos Totales</div><div class="stat-val purple" id="rt-total">0</div></div>
+    <div class="stat-box"><div class="stat-lbl">Activos</div><div class="stat-val cyan" id="rt-activos">0</div></div>
+    <div class="stat-box"><div class="stat-lbl">Ganados/Cerrados</div><div class="stat-val green" id="rt-ganados">0</div></div>
+    <div class="stat-box"><div class="stat-lbl">Perdidos</div><div class="stat-val red" id="rt-perdidos">0</div></div>
+    <div class="stat-box"><div class="stat-lbl">Tasa de Éxito</div><div class="stat-val gold" id="rt-tasa">0%</div></div>
   </div>
-
-  <!-- GRAFICA SALDO -->
   <div class="card" style="margin-bottom:11px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:11px;">
-      <div class="card-title" style="margin-bottom:0;">Evolución del Saldo</div>
-      <div class="period-bar">
-        <button class="period-btn active" data-balperiod="all" onclick="setBalancePeriod('all')">Todo</button>
-        <button class="period-btn" data-balperiod="1y" onclick="setBalancePeriod('1y')">1 Año</button>
-        <button class="period-btn" data-balperiod="6m" onclick="setBalancePeriod('6m')">6 Meses</button>
-        <button class="period-btn" data-balperiod="3m" onclick="setBalancePeriod('3m')">3 Meses</button>
-        <button class="period-btn" data-balperiod="1m" onclick="setBalancePeriod('1m')">1 Mes</button>
-        <button class="period-btn" data-balperiod="1w" onclick="setBalancePeriod('1w')">1 Semana</button>
+    <div class="card-title">Filtros</div>
+    <div style="margin-bottom:8px;"><span class="flbl">Tipster:</span>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="retosTipsterFilter"><button class="tf-btn active" onclick="setRetosFilterTipster('all',this)">Todos</button></div>
+    </div>
+    <div><span class="flbl">Estado:</span>
+      <div class="filter-bar" style="margin-top:5px;">
+        <button class="flt-btn a-all" id="rf-all" onclick="setRetosFilterEstado('all')">🔵 Todos</button>
+        <button class="flt-btn" id="rf-activo" onclick="setRetosFilterEstado('activo')">🟡 Activos</button>
+        <button class="flt-btn" id="rf-completado" onclick="setRetosFilterEstado('completado')">🏆 Completados</button>
+        <button class="flt-btn" id="rf-finalizado" onclick="setRetosFilterEstado('finalizado')">✅ Cerrados a mano</button>
+        <button class="flt-btn" id="rf-perdido" onclick="setRetosFilterEstado('perdido')">❌ Perdidos</button>
       </div>
     </div>
-    <div style="margin-bottom:9px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-      <input type="date" id="balDateFrom" style="width:130px;padding:5px 9px;font-size:0.72rem;" onchange="setBalanceDateRange()">
-      <span style="color:var(--muted);font-size:0.75rem;">→</span>
-      <input type="date" id="balDateTo" style="width:130px;padding:5px 9px;font-size:0.72rem;" onchange="setBalanceDateRange()">
-      <button class="period-btn" onclick="clearBalanceDateRange()" style="padding:4px 9px;">✕</button>
-      <span id="balDateRangeLabel" style="font-size:0.65rem;color:var(--cyan);font-family:'DM Mono',monospace;"></span>
-    </div>
-    <div class="chart-wrap" style="height:270px;"><canvas id="chartBalance"></canvas></div>
   </div>
-
-  <!-- ULTIMAS 20 APUESTAS DEL PERIODO -->
-  <div class="card" style="margin-bottom:11px;">
-    <div class="card-title">Últimas 20 Apuestas del Período (mayor ganancia → peor)</div>
-    <div id="balanceTop20"></div>
+  <div id="retosList" class="tipster-list">
+    <div class="empty"><div class="empty-icon">🎯</div><p>Sin retos creados. Activá "Modo Reto" en Nueva Apuesta.</p></div>
   </div>
-
-  <!-- RANKING TIPSTERS -->
-  <div class="card">
-    <div class="card-title">🏆 Ranking de Tipsters — Período Seleccionado</div>
-    <div id="balanceRanking" class="balance-ranking"></div>
-  </div>
-
-</div><!-- /tab-balance -->
+</div>
 
 </div><!-- /container -->
 
@@ -578,13 +628,8 @@ select option{background:var(--s2);}
       <div class="fg" style="margin-bottom:6px;"><label>Tipo</label></div>
       <div class="chip-row" id="editBetTypeChips">
         <div class="chip" data-val="Ganador" onclick="toggleEditChip(this)">🏆 Ganador</div>
-        <div class="chip" data-val="Ganador P0" onclick="toggleEditChip(this)">🥅 Ganador P0</div>
         <div class="chip" data-val="Ganador 1/2" onclick="toggleEditChip(this)">½ Mitad</div>
-        <div class="chip" data-val="Clasifica" onclick="toggleEditChip(this)">🎯 Clasifica</div>
         <div class="chip" data-val="Goles" onclick="toggleEditChip(this)">⚽ Goles</div>
-        <div class="chip" data-val="Corners" onclick="toggleEditChip(this)">🚩 Corners</div>
-        <div class="chip" data-val="Amarillas" onclick="toggleEditChip(this)">🟨 Amarillas</div>
-        <div class="chip" data-val="Tiros" onclick="toggleEditChip(this)">🎯 Tiros</div>
         <div class="chip" data-val="Asian Market" onclick="toggleEditChip(this)">🎌 AM</div>
         <div class="chip" data-val="Hándicap" onclick="toggleEditChip(this)">📐 Hándicap</div>
         <div class="chip" data-val="BTTS" onclick="toggleEditChip(this)">🥅 BTTS</div>
@@ -594,6 +639,9 @@ select option{background:var(--s2);}
         <div class="chip" data-val="Doble Oportunidad" onclick="toggleEditChip(this)">🔁 Doble Op.</div>
         <div class="chip" data-val="Live" onclick="toggleEditChip(this)">🔴 Live</div>
       </div>
+    </div>
+    <div style="margin-bottom:11px;">
+      <button class="auto-badge" id="eSonadoraBadge" onclick="toggleEditSonadora()" style="font-size:0.72rem;padding:6px 13px;">🌙 Soñadora: OFF</button>
     </div>
     <div class="jugada-section" style="margin-bottom:11px;">
       <div class="slabel">¿La jugaste?</div>
@@ -626,16 +674,32 @@ select option{background:var(--s2);}
     <div class="form-grid">
       <div class="fg"><label>Nombre</label><input type="text" id="etName"></div>
       <div class="fg"><label>Bankroll inicial <span class="opt">(para calcular ROI)</span></label><input type="number" id="etBankroll" placeholder="ej: 1000"></div>
+      <div class="fg"><label>Bank de Referencia <span class="opt">(para drawdown real)</span></label><input type="number" id="etBankRef" placeholder="ej: 1000"></div>
     </div>
+
+    <!-- STAKE MODE SELECTOR -->
     <div style="margin-bottom:13px;">
       <div class="fg" style="margin-bottom:8px;"><label>Modo Auto-Stake</label></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;" id="etStakeModeBar">
         <button class="rt-btn" id="etMode-off"    onclick="setETMode('off')"    style="flex:1;min-width:110px;">🚫 Desactivado</button>
         <button class="rt-btn" id="etMode-avg"    onclick="setETMode('avg')"    style="flex:1;min-width:110px;">📊 Promedio histórico</button>
+        <button class="rt-btn" id="etMode-bankpct" onclick="setETMode('bankpct')" style="flex:1;min-width:110px;">📈 % del Bank</button>
         <button class="rt-btn" id="etMode-table"  onclick="setETMode('table')"  style="flex:1;min-width:110px;">📋 Tabla manual</button>
       </div>
       <div id="etModeDesc" style="font-size:0.62rem;color:var(--muted);margin-top:6px;"></div>
     </div>
+
+    <!-- % DEL BANK (visible solo en modo bankpct) -->
+    <div id="etBankPctSection" style="display:none;margin-bottom:13px;">
+      <div class="fg">
+        <label>Monto por unidad de stake ($) <span class="opt">— calculado sobre el bank actual</span></label>
+        <input type="number" id="etBankPctInput" placeholder="ej: 10" min="0" step="0.5">
+      </div>
+      <div id="etBankPctInfo" style="font-size:0.62rem;color:var(--muted);margin-top:6px;"></div>
+      <div style="font-size:0.6rem;color:var(--muted);margin-top:4px;">💡 Guardás la proporción, no el monto fijo: si el bank crece o baja, el $ por unidad se ajusta solo.</div>
+    </div>
+
+    <!-- TABLA MANUAL DE STAKES (visible solo en modo table) -->
     <div id="etTableSection" style="display:none;margin-bottom:13px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <span style="font-size:0.62rem;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">Tabla Stake → Monto</span>
@@ -651,6 +715,8 @@ select option{background:var(--s2);}
       </div>
       <div style="font-size:0.6rem;color:var(--muted);margin-top:6px;">💡 Podés poner cualquier valor de stake. Al tipear un stake en el formulario, se busca la coincidencia exacta; si no hay, se usa el promedio histórico como fallback.</div>
     </div>
+
+    <!-- AUTO-CUOTA SETTING -->
     <div style="margin-bottom:13px;">
       <div class="fg" style="margin-bottom:8px;"><label>Auto-Cuota</label></div>
       <div style="display:flex;align-items:center;gap:10px;">
@@ -658,9 +724,39 @@ select option{background:var(--s2);}
         <span style="font-size:0.62rem;color:var(--muted);">Al seleccionar el tipster, la cuota se pre-rellena con su cuota media histórica. Desactivable por apuesta.</span>
       </div>
     </div>
+
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="saveEditTipster()">💾 Guardar</button>
       <button class="btn btn-ghost" onclick="closeEditTipsterModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ELEGIR MODO DE RETO -->
+<div class="modal-overlay" id="retoModeModal" style="display:none;" onclick="if(event.target===this)cancelRetoFlow()">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-title">🎯 Elegí el Modo de Reto</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button class="reto-mode-btn" onclick="selectRetoMode('allin')">🎯 All In <span class="reto-mode-desc">100% del bank cada apuesta — una pérdida y se acabó</span></button>
+      <button class="reto-mode-btn" onclick="selectRetoMode('p501')">⚖️ 50.1% <span class="reto-mode-desc">Mitad del bank; máx. 2 pérdidas seguidas (la 2da va all-in)</span></button>
+      <button class="reto-mode-btn" onclick="selectRetoMode('p503')">⚖️ 50.3% <span class="reto-mode-desc">Mitad del bank; máx. 3 pérdidas seguidas (la 3ra va all-in)</span></button>
+      <button class="reto-mode-btn" onclick="selectRetoMode('cuarto')">🔹 1/4 <span class="reto-mode-desc">25% del bank cada apuesta</span></button>
+      <button class="reto-mode-btn" onclick="selectRetoMode('escalera')">🪜 Escalera <span class="reto-mode-desc">50% hasta duplicar (x2), 33% hasta x5, 25% hasta x10+</span></button>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="cancelRetoFlow()">Cancelar</button></div>
+  </div>
+</div>
+
+<!-- MODAL BANK DEL RETO -->
+<div class="modal-overlay" id="retoBankModal" style="display:none;" onclick="if(event.target===this)cancelRetoFlow()">
+  <div class="modal-box" style="max-width:380px;">
+    <div class="modal-title">💰 Bank del Reto</div>
+    <div class="fg"><label>Modo elegido</label><div id="retoBankModeLabel" style="font-family:'DM Mono',monospace;color:var(--accent);font-weight:700;padding:6px 0;"></div></div>
+    <div class="fg"><label>Monto inicial del reto ($)</label><input type="number" id="retoBankInput" placeholder="ej: 100" min="1" onkeydown="if(event.key==='Enter')document.getElementById('retoObjetivoInput').focus()"></div>
+    <div class="fg"><label>Objetivo <span class="opt">(multiplicador del bank inicial)</span></label><input type="number" id="retoObjetivoInput" placeholder="ej: 10" min="1" step="0.5" value="10" onkeydown="if(event.key==='Enter')confirmRetoBank()"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="confirmRetoBank()">🚀 Iniciar Reto</button>
+      <button class="btn btn-ghost" onclick="cancelRetoFlow()">Cancelar</button>
     </div>
   </div>
 </div>
@@ -702,9 +798,9 @@ select option{background:var(--s2);}
 // ============================================================
 // STATE
 // ============================================================
-let data = { tipsters: [], balance: { invertido: 0, retirado: 0 } };
-let curResult = 'pending', curJugada = null;
-let editResult = 'pending', editJugada = null;
+let data = { tipsters: [], retos: [] };
+let curResult = 'pending', curJugada = null, curSonadora = false;
+let editResult = 'pending', editJugada = null, editSonadora = false;
 let etAutoStakeOn = true;
 let etStakeMode = 'avg';
 let etStakeTable = [];
@@ -716,10 +812,20 @@ let unitFilter = 'all', unitTipster = 'all', unitPeriod = 'all', unitDateFrom = 
 let unitSports = [];
 let tipsterSort = 'nombre';
 let tcId = null, tcPeriod = 'all', tcFilter = 'all', tcMetric = 'profit';
-let balancePeriod = 'all', balanceDateFrom = null, balanceDateTo = null;
 let charts = {};
 let fbListening = false;
+let retoModeOn = false, activeRetoId = null, pendingRetoMode = null;
+let retosFilterTipster = 'all', retosFilterEstado = 'all';
+let graficasSubView = 'apuestas';
+let riskSimTimer = null;
 const COLORS = ['#6c63ff','#22c55e','#06b6d4','#f59e0b','#e879f9','#ef4444','#f97316','#84cc16','#14b8a6','#a78bfa'];
+const RETO_MODES = {
+  allin:    { label: '🎯 All In' },
+  p501:     { label: '⚖️ 50.1%', cap: 2 },
+  p503:     { label: '⚖️ 50.3%', cap: 3 },
+  cuarto:   { label: '🔹 1/4' },
+  escalera: { label: '🪜 Escalera' }
+};
 
 // ============================================================
 // FIREBASE + INIT
@@ -727,7 +833,9 @@ const COLORS = ['#6c63ff','#22c55e','#06b6d4','#f59e0b','#e879f9','#ef4444','#f9
 function initApp() {
   document.getElementById('bFecha').value = new Date().toISOString().split('T')[0];
   const ls = localStorage.getItem('tipsterbook_v4');
-  if (ls) { try { const parsed = JSON.parse(ls); data = parsed; if (!data.balance) data.balance = { invertido: 0, retirado: 0 }; } catch(e){} }
+  if (ls) { try { data = JSON.parse(ls); } catch(e){} }
+  if (!data.retos) data.retos = [];
+  data.tipsters.forEach(t => refreshBankPico(t));
   renderAll();
   setSyncStatus('connecting');
   if (window._fbReady) startFB();
@@ -741,7 +849,7 @@ function startFB() {
   window._fbListen(remote => {
     if (remote.tipsters && remote.tipsters.length > 0) {
       data = remote;
-      if (!data.balance) data.balance = { invertido: 0, retirado: 0 };
+      if (!data.retos) data.retos = [];
       localStorage.setItem('tipsterbook_v4', JSON.stringify(data));
       renderAll();
     }
@@ -808,18 +916,6 @@ function filterByPeriodEx(bets, p) {
   return filterByPeriod(bets, p);
 }
 
-function filterByBalancePeriod(bets) {
-  if (balancePeriod === 'custom') {
-    return bets.filter(b => {
-      if (!b.fecha) return false;
-      if (balanceDateFrom && b.fecha < balanceDateFrom) return false;
-      if (balanceDateTo   && b.fecha > balanceDateTo)   return false;
-      return true;
-    });
-  }
-  return filterByPeriod(bets, balancePeriod);
-}
-
 function calcStats(bets, filter = 'all') {
   const fb = filter==='all' ? bets : bets.filter(b => filter==='played' ? b.played : !b.played);
   const closed = fb.filter(b => b.result !== 'pending');
@@ -865,6 +961,7 @@ function renderStakeQuickBtns(t) {
   if (!t) { el.innerHTML = ''; return; }
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   if (mode === 'off') { el.innerHTML = ''; return; }
+  
   let stakes = [];
   if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
     stakes = t.stakeTable.slice(0, 3).map(r => r.stake);
@@ -872,6 +969,7 @@ function renderStakeQuickBtns(t) {
     stakes = topStakes(t.bets, 3);
   }
   if (!stakes.length) { el.innerHTML = ''; return; }
+
   const curStake = parseFloat(document.getElementById('bStake').value);
   el.innerHTML = stakes.map(s =>
     `<button class="stake-quick-btn${s === curStake ? ' active' : ''}" onclick="applyQuickStake(${s})">${s}u</button>`
@@ -886,7 +984,13 @@ function applyQuickStake(stake) {
   });
 }
 
-const SPORT_MAP = { 'Fútbol': 'Fútbol Europeo', 'Tennis': 'Tenis', 'NFL': 'Otro', 'Hockey': 'Otro', 'Baseball': 'Otro' };
+const SPORT_MAP = {
+  'Fútbol': 'Fútbol Europeo',
+  'Tennis': 'Tenis',
+  'NFL': 'Otro',
+  'Hockey': 'Otro',
+  'Baseball': 'Otro',
+};
 function normalizeSport(s) { return SPORT_MAP[s] || s; }
 
 function mostUsedSport(bets) {
@@ -942,6 +1046,58 @@ function avgStakeRatio(bets) {
   return b.reduce((s,x) => s + x.monto / x.stake, 0) / b.length;
 }
 
+// ── RISK CALCULATOR + RETO MODE HELPERS ──
+function getBankReferencia(t) {
+  if (t.bankReferencia != null) return t.bankReferencia;
+  return t.bankroll != null ? t.bankroll : null;
+}
+function getBankActual(t) {
+  if (t.bankroll == null) return null;
+  const s = calcStats(t.bets, 'played');
+  return t.bankroll + s.profit;
+}
+function getBankPico(t) {
+  if (t.bankPico != null) return t.bankPico;
+  const ref = getBankReferencia(t);
+  const actual = getBankActual(t);
+  if (ref == null && actual == null) return null;
+  return Math.max(ref||0, actual||0);
+}
+function refreshBankPico(t) {
+  const bankActual = getBankActual(t);
+  if (bankActual == null) return;
+  if (t.bankPico == null) t.bankPico = getBankReferencia(t) != null ? getBankReferencia(t) : bankActual;
+  if (bankActual > t.bankPico) t.bankPico = bankActual;
+}
+function computeExposicionPrevia(t, fecha) {
+  if (!t || !fecha) return 0;
+  return t.bets.filter(b => b.played && b.result === 'pending' && b.fecha === fecha)
+    .reduce((s,b) => s + (b.monto||0), 0);
+}
+function getEscaleraStage(reto) {
+  const mult = reto.bankInicial > 0 ? reto.bankActual / reto.bankInicial : 1;
+  if (mult < 2)  return { frac: 0.5,    label: '50%', range: '1x → 2x' };
+  if (mult < 5)  return { frac: 1/3,    label: '33%', range: '2x → 5x' };
+  return            { frac: 0.25,   label: '25%', range: '5x → 10x+' };
+}
+function getRetoFraction(reto) {
+  const mode = reto.mode;
+  const step = reto.step || 0;
+  if (mode === 'allin') return 1;
+  if (mode === 'cuarto') return 0.25;
+  if (mode === 'escalera') return getEscaleraStage(reto).frac;
+  const cap = RETO_MODES[mode] && RETO_MODES[mode].cap;
+  if (cap) {
+    // Apostás la mitad del bank; en el último intento permitido antes de
+    // quedar eliminado, vas con todo (all-in) sobre lo que queda.
+    return step >= (cap - 1) ? 1 : 0.5;
+  }
+  return 0;
+}
+function retoModeLabel(mode) {
+  return RETO_MODES[mode] ? RETO_MODES[mode].label : mode;
+}
+
 // ============================================================
 // ALERTS / CONFIRMS
 // ============================================================
@@ -980,12 +1136,13 @@ function showConfirm(msg, onYes) {
 // ============================================================
 function switchTab(id) {
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab:not(.subtab)').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
-  ['tipsters','nueva','unidades','graficas','balance'].forEach((x,i)=>{ if(x===id) document.querySelectorAll('.tab')[i]?.classList.add('active'); });
-  if (id==='graficas') { updateChartTipsterFilter(); renderCharts(); }
+  ['tipsters','nueva','unidades','graficas','retos'].forEach((x,i)=>{ if(x===id) document.querySelectorAll('.tab:not(.subtab)')[i]?.classList.add('active'); });
+  if (id==='graficas') { updateChartTipsterFilter(); setGraficasSubView(graficasSubView); }
   if (id==='unidades') { updateUnitTipsterFilter(); renderUnidades(); }
-  if (id==='balance')  { renderBalance(); }
+  if (id==='retos') { updateRetosTipsterFilter(); renderRetos(); }
+  if (id==='nueva') { renderRetoInfoPanel(); updateRiskPanel(); }
 }
 
 // ============================================================
@@ -995,7 +1152,7 @@ function addTipster() {
   const n = document.getElementById('newName').value.trim();
   if (!n) return showAlert('Ingresá un nombre');
   const bankroll = parseFloat(document.getElementById('newBankroll').value) || null;
-  data.tipsters.push({ id:Date.now(), name:n, bets:[], bankroll, autoStake:true, stakeMode:'avg', stakeTable:[], autoCuota:true });
+  data.tipsters.push({ id:Date.now(), name:n, bets:[], bankroll, bankReferencia: bankroll, bankPico: bankroll, autoStake:true, stakeMode:'avg', stakeTable:[], autoCuota:true });
   document.getElementById('newName').value = '';
   document.getElementById('newBankroll').value = '';
   save(); renderAll();
@@ -1101,6 +1258,7 @@ function renderTipsterBody(t, s, sk, ratio, roi, color) {
       <span class="info-pill" style="background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.25);color:var(--cyan);">${
         t.stakeMode==='off' ? '✏️ Auto-stake OFF' :
         t.stakeMode==='table' ? '📋 Tabla manual (' + (t.stakeTable||[]).length + ' filas)' :
+        t.stakeMode==='bankpct' ? '📈 % del Bank (≈$' + (resolveMontoFromStake(t,1)||0).toFixed(2) + '/u ahora)' :
         '📊 Auto (promedio)'
       }</span>
     </div>
@@ -1130,7 +1288,7 @@ function renderBetsTable(t, sortKey) {
     const p=calcProfit(b), u=calcUnits(b);
     return `<tr class="${b.played?'':'row-skipped'}">
       <td>${b.fecha||'—'}</td>
-      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;">${b.desc||'—'}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;">${b.retoId?'🎯':''}${b.esSonadora?'🌙':''}${(b.retoId||b.esSonadora)?' ':''}${b.desc||'—'}</td>
       <td><div class="types-tags">${(b.types||[]).map(tp=>`<span class="type-tag">${tp}</span>`).join('')}</div></td>
       <td style="font-family:'DM Mono',monospace;">${b.stake?b.stake+'u':'—'}</td>
       <td>$${(b.monto||0).toFixed(0)}</td>
@@ -1165,17 +1323,20 @@ function toggleTipster(id) {
 const ET_MODE_DESC = {
   off:   'El monto no se calcula automáticamente. Lo ingresás vos siempre.',
   avg:   'Al tipear el stake, el monto se calcula usando el promedio histórico de tus apuestas ($ apostados ÷ stake).',
+  bankpct: 'El monto por unidad de stake es un % fijo del bank actual del tipster. Si el bank crece (ej: de 600 a 1200), el monto por unidad sube en la misma proporción (ej: de $10 a $20), sin que tengas que tocar nada.',
   table: 'Definís vos la tabla: stake 1 = $X, stake 2 = $Y, etc. Coincidencia exacta; sino cae al promedio como fallback.'
 };
 
 function setETMode(mode) {
   etStakeMode = mode;
-  ['off','avg','table'].forEach(m => {
+  ['off','avg','bankpct','table'].forEach(m => {
     const btn = document.getElementById('etMode-'+m);
-    btn.className = 'rt-btn' + (m === mode ? ' win' : '');
+    if (btn) btn.className = 'rt-btn' + (m === mode ? ' win' : '');
   });
   document.getElementById('etModeDesc').textContent = ET_MODE_DESC[mode];
   document.getElementById('etTableSection').style.display = mode === 'table' ? 'block' : 'none';
+  const bpSection = document.getElementById('etBankPctSection');
+  if (bpSection) bpSection.style.display = mode === 'bankpct' ? 'block' : 'none';
 }
 
 function addETRow(stake='', monto='') {
@@ -1215,6 +1376,7 @@ function openEditTipsterModal(id) {
   document.getElementById('etId').value = id;
   document.getElementById('etName').value = t.name;
   document.getElementById('etBankroll').value = t.bankroll || '';
+  document.getElementById('etBankRef').value = t.bankReferencia || '';
   let mode = 'avg';
   if (t.stakeMode) mode = t.stakeMode;
   else if (t.autoStake === false) mode = 'off';
@@ -1222,6 +1384,19 @@ function openEditTipsterModal(id) {
   etStakeTable = t.stakeTable || [];
   setETMode(mode);
   renderETTableRows(etStakeTable);
+  const bankActualNow = getBankActual(t);
+  const bpInput = document.getElementById('etBankPctInput');
+  const bpInfo = document.getElementById('etBankPctInfo');
+  if (bpInput) {
+    bpInput.value = (t.stakeUnitPct != null && bankActualNow != null) ? (t.stakeUnitPct * bankActualNow).toFixed(2) : '';
+  }
+  if (bpInfo) {
+    if (bankActualNow == null) {
+      bpInfo.textContent = '⚠️ Configurá primero el bankroll inicial para usar este modo.';
+    } else {
+      bpInfo.textContent = `Bank actual: $${bankActualNow.toFixed(2)}` + (t.stakeUnitPct != null ? ` · ratio guardada: ${(t.stakeUnitPct*100).toFixed(2)}% por unidad de stake` : '');
+    }
+  }
   const acBtn = document.getElementById('etAutoCuota');
   const acOn = t.autoCuota !== false;
   if (acBtn) { acBtn.className = 'auto-badge' + (acOn ? ' on' : ''); acBtn.textContent = acOn ? '📐 Auto activado' : '✏️ Manual'; }
@@ -1240,6 +1415,7 @@ function saveEditTipster() {
   const t = data.tipsters.find(t=>t.id===id); if(!t) return;
   t.name = document.getElementById('etName').value.trim() || t.name;
   t.bankroll = parseFloat(document.getElementById('etBankroll').value) || null;
+  t.bankReferencia = parseFloat(document.getElementById('etBankRef').value) || null;
   t.stakeMode = etStakeMode;
   t.autoStake = etStakeMode !== 'off';
   if (etStakeMode === 'table') {
@@ -1249,8 +1425,16 @@ function saveEditTipster() {
   } else {
     t.stakeTable = [];
   }
+  if (etStakeMode === 'bankpct') {
+    const bankActualNow = getBankActual(t);
+    if (bankActualNow == null || bankActualNow <= 0) return showAlert('Configurá primero el bankroll inicial del tipster para usar este modo.');
+    const perUnit = parseFloat(document.getElementById('etBankPctInput').value);
+    if (!perUnit || perUnit <= 0) return showAlert('Ingresá el monto por unidad de stake.');
+    t.stakeUnitPct = perUnit / bankActualNow;
+  }
   const acBtn = document.getElementById('etAutoCuota');
   t.autoCuota = acBtn ? acBtn.classList.contains('on') : true;
+  refreshBankPico(t);
   save(); renderAll(); closeEditTipsterModal(); showToast('✅ Tipster actualizado');
 }
 
@@ -1271,24 +1455,19 @@ function updateExceptionRow() {
 
 function prefillFromTipster(t) {
   if (!t) return;
+  const retoActive = retoModeOn && activeRetoId;
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
-  if (mode !== 'off' && !betException) {
+  if (mode !== 'off' && !betException && !retoActive) {
     let defaultStake = 1;
     if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
       defaultStake = t.stakeTable[0].stake;
-    } else if (mode === 'avg') {
+    } else if (mode === 'avg' || mode === 'bankpct') {
       const top = topStakes(t.bets, 1);
       if (top.length) defaultStake = top[0];
     }
     document.getElementById('bStake').value = defaultStake;
-    const ratio = avgStakeRatio(t.bets);
-    if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
-      const row = t.stakeTable.find(r => r.stake === defaultStake);
-      if (row) document.getElementById('bMonto').value = row.monto.toFixed(2);
-      else if (ratio) document.getElementById('bMonto').value = (defaultStake * ratio).toFixed(2);
-    } else if (ratio) {
-      document.getElementById('bMonto').value = (defaultStake * ratio).toFixed(2);
-    }
+    const monto = resolveMontoFromStake(t, defaultStake);
+    if (monto != null) document.getElementById('bMonto').value = monto.toFixed(2);
   }
   if (!betCuotaException && t.autoCuota !== false) {
     const ac = avgCuota(t.bets);
@@ -1318,7 +1497,11 @@ function prefillFromTipster(t) {
 }
 
 function onTipsterChange() {
-  betException = false; betCuotaException = false;
+  retoModeOn = false; activeRetoId = null;
+  updateRetoToggleUI();
+  const rip = document.getElementById('retoInfoPanel'); if (rip) rip.style.display='none';
+  betException = false;
+  betCuotaException = false;
   updateExceptionRow();
   const sb = document.getElementById('autoStakeBadge');
   if (sb) { sb.className='auto-badge on'; sb.textContent='🔗 Auto'; }
@@ -1330,14 +1513,18 @@ function onTipsterChange() {
   document.getElementById('bPreview').style.display = 'none';
   const t = getSelectedTipster();
   prefillFromTipster(t);
+  updateRiskPanel();
 }
 
 function toggleAutoStake() {
   betException = !betException;
   const badge = document.getElementById('autoStakeBadge');
-  if (betException) { badge.className='auto-badge'; badge.textContent='✏️ Manual'; }
-  else {
-    badge.className='auto-badge on'; badge.textContent='🔗 Auto';
+  if (betException) {
+    badge.className = 'auto-badge';
+    badge.textContent = '✏️ Manual';
+  } else {
+    badge.className = 'auto-badge on';
+    badge.textContent = '🔗 Auto';
     const t = getSelectedTipster();
     if (t) {
       const stake = parseFloat(document.getElementById('bStake').value);
@@ -1347,22 +1534,27 @@ function toggleAutoStake() {
       }
     }
   }
-  updateExceptionRow(); updatePreview();
+  updateExceptionRow();
+  updatePreview();
 }
 
 function toggleAutoCuota() {
   betCuotaException = !betCuotaException;
   const badge = document.getElementById('autoCuotaBadge');
-  if (betCuotaException) { badge.className='auto-badge'; badge.textContent='✏️ Manual'; }
-  else {
-    badge.className='auto-badge on'; badge.textContent='📐 Auto';
+  if (betCuotaException) {
+    badge.className = 'auto-badge';
+    badge.textContent = '✏️ Manual';
+  } else {
+    badge.className = 'auto-badge on';
+    badge.textContent = '📐 Auto';
     const t = getSelectedTipster();
     if (t && t.autoCuota !== false) {
       const ac = avgCuota(t.bets);
       if (ac !== null) document.getElementById('bCuota').value = ac.toFixed(2);
     }
   }
-  updateExceptionRow(); updatePreview();
+  updateExceptionRow();
+  updatePreview();
 }
 
 function getSelectedTipster() {
@@ -1372,7 +1564,9 @@ function getSelectedTipster() {
 
 function isAutoActive() {
   if (betException) return false;
-  const t = getSelectedTipster(); if (!t) return false;
+  if (retoModeOn && activeRetoId) return false;
+  const t = getSelectedTipster();
+  if (!t) return false;
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   return mode !== 'off';
 }
@@ -1380,6 +1574,11 @@ function isAutoActive() {
 function resolveMontoFromStake(t, stake) {
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   if (mode === 'off') return null;
+  if (mode === 'bankpct') {
+    const bankActualNow = getBankActual(t);
+    if (bankActualNow == null || !t.stakeUnitPct) return null;
+    return stake * t.stakeUnitPct * bankActualNow;
+  }
   if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
     const row = t.stakeTable.find(r => r.stake === stake);
     if (row) return row.monto;
@@ -1391,6 +1590,12 @@ function resolveMontoFromStake(t, stake) {
 function resolveStakeFromMonto(t, monto) {
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   if (mode === 'off') return null;
+  if (mode === 'bankpct') {
+    const bankActualNow = getBankActual(t);
+    if (bankActualNow == null || !t.stakeUnitPct) return null;
+    const perUnit = t.stakeUnitPct * bankActualNow;
+    return perUnit > 0 ? monto / perUnit : null;
+  }
   if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
     const row = t.stakeTable.find(r => r.monto === monto);
     if (row) return row.stake;
@@ -1448,7 +1653,551 @@ function updatePreview() {
       document.getElementById('prev-units').innerHTML = `<span class="green">+${(st*(c-1)).toFixed(2)}u</span> / <span class="red">-${st.toFixed(1)}u</span>`;
     } else ur.style.display='none';
   } else box.style.display='none';
+  updateRiskPanel();
 }
+
+// ============================================================
+// CALCULADORA DE RIESGO EN VIVO
+// ============================================================
+function updateRiskPanel() {
+  const panel = document.getElementById('riskPanel');
+  if (!panel) return;
+  const t = getSelectedTipster();
+  if (!t) { panel.style.display = 'none'; return; }
+
+  let bankActual = null, bankReferencia = null, bankPico = null;
+  let reto = null;
+  if (retoModeOn && activeRetoId) {
+    reto = data.retos.find(r => r.id === activeRetoId);
+    if (reto) { bankActual = reto.bankActual; bankReferencia = reto.bankInicial; bankPico = reto.bankPicoReto != null ? reto.bankPicoReto : reto.bankInicial; }
+  }
+  if (bankActual === null) {
+    bankActual = getBankActual(t);
+    bankReferencia = getBankReferencia(t);
+    bankPico = getBankPico(t);
+  }
+
+  panel.style.display = 'block';
+  const noBankEl = document.getElementById('riskNoBank');
+  const contentEl = document.getElementById('riskContent');
+  if (bankActual === null || bankActual <= 0) {
+    noBankEl.style.display = 'block';
+    contentEl.style.display = 'none';
+    return;
+  }
+  noBankEl.style.display = 'none';
+  contentEl.style.display = 'block';
+  if (bankReferencia === null || bankReferencia <= 0) bankReferencia = bankActual;
+  if (bankPico === null || bankPico <= 0) bankPico = Math.max(bankActual, bankReferencia);
+  if (bankActual > bankPico) bankPico = bankActual; // por si no se refrescó todavía
+
+  const montoApuesta = parseFloat(document.getElementById('bMonto').value) || 0;
+  const cuota = parseFloat(document.getElementById('bCuota').value) || 0;
+  const fecha = document.getElementById('bFecha').value;
+
+  const statsPlayed = calcStats(t.bets, 'played');
+  const winRate = statsPlayed.closed > 0 ? statsPlayed.wr/100 : 0.5;
+
+  const exposicionPrevia = computeExposicionPrevia(t, fecha);
+
+  const stakePct = montoApuesta / bankActual;
+  const bankSiPierde = bankActual - montoApuesta;
+  const retornoPct = bankReferencia > 0 ? (bankActual / bankReferencia - 1) : 0;
+  const drawdownPicoPct = bankPico > 0 ? Math.max(0, 1 - (bankActual / bankPico)) : 0;
+  const probPerder1 = 1 - winRate;
+  const probPerder2 = probPerder1 * probPerder1;
+  const exposicionTotal = exposicionPrevia + montoApuesta;
+  const exposicionPct = exposicionTotal / bankActual;
+
+  const stakeLevel = stakePct<=0.02 ? 'green' : stakePct<=0.05 ? 'yellow' : 'red';
+  const expLevel = exposicionPct<=0.05 ? 'green' : exposicionPct<=0.10 ? 'yellow' : 'red';
+  const order = {green:0,yellow:1,red:2};
+  const overallLevel = order[stakeLevel] >= order[expLevel] ? stakeLevel : expLevel;
+  const semText = { green:'🟢 Zona Segura', yellow:'🟡 Riesgo Moderado', red:'🔴 Zona de Ruina' }[overallLevel];
+
+  const sem = document.getElementById('riskSemaforo');
+  sem.className = 'semaforo-badge sem-' + overallLevel;
+  sem.textContent = semText;
+
+  const stakeEl = document.getElementById('rk-stakepct');
+  stakeEl.textContent = (stakePct*100).toFixed(2) + '%';
+  stakeEl.className = 'pbox-val-lg ' + (stakeLevel==='green'?'green':stakeLevel==='yellow'?'gold':'red');
+
+  // Bloque 2 dinámico: Exposición Total Hoy (normal) vs Apuesta sugerida + Progreso (modo reto)
+  const expLbl = document.getElementById('rk-exp-lbl');
+  const expEl = document.getElementById('rk-exppct');
+  if (reto) {
+    expLbl.textContent = '🎯 Reto: próxima apuesta / progreso';
+    const frac = getRetoFraction(reto);
+    const sugerido = reto.bankActual * frac;
+    const progreso = reto.bankInicial > 0 ? reto.bankActual / reto.bankInicial : 0;
+    const objetivo = reto.objetivo || 10;
+    expEl.innerHTML = '$' + sugerido.toFixed(2) + ' <span style="font-size:0.58rem;color:var(--muted2);">(' + (frac*100).toFixed(0) + '% del bank)</span><br><span style="font-size:0.82rem;color:var(--gold);">x' + progreso.toFixed(2) + ' de x' + objetivo + '</span>';
+    expEl.className = 'pbox-val-lg';
+  } else {
+    expLbl.textContent = 'Exposición Total Hoy';
+    expEl.textContent = (exposicionPct*100).toFixed(2) + '%';
+    expEl.className = 'pbox-val-lg ' + (expLevel==='green'?'green':expLevel==='yellow'?'gold':'red');
+  }
+
+  document.getElementById('rk-bankpierde').textContent = '$' + bankSiPierde.toFixed(2);
+  const retornoEl = document.getElementById('rk-retorno');
+  retornoEl.textContent = (retornoPct>=0?'+':'') + (retornoPct*100).toFixed(2) + '%';
+  retornoEl.className = 'pbox-val ' + (retornoPct>=0?'green':'red');
+  const ddLevel = drawdownPicoPct<=0.15 ? 'green' : drawdownPicoPct<=0.35 ? 'yellow' : 'red';
+  const ddEl = document.getElementById('rk-ddpico');
+  ddEl.textContent = (drawdownPicoPct*100).toFixed(2) + '%';
+  ddEl.className = 'pbox-val ' + (ddLevel==='green'?'green':ddLevel==='yellow'?'gold':'red');
+  document.getElementById('rk-prob2').textContent = (probPerder2*100).toFixed(1) + '%';
+
+  clearTimeout(riskSimTimer);
+  if (montoApuesta > 0 && cuota > 1 && bankActual > 0) {
+    riskSimTimer = setTimeout(() => {
+      const sim = simulateFutureRisk(stakePct, winRate, cuota);
+      document.getElementById('rk-sim60').textContent = sim.pct60.toFixed(1) + '%';
+      document.getElementById('rk-sim80').textContent = sim.pct80.toFixed(1) + '%';
+      document.getElementById('rk-simruin').textContent = sim.pctRuin.toFixed(1) + '%';
+    }, 200);
+  } else {
+    document.getElementById('rk-sim60').textContent = '—';
+    document.getElementById('rk-sim80').textContent = '—';
+    document.getElementById('rk-simruin').textContent = '—';
+  }
+}
+
+function simulateFutureRisk(stakePct, winRate, cuota, nSims=2000, nBets=100) {
+  if (stakePct <= 0) return { pct60:0, pct80:0, pctRuin:0 };
+  let c60=0, c80=0, cRuin=0;
+  for (let s=0; s<nSims; s++) {
+    let bank = 1, minBank = 1;
+    for (let i=0; i<nBets; i++) {
+      if (Math.random() < winRate) bank += stakePct * (cuota - 1);
+      else bank -= stakePct;
+      if (bank < 0) bank = 0;
+      if (bank < minBank) minBank = bank;
+      if (bank <= 0) break;
+    }
+    if (minBank < 0.40) c60++;
+    if (minBank < 0.20) c80++;
+    if (minBank <= 0) cRuin++;
+  }
+  return { pct60: c60/nSims*100, pct80: c80/nSims*100, pctRuin: cRuin/nSims*100 };
+}
+
+// ============================================================
+// MODO RETO
+// ============================================================
+function updateRetoToggleUI() {
+  const b = document.getElementById('retoModeBadge');
+  if (!b) return;
+  b.className = 'auto-badge' + (retoModeOn ? ' on' : '');
+  b.textContent = retoModeOn ? '🎯 Modo Reto: ON' : '🎯 Modo Reto: OFF';
+}
+
+function toggleRetoMode() {
+  if (retoModeOn) {
+    retoModeOn = false;
+    activeRetoId = null;
+    updateRetoToggleUI();
+    const rip = document.getElementById('retoInfoPanel'); if (rip) rip.style.display = 'none';
+    updateRiskPanel();
+    return;
+  }
+  const t = getSelectedTipster();
+  if (!t) { showAlert('Seleccioná un tipster primero'); return; }
+  const existing = data.retos.find(r => r.tipsterId === t.id && r.estado === 'activo');
+  if (existing) {
+    activeRetoId = existing.id;
+    retoModeOn = true;
+    updateRetoToggleUI();
+    renderRetoInfoPanel();
+    applyRetoStakeToForm();
+    updateRiskPanel();
+  } else {
+    pendingRetoMode = null;
+    document.getElementById('retoModeModal').style.display = 'flex';
+  }
+}
+
+function selectRetoMode(mode) {
+  pendingRetoMode = mode;
+  document.getElementById('retoModeModal').style.display = 'none';
+  document.getElementById('retoBankModeLabel').textContent = retoModeLabel(mode);
+  document.getElementById('retoBankInput').value = '';
+  document.getElementById('retoObjetivoInput').value = '10';
+  document.getElementById('retoBankModal').style.display = 'flex';
+}
+
+function confirmRetoBank() {
+  const bank = parseFloat(document.getElementById('retoBankInput').value);
+  if (!bank || bank <= 0) return showAlert('Ingresá un monto válido para el bank del reto');
+  const objetivo = parseFloat(document.getElementById('retoObjetivoInput').value) || 10;
+  const t = getSelectedTipster();
+  if (!t) { cancelRetoFlow(); return; }
+  const statsT = calcStats(t.bets, 'played');
+  const winRateInicial = statsT.closed > 0 ? statsT.wr : null;
+  const cuotaMediaInicial = avgCuota(t.bets.filter(b => b.played));
+  const reto = {
+    id: Date.now(), tipsterId: t.id, mode: pendingRetoMode,
+    bankInicial: bank, bankActual: bank, bankPicoReto: bank, objetivo, step: 0, estado: 'activo',
+    winRateInicial, cuotaMediaInicial,
+    fechaInicio: new Date().toISOString().split('T')[0], fechaFin: null, historial: []
+  };
+  data.retos.push(reto);
+  save();
+  activeRetoId = reto.id;
+  retoModeOn = true;
+  document.getElementById('retoBankModal').style.display = 'none';
+  updateRetoToggleUI();
+  renderRetoInfoPanel();
+  applyRetoStakeToForm();
+  updateRiskPanel();
+  showToast('🎯 Reto iniciado: ' + retoModeLabel(pendingRetoMode));
+}
+
+function cancelRetoFlow() {
+  document.getElementById('retoModeModal').style.display = 'none';
+  document.getElementById('retoBankModal').style.display = 'none';
+  retoModeOn = false;
+  activeRetoId = null;
+  updateRetoToggleUI();
+}
+
+function renderRetoInfoPanel() {
+  const panel = document.getElementById('retoInfoPanel');
+  if (!panel) return;
+  if (!retoModeOn || !activeRetoId) { panel.style.display = 'none'; return; }
+  const reto = data.retos.find(r => r.id === activeRetoId);
+  if (!reto) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+  const frac = getRetoFraction(reto);
+  const next = reto.bankActual * frac;
+  document.getElementById('rp-mode').textContent = retoModeLabel(reto.mode);
+  document.getElementById('rp-bankini').textContent = '$' + reto.bankInicial.toFixed(2);
+  document.getElementById('rp-bankcur').textContent = '$' + reto.bankActual.toFixed(2);
+  document.getElementById('rp-next').textContent = '$' + next.toFixed(2);
+  document.getElementById('rp-pct').textContent = (frac*100).toFixed(1) + '%';
+  let stepLabel = '—';
+  const step = reto.step || 0;
+  if (reto.mode === 'escalera') {
+    const mult = reto.bankInicial > 0 ? reto.bankActual / reto.bankInicial : 1;
+    const stage = getEscaleraStage(reto);
+    stepLabel = stage.label + ' (' + stage.range + ') · ' + mult.toFixed(2) + 'x actual';
+  }
+  else if (reto.mode === 'p501') stepLabel = 'Intento ' + (step+1) + '/2';
+  else if (reto.mode === 'p503') stepLabel = 'Intento ' + (step+1) + '/3';
+  document.getElementById('rp-step').textContent = stepLabel;
+  const wrEl = document.getElementById('rp-winrate'); if (wrEl) wrEl.textContent = reto.winRateInicial!=null ? reto.winRateInicial.toFixed(1)+'%' : 'N/A';
+  const cmEl = document.getElementById('rp-cuotamedia'); if (cmEl) cmEl.textContent = reto.cuotaMediaInicial!=null ? reto.cuotaMediaInicial.toFixed(2) : 'N/A';
+}
+
+function applyRetoStakeToForm() {
+  if (!retoModeOn || !activeRetoId) return;
+  const reto = data.retos.find(r => r.id === activeRetoId);
+  if (!reto) return;
+  const frac = getRetoFraction(reto);
+  const monto = reto.bankActual * frac;
+  document.getElementById('bMonto').value = monto.toFixed(2);
+  renderRetoInfoPanel();
+  updatePreview();
+}
+
+function recomputeReto(retoId) {
+  const reto = data.retos.find(r => r.id === retoId);
+  if (!reto) return;
+  const bets = data.tipsters.flatMap(t => t.bets.filter(b => b.retoId === retoId)).sort((a,b)=>a.id-b.id);
+  const cap = RETO_MODES[reto.mode] && RETO_MODES[reto.mode].cap; // 2 (p501) | 3 (p503) | undefined
+  const objetivo = reto.objetivo || 10;
+  let bank = reto.bankInicial;
+  let pico = reto.bankInicial;
+  let step = 0; // sólo se usa en p501/p503: racha de pérdidas consecutivas (se resetea al ganar)
+  let estado = 'activo';
+  const historial = [];
+  for (const b of bets) {
+    if (estado !== 'activo') break;
+    if (b.result === 'pending' || b.result === 'void') {
+      historial.push({ betId:b.id, fecha:b.fecha, desc:b.desc, monto:b.monto, cuota:b.cuota, resultado:b.result, bankAntes:bank, bankDespues:bank });
+      continue;
+    }
+    const bankAntes = bank;
+    if (b.result === 'win') {
+      bank = bank + b.monto * (b.cuota - 1);
+      if (cap) step = 0; // ganar reinicia la racha de pérdidas (p501/p503)
+    } else if (b.result === 'loss') {
+      bank = bank - b.monto;
+      if (bank < 0) bank = 0;
+      if (cap) {
+        step += 1;
+        if (step >= cap) bank = 0; // se alcanzó el máximo de pérdidas seguidas -> queda en 0
+      }
+    }
+    if (bank > pico) pico = bank;
+    // chequeo universal de fin de reto, en cada resultado registrado
+    if (bank <= 0) { bank = 0; estado = 'perdido'; }
+    else if (bank >= reto.bankInicial * objetivo) { estado = 'completado'; }
+    historial.push({ betId:b.id, fecha:b.fecha, desc:b.desc, monto:b.monto, cuota:b.cuota, resultado:b.result, bankAntes, bankDespues: bank });
+  }
+  if (reto.estado === 'finalizado') {
+    reto.bankActual = bank; reto.step = step; reto.historial = historial; reto.bankPicoReto = pico;
+    save(); return;
+  }
+  reto.bankActual = bank;
+  reto.step = step;
+  reto.estado = estado;
+  reto.historial = historial;
+  reto.bankPicoReto = pico;
+  if (estado !== 'activo' && !reto.fechaFin) {
+    reto.fechaFin = historial.length ? historial[historial.length-1].fecha : new Date().toISOString().split('T')[0];
+  }
+  save();
+}
+
+function finalizeReto() {
+  if (!activeRetoId) return;
+  const reto = data.retos.find(r => r.id === activeRetoId);
+  if (!reto) return;
+  showConfirm('¿Finalizar este reto como ganado/cerrado? No vas a poder agregarle más apuestas.', () => {
+    reto.estado = 'finalizado';
+    reto.fechaFin = new Date().toISOString().split('T')[0];
+    save();
+    showToast('✅ Reto finalizado');
+    retoModeOn = false; activeRetoId = null;
+    updateRetoToggleUI();
+    const rip = document.getElementById('retoInfoPanel'); if (rip) rip.style.display = 'none';
+    updateRiskPanel();
+  });
+}
+
+// ============================================================
+// TAB RETOS
+// ============================================================
+function setRetosFilterTipster(id, el) {
+  retosFilterTipster = id;
+  document.querySelectorAll('#retosTipsterFilter .tf-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderRetos();
+}
+function setRetosFilterEstado(est) {
+  retosFilterEstado = est;
+  document.querySelectorAll('#tab-retos .filter-bar .flt-btn').forEach(b=>b.classList.remove('a-all','a-played','a-skipped'));
+  const map = {all:'rf-all', activo:'rf-activo', completado:'rf-completado', finalizado:'rf-finalizado', perdido:'rf-perdido'};
+  const activeClass = {all:'a-all', activo:'a-played', completado:'a-played', finalizado:'a-played', perdido:'a-skipped'};
+  const btn = document.getElementById(map[est]);
+  if (btn) btn.classList.add(activeClass[est]);
+  renderRetos();
+}
+function updateRetosTipsterFilter() {
+  const el = document.getElementById('retosTipsterFilter'); if (!el) return;
+  el.innerHTML = `<button class="tf-btn ${retosFilterTipster==='all'?'active':''}" onclick="setRetosFilterTipster('all',this)">Todos</button>` +
+    data.tipsters.map(t=>`<button class="tf-btn ${retosFilterTipster==t.id?'active':''}" onclick="setRetosFilterTipster(${t.id},this)">${t.name}</button>`).join('');
+}
+function isRetoGanado(estado) { return estado === 'finalizado' || estado === 'completado'; }
+function renderRetos() {
+  updateRetosTipsterFilter();
+  let retos = data.retos.slice();
+  if (retosFilterTipster !== 'all') retos = retos.filter(r => r.tipsterId === retosFilterTipster);
+  if (retosFilterEstado !== 'all') retos = retos.filter(r => r.estado === retosFilterEstado);
+  retos.sort((a,b) => b.id - a.id);
+
+  const total = data.retos.length;
+  const activos = data.retos.filter(r=>r.estado==='activo').length;
+  const ganados = data.retos.filter(r=>isRetoGanado(r.estado)).length;
+  const perdidos = data.retos.filter(r=>r.estado==='perdido').length;
+  const cerrados = ganados + perdidos;
+  const tasa = cerrados > 0 ? ganados/cerrados*100 : 0;
+  document.getElementById('rt-total').textContent = total;
+  document.getElementById('rt-activos').textContent = activos;
+  document.getElementById('rt-ganados').textContent = ganados;
+  document.getElementById('rt-perdidos').textContent = perdidos;
+  document.getElementById('rt-tasa').textContent = tasa.toFixed(0)+'%';
+
+  const el = document.getElementById('retosList');
+  if (!retos.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🎯</div><p>Sin retos para este filtro.</p></div>'; return; }
+  el.innerHTML = retos.map(r => {
+    const t = data.tipsters.find(x=>x.id===r.tipsterId);
+    const ganado = isRetoGanado(r.estado);
+    const estColor = r.estado==='activo'?'#06b6d4':ganado?'#22c55e':'#ef4444';
+    const estClass = r.estado==='activo'?'cyan':ganado?'green':'red';
+    const estLabel = r.estado==='activo'?'🟡 Activo':r.estado==='completado'?'🏆 Completado':r.estado==='finalizado'?'✅ Cerrado a mano':'❌ Perdido';
+    const mult = r.bankInicial>0 ? (r.bankActual/r.bankInicial) : 0;
+    const objetivo = r.objetivo || 10;
+    return `<div class="tipster-card">
+      <div class="tipster-header" style="cursor:default;">
+        <div class="tipster-left">
+          <div class="avatar" style="background:${estColor}">${(t?t.name:'?').substring(0,2).toUpperCase()}</div>
+          <div>
+            <div class="tipster-name">${t?t.name:'Tipster eliminado'} — ${retoModeLabel(r.mode)}</div>
+            <div style="font-size:0.58rem;color:var(--muted);margin-top:2px;">Inicio: ${r.fechaInicio||'—'}${r.fechaFin?(' · Fin: '+r.fechaFin):''} · Objetivo: x${objetivo}</div>
+          </div>
+        </div>
+        <div class="tipster-right">
+          <div class="tip-stat"><div class="tip-stat-lbl">Bank Inicial</div><div class="tip-stat-val">$${r.bankInicial.toFixed(0)}</div></div>
+          <div class="tip-stat"><div class="tip-stat-lbl">Bank Actual</div><div class="tip-stat-val ${estClass}">$${r.bankActual.toFixed(2)}</div></div>
+          <div class="tip-stat"><div class="tip-stat-lbl">Progreso</div><div class="tip-stat-val gold">x${mult.toFixed(2)} de x${objetivo}</div></div>
+          <div class="tip-stat"><div class="tip-stat-lbl">Win Rate</div><div class="tip-stat-val gold">${r.winRateInicial!=null?r.winRateInicial.toFixed(1)+'%':'N/A'}</div></div>
+          <div class="tip-stat"><div class="tip-stat-lbl">Cuota Media</div><div class="tip-stat-val gold">${r.cuotaMediaInicial!=null?r.cuotaMediaInicial.toFixed(2):'N/A'}</div></div>
+          <span class="badge badge-${r.estado==='activo'?'pending':ganado?'win':'loss'}">${estLabel}</span>
+        </div>
+      </div>
+      <div class="tipster-body open" style="padding:13px;">
+        ${(r.historial && r.historial.length) ? `<table class="bets-table"><thead><tr><th>Fecha</th><th>Descripción</th><th>Monto</th><th>Cuota</th><th>Resultado</th><th>Bank antes</th><th>Bank después</th></tr></thead><tbody>
+        ${r.historial.map(h=>`<tr><td>${h.fecha||'—'}</td><td>${h.desc||'—'}</td><td>$${(h.monto||0).toFixed(2)}</td><td>${(h.cuota||0).toFixed(2)}</td><td><span class="badge badge-${h.resultado}">${resLabel(h.resultado)}</span></td><td>$${h.bankAntes.toFixed(2)}</td><td>$${h.bankDespues.toFixed(2)}</td></tr>`).join('')}
+        </tbody></table>` : '<div class="no-bets">Sin apuestas registradas en este reto todavía.</div>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// GRAFICAS: SUB-VISTAS RETOS Y SOÑADORAS
+// ============================================================
+function setGraficasSubView(view) {
+  graficasSubView = view;
+  ['apuestas','retos','sonadoras'].forEach(v => {
+    const tabBtn = document.getElementById('gst-'+v);
+    const viewEl = document.getElementById('gsv-'+v);
+    if (tabBtn) tabBtn.classList.toggle('active', v===view);
+    if (viewEl) viewEl.style.display = (v===view) ? 'block' : 'none';
+  });
+  if (view === 'apuestas') { updateChartTipsterFilter(); renderCharts(); }
+  else if (view === 'retos') renderGraficasRetos();
+  else if (view === 'sonadoras') renderGraficasSonadoras();
+}
+
+function getArchivedRetos() {
+  return data.retos.filter(r => r.estado !== 'activo');
+}
+function retoReturnPct(r) {
+  return r.bankInicial > 0 ? (r.bankActual / r.bankInicial - 1) * 100 : 0;
+}
+
+function renderGraficasRetos() {
+  const archived = getArchivedRetos();
+  const ganados = archived.filter(r => isRetoGanado(r.estado));
+  const perdidos = archived.filter(r => r.estado === 'perdido');
+  const wr = archived.length > 0 ? ganados.length/archived.length*100 : 0;
+  const yieldAvg = archived.length > 0 ? archived.reduce((s,r)=>s+retoReturnPct(r),0)/archived.length : 0;
+
+  const se = (id,txt,cls) => { const e=document.getElementById(id); if(e){e.textContent=txt; if(cls) e.className='stat-val '+cls;} };
+  se('gr-total', archived.length, 'purple');
+  se('gr-wr', wr.toFixed(0)+'%', 'gold');
+  se('gr-yield', (yieldAvg>=0?'+':'')+yieldAvg.toFixed(1)+'%', yieldAvg>=0?'green':'red');
+  se('gr-ganados', ganados.length, 'green');
+  se('gr-perdidos', perdidos.length, 'red');
+
+  // Desglose por modo
+  const byMode = {};
+  archived.forEach(r => {
+    if (!byMode[r.mode]) byMode[r.mode] = { count:0, ganados:0, perdidos:0, yieldSum:0 };
+    const e = byMode[r.mode];
+    e.count++;
+    if (isRetoGanado(r.estado)) e.ganados++;
+    if (r.estado==='perdido') e.perdidos++;
+    e.yieldSum += retoReturnPct(r);
+  });
+  const modeRows = Object.entries(byMode).sort((a,b)=>b[1].count-a[1].count);
+  const modeEl = document.getElementById('gr-by-mode');
+  if (modeEl) modeEl.innerHTML = modeRows.length ? `<table class="bets-table"><thead><tr><th>Modo</th><th>Retos</th><th>Ganados</th><th>Perdidos</th><th>Win Rate</th><th>Yield Prom.</th></tr></thead><tbody>
+    ${modeRows.map(([mode,v])=>{
+      const wrm = v.count>0?v.ganados/v.count*100:0;
+      const ym = v.count>0?v.yieldSum/v.count:0;
+      return `<tr><td>${retoModeLabel(mode)}</td><td>${v.count}</td><td class="green">${v.ganados}</td><td class="red">${v.perdidos}</td><td class="gold">${wrm.toFixed(0)}%</td><td class="${ym>=0?'green':'red'}">${(ym>=0?'+':'')+ym.toFixed(1)}%</td></tr>`;
+    }).join('')}
+  </tbody></table>` : '<div class="no-bets">Sin retos archivados todavía.</div>';
+
+  // Desglose por tipster
+  const byTip = {};
+  archived.forEach(r => {
+    if (!byTip[r.tipsterId]) byTip[r.tipsterId] = { count:0, ganados:0, perdidos:0, yieldSum:0 };
+    const e = byTip[r.tipsterId];
+    e.count++;
+    if (isRetoGanado(r.estado)) e.ganados++;
+    if (r.estado==='perdido') e.perdidos++;
+    e.yieldSum += retoReturnPct(r);
+  });
+  const tipRows = Object.entries(byTip).sort((a,b)=>b[1].count-a[1].count);
+  const tipEl = document.getElementById('gr-by-tipster');
+  if (tipEl) tipEl.innerHTML = tipRows.length ? `<table class="bets-table"><thead><tr><th>Tipster</th><th>Retos</th><th>Ganados</th><th>Perdidos</th><th>Win Rate</th><th>Yield Prom.</th></tr></thead><tbody>
+    ${tipRows.map(([tid,v])=>{
+      const tip = data.tipsters.find(x=>x.id==tid);
+      const wrm = v.count>0?v.ganados/v.count*100:0;
+      const ym = v.count>0?v.yieldSum/v.count:0;
+      return `<tr><td>${tip?tip.name:'Tipster eliminado'}</td><td>${v.count}</td><td class="green">${v.ganados}</td><td class="red">${v.perdidos}</td><td class="gold">${wrm.toFixed(0)}%</td><td class="${ym>=0?'green':'red'}">${(ym>=0?'+':'')+ym.toFixed(1)}%</td></tr>`;
+    }).join('')}
+  </tbody></table>` : '<div class="no-bets">Sin retos archivados todavía.</div>';
+
+  // Charts: win rate por modo y por tipster
+  destroyChart('cRetoModoWR');
+  const c1 = document.getElementById('chartRetoModoWR')?.getContext('2d');
+  if (c1 && modeRows.length) {
+    const labels = modeRows.map(([mode])=>retoModeLabel(mode));
+    const vals = modeRows.map(([,v])=>v.count>0?parseFloat((v.ganados/v.count*100).toFixed(1)):0);
+    charts.cRetoModoWR = new Chart(c1,{type:'bar',data:{labels,datasets:[{label:'Win Rate %',data:vals,backgroundColor:vals.map(v=>v>=50?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:vals.map(v=>v>=50?'#22c55e':'#ef4444'),borderWidth:1}]},options:cOpts('','%')});
+  }
+  destroyChart('cRetoTipsterWR');
+  const c2 = document.getElementById('chartRetoTipsterWR')?.getContext('2d');
+  if (c2 && tipRows.length) {
+    const labels = tipRows.map(([tid])=>{const tip=data.tipsters.find(x=>x.id==tid);return tip?tip.name:'—';});
+    const vals = tipRows.map(([,v])=>v.count>0?parseFloat((v.ganados/v.count*100).toFixed(1)):0);
+    charts.cRetoTipsterWR = new Chart(c2,{type:'bar',data:{labels,datasets:[{label:'Win Rate %',data:vals,backgroundColor:vals.map(v=>v>=50?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:vals.map(v=>v>=50?'#22c55e':'#ef4444'),borderWidth:1}]},options:cOpts('','%')});
+  }
+}
+
+function getSonadoraBets() {
+  return data.tipsters.flatMap(t => t.bets.filter(b => b.esSonadora).map(b => ({...b, tipsterName:t.name, tipsterId:t.id})));
+}
+
+function renderGraficasSonadoras() {
+  const bets = getSonadoraBets();
+  const closed = bets.filter(b => b.result !== 'pending');
+  const won = closed.filter(b => b.result === 'win');
+  const notVoid = closed.filter(b => b.result !== 'void');
+  const invested = closed.reduce((s,b)=>s+(b.monto||0),0);
+  const profit = closed.reduce((s,b)=>s+calcProfit(b),0);
+  const yield_ = invested>0 ? profit/invested*100 : 0;
+  const wr = notVoid.length>0 ? won.length/notVoid.length*100 : 0;
+  const avgC = avgCuota(bets);
+
+  const se = (id,txt,cls) => { const e=document.getElementById(id); if(e){e.textContent=txt; if(cls) e.className='stat-val '+cls;} };
+  se('gs-total', bets.length, 'purple');
+  se('gs-profit', fmt(profit), profit>=0?'green':'red');
+  se('gs-yield', yield_.toFixed(1)+'%', yield_>=0?'cyan':'red');
+  se('gs-wr', wr.toFixed(0)+'%', 'gold');
+  se('gs-cuota', avgC!=null?avgC.toFixed(2):'N/A', 'gold');
+
+  const byTip = {};
+  bets.forEach(b => {
+    if (!byTip[b.tipsterId]) byTip[b.tipsterId] = { name:b.tipsterName, count:0, won:0, notVoid:0, invested:0, profit:0 };
+    const e = byTip[b.tipsterId];
+    e.count++;
+    if (b.result !== 'pending') {
+      e.invested += b.monto||0;
+      e.profit += calcProfit(b);
+      if (b.result==='win') e.won++;
+      if (b.result!=='void') e.notVoid++;
+    }
+  });
+  const rows = Object.values(byTip).sort((a,b)=>b.count-a.count);
+  const tipEl = document.getElementById('gs-by-tipster');
+  if (tipEl) tipEl.innerHTML = rows.length ? `<table class="bets-table"><thead><tr><th>Tipster</th><th>Apuestas</th><th>Profit $</th><th>Yield</th><th>Win Rate</th></tr></thead><tbody>
+    ${rows.map(e=>{
+      const y = e.invested>0?e.profit/e.invested*100:0;
+      const w = e.notVoid>0?e.won/e.notVoid*100:0;
+      return `<tr><td>${e.name}</td><td>${e.count}</td><td class="${e.profit>=0?'green':'red'}">${fmt(e.profit)}</td><td class="${y>=0?'cyan':'red'}">${y.toFixed(1)}%</td><td class="gold">${w.toFixed(0)}%</td></tr>`;
+    }).join('')}
+  </tbody></table>` : '<div class="no-bets">Sin apuestas marcadas como Soñadora todavía.</div>';
+
+  destroyChart('cSonadoras');
+  const sc = closed.filter(b=>b.fecha).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const dateMap = {};
+  sc.forEach(b=>{ if(!dateMap[b.fecha]) dateMap[b.fecha]=0; dateMap[b.fecha]+=calcProfit(b); });
+  const days = Object.keys(dateMap).sort();
+  let cum=0; const lb=[],vl=[];
+  days.forEach(d=>{ cum+=dateMap[d]; lb.push(d); vl.push(parseFloat(cum.toFixed(2))); });
+  const ctx = document.getElementById('chartSonadoras')?.getContext('2d');
+  if (ctx) charts.cSonadoras = new Chart(ctx,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado (Soñadoras)',data:vl,borderColor:'#e879f9',backgroundColor:'rgba(232,121,249,.12)',fill:true,tension:0.4,pointRadius:vl.length>60?0:4,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444')}]},options:cOpts('$')});
+}
+
 
 function setResult(r) {
   curResult = r;
@@ -1462,6 +2211,27 @@ function setJugada(v) {
 function toggleChip(el) { el.classList.toggle('selected'); }
 function getChips(id) { return [...document.querySelectorAll(`#${id} .chip.selected`)].map(c=>c.dataset.val); }
 
+function toggleSonadora() {
+  curSonadora = !curSonadora;
+  updateSonadoraBadgeUI();
+}
+function updateSonadoraBadgeUI() {
+  const b = document.getElementById('sonadoraBadge');
+  if (!b) return;
+  b.className = 'auto-badge' + (curSonadora ? ' on' : '');
+  b.textContent = curSonadora ? '🌙 Soñadora: ON' : '🌙 Soñadora: OFF';
+}
+function toggleEditSonadora() {
+  editSonadora = !editSonadora;
+  updateEditSonadoraBadgeUI();
+}
+function updateEditSonadoraBadgeUI() {
+  const b = document.getElementById('eSonadoraBadge');
+  if (!b) return;
+  b.className = 'auto-badge' + (editSonadora ? ' on' : '');
+  b.textContent = editSonadora ? '🌙 Soñadora: ON' : '🌙 Soñadora: OFF';
+}
+
 function saveBet() {
   const tid = parseInt(document.getElementById('bTipster').value);
   const t = data.tipsters.find(t=>t.id===tid);
@@ -1471,7 +2241,8 @@ function saveBet() {
   const cuota = parseFloat(document.getElementById('bCuota').value);
   if (!cuota||cuota<=1) return showAlert('La cuota debe ser mayor a 1');
   if (curJugada===null) return showAlert('Indicá si la jugaste');
-  t.bets.push({
+
+  const newBet = {
     id: Date.now(),
     desc: document.getElementById('bDesc').value.trim() || '—',
     stake: parseFloat(document.getElementById('bStake').value) || null,
@@ -1482,12 +2253,30 @@ function saveBet() {
     types: getChips('betTypeChips'),
     played: curJugada,
     result: curResult,
-    exception: betException
-  });
+    exception: betException,
+    esSonadora: curSonadora,
+    retoId: (retoModeOn && activeRetoId) ? activeRetoId : null
+  };
+  t.bets.push(newBet);
+  refreshBankPico(t);
   save(); renderAll();
+
+  let retoEndedMsg = null;
+  if (newBet.retoId) {
+    recomputeReto(newBet.retoId);
+    const reto = data.retos.find(r=>r.id===newBet.retoId);
+    if (reto && reto.estado !== 'activo') {
+      retoEndedMsg = reto.estado === 'perdido' ? '❌ Reto perdido — registrado en Retos' : '🏆 ¡Reto completado! — registrado en Retos';
+      retoModeOn = false; activeRetoId = null;
+      updateRetoToggleUI();
+      const rip=document.getElementById('retoInfoPanel'); if(rip) rip.style.display='none';
+    }
+  }
+
   document.getElementById('bDesc').value='';
   document.getElementById('bEventos').value='1';
-  curResult='pending'; curJugada=null; betException=false; betCuotaException=false;
+  curResult='pending'; curJugada=null; betException=false; betCuotaException=false; curSonadora=false;
+  updateSonadoraBadgeUI();
   ['win','loss','void','pending'].forEach(x=>document.getElementById('rt-'+x).className='rt-btn');
   document.getElementById('jt-played').className='jt-btn';
   document.getElementById('jt-skipped').className='jt-btn';
@@ -1495,9 +2284,14 @@ function saveBet() {
   const sb=document.getElementById('autoStakeBadge');if(sb){sb.className='auto-badge on';sb.textContent='🔗 Auto';}
   const cb2=document.getElementById('autoCuotaBadge');if(cb2){cb2.className='auto-badge on';cb2.textContent='📐 Auto';}
   const tAfter=getSelectedTipster();
-  if(tAfter) prefillFromTipster(tAfter);
-  else { document.getElementById('bStake').value=''; document.getElementById('bMonto').value=''; document.getElementById('bCuota').value=''; document.getElementById('bPreview').style.display='none'; }
-  showToast('✅ Apuesta guardada');
+  if(tAfter) {
+    prefillFromTipster(tAfter);
+    if (retoModeOn && activeRetoId) applyRetoStakeToForm();
+  } else {
+    document.getElementById('bStake').value=''; document.getElementById('bMonto').value=''; document.getElementById('bCuota').value=''; document.getElementById('bPreview').style.display='none';
+  }
+  updateRiskPanel();
+  showToast(retoEndedMsg || '✅ Apuesta guardada', !retoEndedMsg || retoEndedMsg.indexOf('🏆')>=0);
 }
 
 function clearForm() {
@@ -1506,7 +2300,8 @@ function clearForm() {
   document.getElementById('bEventos').value = '1';
   document.getElementById('bPreview').style.display = 'none';
   document.querySelectorAll('#betTypeChips .chip').forEach(c=>c.classList.remove('selected'));
-  curResult='pending'; curJugada=null; betException=false;
+  curResult='pending'; curJugada=null; betException=false; curSonadora=false;
+  updateSonadoraBadgeUI();
   ['win','loss','void','pending'].forEach(x=>document.getElementById('rt-'+x).className='rt-btn');
   document.getElementById('jt-played').className='jt-btn';
   document.getElementById('jt-skipped').className='jt-btn';
@@ -1517,12 +2312,24 @@ function clearForm() {
   document.getElementById('autoCuotaBadge').textContent='📐 Auto';
   betCuotaException = false;
   updateExceptionRow();
+  if (retoModeOn && activeRetoId) applyRetoStakeToForm();
+  updateRiskPanel();
 }
 
 function deleteBet(tid, bid) {
   showConfirm('¿Eliminar esta apuesta?', () => {
     const t = data.tipsters.find(t=>t.id===tid);
-    if (t) { t.bets=t.bets.filter(b=>b.id!==bid); save(); renderAll(); showToast('🗑 Apuesta eliminada'); }
+    if (t) {
+      const bet = t.bets.find(b=>b.id===bid);
+      const rid = bet ? bet.retoId : null;
+      t.bets=t.bets.filter(b=>b.id!==bid);
+      save(); renderAll();
+      if (rid) {
+        recomputeReto(rid);
+        if (activeRetoId === rid) { renderRetoInfoPanel(); updateRiskPanel(); }
+      }
+      showToast('🗑 Apuesta eliminada');
+    }
   });
 }
 
@@ -1543,6 +2350,7 @@ function openEditModal(tid, bid) {
   document.querySelectorAll('#editBetTypeChips .chip').forEach(c=>c.classList.toggle('selected',(b.types||[]).includes(c.dataset.val)));
   editJugada=b.played; setEditJugada(b.played);
   editResult=b.result; setEditResult(b.result);
+  editSonadora = !!b.esSonadora; updateEditSonadoraBadgeUI();
   document.getElementById('editModal').style.display='flex';
 }
 function closeEditModal() { document.getElementById('editModal').style.display='none'; }
@@ -1569,7 +2377,14 @@ function saveEditBet() {
   b.fecha=document.getElementById('eFecha').value;
   b.types=getChips('editBetTypeChips');
   b.played=editJugada; b.result=editResult;
-  save(); renderAll(); closeEditModal(); showToast('✅ Apuesta actualizada');
+  b.esSonadora=editSonadora;
+  refreshBankPico(t);
+  save(); renderAll(); closeEditModal();
+  if (b.retoId) {
+    recomputeReto(b.retoId);
+    if (activeRetoId === b.retoId) { renderRetoInfoPanel(); updateRiskPanel(); }
+  }
+  showToast('✅ Apuesta actualizada');
 }
 
 // ============================================================
@@ -1638,207 +2453,6 @@ function updateGlobalStats() {
 }
 
 // ============================================================
-// BALANCE TAB
-// ============================================================
-function saveBalanceSaldo(tipo) {
-  if (!data.balance) data.balance = { invertido: 0, retirado: 0 };
-  const input = document.getElementById('bal-'+tipo+'-input');
-  const val = parseFloat(input.value);
-  if (isNaN(val) || val < 0) return showAlert('Ingresá un monto válido');
-  data.balance[tipo] = val;
-  save();
-  renderBalance();
-  showToast('✅ Saldo actualizado');
-}
-
-function calcSaldoActual() {
-  if (!data.balance) return 0;
-  const invertido = data.balance.invertido || 0;
-  const retirado  = data.balance.retirado  || 0;
-  // Profit total de apuestas jugadas y cerradas
-  let profitTotal = 0;
-  data.tipsters.forEach(t => {
-    t.bets.filter(b => b.played && b.result !== 'pending').forEach(b => {
-      profitTotal += calcProfit(b);
-    });
-  });
-  return invertido + profitTotal - retirado;
-}
-
-function setBalancePeriod(p) {
-  balancePeriod = p; balanceDateFrom = null; balanceDateTo = null;
-  document.querySelectorAll('[data-balperiod]').forEach(x => x.classList.toggle('active', x.dataset.balperiod === p));
-  const lbl = document.getElementById('balDateRangeLabel'); if (lbl) lbl.textContent = '';
-  const df = document.getElementById('balDateFrom'); if (df) df.value = '';
-  const dt = document.getElementById('balDateTo'); if (dt) dt.value = '';
-  renderBalance();
-}
-
-function setBalanceDateRange() {
-  const from = document.getElementById('balDateFrom')?.value;
-  const to   = document.getElementById('balDateTo')?.value;
-  if (!from && !to) return;
-  balanceDateFrom = from || null; balanceDateTo = to || null; balancePeriod = 'custom';
-  document.querySelectorAll('[data-balperiod]').forEach(x => x.classList.remove('active'));
-  const lbl = document.getElementById('balDateRangeLabel');
-  if (lbl) lbl.textContent = (from || 'inicio') + ' → ' + (to || 'hoy');
-  renderBalance();
-}
-
-function clearBalanceDateRange() {
-  balanceDateFrom = null; balanceDateTo = null;
-  const df = document.getElementById('balDateFrom'); if (df) df.value = '';
-  const dt = document.getElementById('balDateTo'); if (dt) dt.value = '';
-  setBalancePeriod('all');
-}
-
-function renderBalance() {
-  if (!data.balance) data.balance = { invertido: 0, retirado: 0 };
-
-  // Saldos display
-  const saldoActual = calcSaldoActual();
-  const elActual = document.getElementById('bal-actual');
-  if (elActual) { elActual.textContent = '$' + saldoActual.toFixed(2); elActual.className = 'saldo-val ' + (saldoActual >= 0 ? 'green' : 'red'); }
-  const elInvDisp = document.getElementById('bal-invertido-display');
-  if (elInvDisp) elInvDisp.textContent = '$' + (data.balance.invertido || 0).toFixed(2);
-  const elRetDisp = document.getElementById('bal-retirado-display');
-  if (elRetDisp) elRetDisp.textContent = '$' + (data.balance.retirado || 0).toFixed(2);
-  const elInvInput = document.getElementById('bal-invertido-input');
-  if (elInvInput && !elInvInput.value) elInvInput.placeholder = (data.balance.invertido || 0).toFixed(2);
-  const elRetInput = document.getElementById('bal-retirado-input');
-  if (elRetInput && !elRetInput.value) elRetInput.placeholder = (data.balance.retirado || 0).toFixed(2);
-
-  // Todas las apuestas jugadas del período con resultado
-  const allPlayedBets = data.tipsters.flatMap(t =>
-    t.bets.filter(b => b.played && b.result !== 'pending' && b.fecha)
-      .map(b => ({ ...b, tipsterName: t.name }))
-  );
-  const periodBets = filterByBalancePeriod(allPlayedBets).sort((a,b) => (a.fecha||'').localeCompare(b.fecha||''));
-
-  // Gráfica: evolución del saldo (saldo inicial + profit acumulado)
-  destroyChart('cBalance');
-  const invertido = data.balance.invertido || 0;
-  let cumProfit = 0;
-  const balLabels = [], balVals = [];
-  // agrupar por fecha
-  const byDate = {};
-  periodBets.forEach(b => {
-    if (!byDate[b.fecha]) byDate[b.fecha] = 0;
-    byDate[b.fecha] += calcProfit(b);
-  });
-  const sortedDates = Object.keys(byDate).sort();
-  if (sortedDates.length > 0) {
-    balLabels.push(sortedDates[0]); balVals.push(parseFloat((invertido).toFixed(2)));
-    sortedDates.forEach(d => {
-      cumProfit += byDate[d];
-      balLabels.push(d);
-      balVals.push(parseFloat((invertido + cumProfit).toFixed(2)));
-    });
-    // deduplicate start
-    if (balLabels.length > 1 && balLabels[0] === balLabels[1]) { balLabels.shift(); balVals.shift(); }
-  }
-
-  const ctx = document.getElementById('chartBalance')?.getContext('2d');
-  if (ctx) {
-    charts.cBalance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: balLabels,
-        datasets: [{
-          label: 'Saldo',
-          data: balVals,
-          borderColor: '#22c55e',
-          backgroundColor: 'rgba(34,197,94,.10)',
-          fill: true,
-          tension: 0.4,
-          pointRadius: balVals.length > 60 ? 0 : 4,
-          pointHoverRadius: 6,
-          pointBackgroundColor: balVals.map(v => v >= invertido ? '#22c55e' : '#ef4444'),
-          pointBorderColor: 'transparent'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: '#e2e8f0', font: { family: 'DM Sans' } } },
-          tooltip: { callbacks: { label: ctx => { const v = ctx.parsed.y; return '$' + v.toFixed(2); } } }
-        },
-        scales: {
-          x: { ticks: { color: '#6b7694', maxTicksLimit: 12 }, grid: { color: 'rgba(255,255,255,.04)' } },
-          y: { ticks: { color: '#6b7694', callback: v => '$' + v }, grid: { color: 'rgba(255,255,255,.04)' } }
-        }
-      }
-    });
-  }
-
-  // Top 20 apuestas del período, de mayor ganancia a peor
-  const top20El = document.getElementById('balanceTop20');
-  if (top20El) {
-    const sorted20 = [...periodBets].sort((a, b) => calcProfit(b) - calcProfit(a)).slice(0, 20);
-    if (!sorted20.length) {
-      top20El.innerHTML = '<div class="no-bets">Sin apuestas jugadas en el período seleccionado.</div>';
-    } else {
-      top20El.innerHTML = `<table class="balance-top20-table">
-        <thead><tr>
-          <th>#</th><th>Tipster</th><th>Fecha</th><th>Descripción</th><th>Tipo</th><th>Monto</th><th>Cuota</th><th>Resultado</th><th>Profit $</th>
-        </tr></thead>
-        <tbody>
-        ${sorted20.map((b, i) => {
-          const p = calcProfit(b);
-          const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-          return `<tr>
-            <td style="font-family:'DM Mono',monospace;font-weight:700;">${medal}</td>
-            <td style="font-weight:700;">${b.tipsterName || '—'}</td>
-            <td>${b.fecha || '—'}</td>
-            <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;">${b.desc || '—'}</td>
-            <td><div class="types-tags">${(b.types||[]).map(tp=>`<span class="type-tag">${tp}</span>`).join('')||'—'}</div></td>
-            <td>$${(b.monto||0).toFixed(0)}</td>
-            <td>${(b.cuota||0).toFixed(2)}</td>
-            <td><span class="badge badge-${b.result}">${resLabel(b.result)}</span></td>
-            <td class="${p>=0?'green':'red'}" style="font-family:'DM Mono',monospace;font-weight:600;">${fmt(p)}</td>
-          </tr>`;
-        }).join('')}
-        </tbody>
-      </table>`;
-    }
-  }
-
-  // Ranking tipsters del período
-  const rankingEl = document.getElementById('balanceRanking');
-  if (rankingEl) {
-    if (!data.tipsters.length) {
-      rankingEl.innerHTML = '<div class="no-bets">Sin tipsters registrados.</div>';
-    } else {
-      const tipsterStats = data.tipsters.map((t, i) => {
-        const betsInPeriod = filterByBalancePeriod(
-          t.bets.filter(b => b.played && b.result !== 'pending' && b.fecha)
-        );
-        const profit = betsInPeriod.reduce((s, b) => s + calcProfit(b), 0);
-        const invested = betsInPeriod.reduce((s, b) => s + (b.monto || 0), 0);
-        const yield_ = invested > 0 ? profit / invested * 100 : 0;
-        const color = COLORS[i % COLORS.length];
-        return { name: t.name, profit, yield_, invested, count: betsInPeriod.length, color };
-      }).sort((a, b) => b.profit - a.profit);
-
-      const medals = ['🥇', '🥈', '🥉'];
-      rankingEl.innerHTML = tipsterStats.map((ts, i) => {
-        const posLabel = medals[i] || `${i + 1}`;
-        const isPos = ts.profit >= 0;
-        return `<div class="ranking-row">
-          <div class="ranking-pos">${posLabel}</div>
-          <div style="width:8px;height:8px;border-radius:50%;background:${ts.color};flex-shrink:0;"></div>
-          <div class="ranking-name">${ts.name}</div>
-          <div style="font-size:0.62rem;color:var(--muted);font-family:'DM Mono',monospace;min-width:55px;text-align:right;">${ts.count} apuestas</div>
-          <div class="ranking-yield ${isPos?'green':'red'}">${ts.yield_.toFixed(1)}%</div>
-          <div class="ranking-profit ${isPos?'green':'red'}">${fmt(ts.profit)}</div>
-        </div>`;
-      }).join('');
-    }
-  }
-}
-
-// ============================================================
 // UNITS TAB
 // ============================================================
 function setUnitFilter(f) {
@@ -1895,9 +2509,15 @@ function calcStreaks(bets) {
   let bestW=0, curW=0, bestL=0, curL=0;
   bets.forEach(b=>{
     const u = calcUnits(b);
-    if (u > 0) { curW += u; bestW = Math.max(bestW, curW); curL = 0; }
-    else if (u < 0) { curL += Math.abs(u); bestL = Math.max(bestL, curL); curW = 0; }
-    else { curW = 0; curL = 0; }
+    if (u > 0) {
+      curW += u; bestW = Math.max(bestW, curW);
+      curL = 0;
+    } else if (u < 0) {
+      curL += Math.abs(u); bestL = Math.max(bestL, curL);
+      curW = 0;
+    } else {
+      curW = 0; curL = 0;
+    }
   });
   return { bestW, bestL };
 }
@@ -1929,19 +2549,27 @@ function filterBySport(bets) {
 function renderUnidades() {
   updateUnitTipsterFilter();
   const allTs=unitTipster==='all'?data.tipsters:data.tipsters.filter(t=>t.id==unitTipster);
+
   const bpAll=allTs.flatMap(t=>t.bets.filter(b=>b.played&&b.stake&&b.result!=='pending'));
   const bsAll=allTs.flatMap(t=>t.bets.filter(b=>!b.played&&b.stake&&b.result!=='pending'));
+
   const bp = filterUnitPeriod(bpAll.slice());
   const bs = filterUnitPeriod(bsAll.slice());
   const ball = [...bp, ...bs].sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
+
   const pSt=bp.reduce((s,b)=>s+b.stake,0),  pNet=bp.reduce((s,b)=>s+calcUnits(b),0);
   const sSt=bs.reduce((s,b)=>s+b.stake,0),  sNet=bs.reduce((s,b)=>s+calcUnits(b),0);
-  const aSt=pSt+sSt, aNet=pNet+sNet;
-  const pY=pSt>0?pNet/pSt*100:0, sY=sSt>0?sNet/sSt*100:0, aY=aSt>0?aNet/aSt*100:0;
+  const aSt=pSt+sSt,                         aNet=pNet+sNet;
+  const pY=pSt>0?pNet/pSt*100:0;
+  const sY=sSt>0?sNet/sSt*100:0;
+  const aY=aSt>0?aNet/aSt*100:0;
+
   const {bestW, bestL} = calcStreaks(ball);
   const periodNet = pNet;
+
   const se=(id,v,cls)=>{const e=document.getElementById(id);if(e){e.textContent=v;if(cls)e.className='stat-val '+cls;}};
-  const pStAll=bpAll.reduce((s,b)=>s+b.stake,0), sStAll=bsAll.reduce((s,b)=>s+b.stake,0);
+  const pStAll=bpAll.reduce((s,b)=>s+b.stake,0);
+  const sStAll=bsAll.reduce((s,b)=>s+b.stake,0);
   se('u-staked', pStAll.toFixed(1)+'u');
   se('u-staked-s', sStAll.toFixed(1)+'u');
   se('u-net-p',  fmtU(pNet),  pNet>=0?'green':'red');
@@ -1953,25 +2581,30 @@ function renderUnidades() {
   se('u-streak',  '+'+bestW.toFixed(2)+'u', 'gold');
   se('u-lstreak', '-'+bestL.toFixed(2)+'u', 'red');
   se('u-period-net', fmtU(periodNet), periodNet>=0?'cyan':'red');
+
   let bets=allTs.flatMap(t=>t.bets.map(b=>({...b,tipsterName:t.name})));
   if(unitFilter==='played') bets=bets.filter(b=>b.played);
   else if(unitFilter==='skipped') bets=bets.filter(b=>!b.played);
   bets=bets.filter(b=>b.stake&&b.result!=='pending').sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
+
   destroyChart('chartU');
   let cum=0; const lbs=[],vls=[];
   bets.forEach(b=>{cum+=calcUnits(b);lbs.push(b.fecha||'');vls.push(parseFloat(cum.toFixed(3)));});
   const c1=document.getElementById('chartUnidades')?.getContext('2d');
   if(c1) charts.chartU=new Chart(c1,{type:'line',data:{labels:lbs,datasets:[{label:'U. Acumuladas',data:vls,borderColor:'#06b6d4',backgroundColor:'rgba(6,182,212,.08)',fill:true,tension:0.3,pointRadius:vls.length>40?0:3,pointBackgroundColor:vls.map(v=>v>=0?'#22c55e':'#ef4444')}]},options:cOpts('','u')});
+
   destroyChart('chartUT');
   const tL=data.tipsters.map(t=>t.name);
   const tP=data.tipsters.map(t=>parseFloat(t.bets.filter(b=>b.played&&b.stake&&b.result!=='pending').reduce((s,b)=>s+calcUnits(b),0).toFixed(2)));
   const tS=data.tipsters.map(t=>parseFloat(t.bets.filter(b=>!b.played&&b.stake&&b.result!=='pending').reduce((s,b)=>s+calcUnits(b),0).toFixed(2)));
   const c2=document.getElementById('chartUnidadesTipster')?.getContext('2d');
   if(c2) charts.chartUT=new Chart(c2,{type:'bar',data:{labels:tL,datasets:[{label:'✅ Jugadas',data:tP,backgroundColor:'rgba(34,197,94,.55)',borderColor:'#22c55e',borderWidth:1},{label:'👁 No Jugadas',data:tS,backgroundColor:'rgba(232,121,249,.45)',borderColor:'#e879f9',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'u'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+
   updateUnitSportFilter(allTs);
   const allBetsForType=allTs.flatMap(t=>t.bets.map(b=>({...b})));
   const filtForType=unitFilter==='played'?allBetsForType.filter(b=>b.played):unitFilter==='skipped'?allBetsForType.filter(b=>!b.played):allBetsForType;
   renderTypeTable(filterBySport(filterUnitPeriod(filtForType)),'unidadesByType','units');
+
   const tEl=document.getElementById('unidadesTable'); if(!tEl) return;
   if(!bets.length){tEl.innerHTML='<div class="no-bets">Sin apuestas con stake.</div>';return;}
   let r=0; const rows=bets.map(b=>{r+=calcUnits(b);return{b,cum:parseFloat(r.toFixed(3))};});
@@ -1989,13 +2622,15 @@ function cOpts(pre='',suf=''){
 }
 function setChartFilter(f){chartFilter=f;['all','played','skipped'].forEach(x=>document.getElementById('flt-'+x).className='flt-btn'+(x===f?' a-'+x:''));renderCharts();}
 function toggleChartTipster(id) {
-  if (id === 'all') { chartTipsters = []; }
-  else {
+  if (id === 'all') {
+    chartTipsters = [];
+  } else {
     const idx = chartTipsters.indexOf(id);
     if (idx >= 0) chartTipsters.splice(idx, 1);
     else chartTipsters.push(id);
   }
-  updateChartTipsterFilter(); renderCharts();
+  updateChartTipsterFilter();
+  renderCharts();
 }
 function setPeriod(p){
   chartPeriod=p; chartDateFrom=null; chartDateTo=null;
@@ -2057,6 +2692,7 @@ function renderCharts(){
   se('cs-yield',yield_.toFixed(1)+'%',yield_>=0?'cyan':'red');
   se('cs-wr',wr.toFixed(0)+'%','gold');
   se('cs-stake',avgSt.toFixed(1)+'u');
+
   destroyChart('cProfit');
   const sc=closed.filter(b=>b.fecha).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const dateMap={};
@@ -2066,21 +2702,36 @@ function renderCharts(){
   sortedDays.forEach(d=>{cum+=dateMap[d];lb.push(d);vl.push(parseFloat(cum.toFixed(2)));});
   const c1=document.getElementById('chartProfit')?.getContext('2d');
   if(c1) charts.cProfit=new Chart(c1,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado',data:vl,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,.12)',fill:true,tension:0.4,pointRadius:vl.length>60?0:4,pointHoverRadius:6,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444'),pointBorderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}},tooltip:{callbacks:{label:ctx=>{const v=ctx.parsed.y;return(v>=0?'+$':'-$')+Math.abs(v).toFixed(2);}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v<0?'-$'+Math.abs(v):'$'+v},grid:{color:'rgba(255,255,255,.04)'}}}}});
+
   destroyChart('cResults');
   const c2=document.getElementById('chartResults')?.getContext('2d');
   if(c2) charts.cResults=new Chart(c2,{type:'doughnut',data:{labels:['Ganadas','Perdidas','Void'],datasets:[{data:[closed.filter(b=>b.result==='win').length,closed.filter(b=>b.result==='loss').length,closed.filter(b=>b.result==='void').length],backgroundColor:['#22c55e','#ef4444','#f59e0b'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}}}});
+
   destroyChart('cTypes');
   const typeMap={};
   closed.forEach(b=>(b.types||['Sin tipo']).forEach(tp=>{if(!typeMap[tp])typeMap[tp]=0;typeMap[tp]+=calcProfit(b);}));
   const tl=Object.keys(typeMap),tv=tl.map(l=>parseFloat(typeMap[l].toFixed(2)));
   const c3=document.getElementById('chartTypes')?.getContext('2d');
   if(c3) charts.cTypes=new Chart(c3,{type:'bar',data:{labels:tl,datasets:[{label:'Profit',data:tv,backgroundColor:tv.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:tv.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1}]},options:cOpts('$')});
+
+  destroyChart('cJugadas');
+  let allB=filterByPeriodEx(getActiveTipsters().flatMap(t=>t.bets),chartPeriod).filter(b=>b.result!=='pending');
+  const pb2=allB.filter(b=>b.played),sb2=allB.filter(b=>!b.played);
+  const pP=pb2.reduce((s,b)=>s+calcProfit(b),0),sP=sb2.reduce((s,b)=>s+calcProfit(b),0);
+  const pI=pb2.reduce((s,b)=>s+(b.monto||0),0),sI=sb2.reduce((s,b)=>s+(b.monto||0),0);
+  const pY2=pI>0?pP/pI*100:0,sY2=sI>0?sP/sI*100:0;
+  const pWR=pb2.filter(b=>b.result!=='void').length>0?pb2.filter(b=>b.result==='win').length/pb2.filter(b=>b.result!=='void').length*100:0;
+  const sWR=sb2.filter(b=>b.result!=='void').length>0?sb2.filter(b=>b.result==='win').length/sb2.filter(b=>b.result!=='void').length*100:0;
+  const c4=document.getElementById('chartJugadas')?.getContext('2d');
+  if(c4) charts.cJugadas=new Chart(c4,{type:'bar',data:{labels:['Profit ($)','Yield (%)','Win Rate (%)'],datasets:[{label:'✅ Jugadas',data:[parseFloat(pP.toFixed(2)),parseFloat(pY2.toFixed(1)),parseFloat(pWR.toFixed(1))],backgroundColor:pP>=0?'rgba(34,197,94,.65)':'rgba(239,68,68,.65)',borderColor:pP>=0?'#22c55e':'#ef4444',borderWidth:1},{label:'👁 No Jugadas',data:[parseFloat(sP.toFixed(2)),parseFloat(sY2.toFixed(1)),parseFloat(sWR.toFixed(1))],backgroundColor:sP>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)',borderColor:sP>=0?'#06b6d4':'#fb923c',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+
   const activeTips = getActiveTipsters();
   const multiMode = activeTips.length !== 1;
   const cardAll = document.getElementById('cardAllTipsters');
   const cardYield = document.getElementById('cardYieldComp');
   if (cardAll)  cardAll.style.display  = multiMode ? 'block' : 'none';
   if (cardYield) cardYield.style.display = multiMode ? 'block' : 'none';
+
   destroyChart('cAll');
   if (multiMode) {
     const allDates=new Set();
@@ -2101,6 +2752,7 @@ function renderCharts(){
       if(c5) charts.cAll=new Chart(c5,{type:'line',data:{labels:allSortedDates,datasets},options:cOpts('$')});
     }
   }
+
   destroyChart('cYield');
   if (multiMode) {
     const rL=activeTips.map(t=>t.name);
@@ -2109,8 +2761,10 @@ function renderCharts(){
     const c6=document.getElementById('chartYieldComparison')?.getContext('2d');
     if(c6) charts.cYield=new Chart(c6,{type:'bar',data:{labels:rL,datasets:[{label:'✅ Yield Jugadas',data:rP,backgroundColor:rP.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:rP.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1},{label:'👁 Yield No Jugadas',data:rS,backgroundColor:rS.map(v=>v>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)'),borderColor:rS.map(v=>v>=0?'#06b6d4':'#fb923c'),borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'}}}}});
   }
+
   destroyChart('cROI');
-  const roiAllBets = filterByPeriodEx(activeTips.flatMap(t=>t.bets.map(b=>({...b,tName:t.name}))),chartPeriod).filter(b=>b.result!=='pending'&&b.fecha);
+  const roiAllBets = filterByPeriodEx(activeTips.flatMap(t=>t.bets.map(b=>({...b,tName:t.name}))),chartPeriod)
+    .filter(b=>b.result!=='pending'&&b.fecha);
   const roiMap={p:{},s:{},a:{}};
   roiAllBets.forEach(b=>{
     const m=b.fecha.substring(0,7);
@@ -2129,10 +2783,17 @@ function renderCharts(){
     {label:'👁 No Jugadas',data:roiS,backgroundColor:'rgba(232,121,249,.45)',borderColor:'#e879f9',borderWidth:1,borderRadius:3},
     {label:'🔵 Ambas',data:roiA,backgroundColor:'rgba(108,99,255,.5)',borderColor:'#6c63ff',borderWidth:1,borderRadius:3}
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:14},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.04)'},stacked:false}}}});
+
   destroyChart('cCuotaWL');
   const cwL=activeTips.map(t=>t.name);
-  const cwWin=activeTips.map(t=>{const b=filterByPeriodEx(t.bets,chartPeriod).filter(x=>x.result==='win'&&x.cuota);return b.length?parseFloat((b.reduce((s,x)=>s+x.cuota,0)/b.length).toFixed(2)):0;});
-  const cwLoss=activeTips.map(t=>{const b=filterByPeriodEx(t.bets,chartPeriod).filter(x=>x.result==='loss'&&x.cuota);return b.length?parseFloat((b.reduce((s,x)=>s+x.cuota,0)/b.length).toFixed(2)):0;});
+  const cwWin=activeTips.map(t=>{
+    const b=filterByPeriodEx(t.bets,chartPeriod).filter(x=>x.result==='win'&&x.cuota);
+    return b.length?parseFloat((b.reduce((s,x)=>s+x.cuota,0)/b.length).toFixed(2)):0;
+  });
+  const cwLoss=activeTips.map(t=>{
+    const b=filterByPeriodEx(t.bets,chartPeriod).filter(x=>x.result==='loss'&&x.cuota);
+    return b.length?parseFloat((b.reduce((s,x)=>s+x.cuota,0)/b.length).toFixed(2)):0;
+  });
   const c8=document.getElementById('chartCuotaWL')?.getContext('2d');
   if(c8) charts.cCuotaWL=new Chart(c8,{type:'bar',data:{labels:cwL,datasets:[{label:'✅ Cuota media ganadas',data:cwWin,backgroundColor:'rgba(34,197,94,.6)',borderColor:'#22c55e',borderWidth:1},{label:'❌ Cuota media perdidas',data:cwLoss,backgroundColor:'rgba(239,68,68,.55)',borderColor:'#ef4444',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
 }
@@ -2148,7 +2809,7 @@ function exportData(){
 function importData(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=e=>{try{data=JSON.parse(e.target.result);if(!data.balance)data.balance={invertido:0,retirado:0};save();renderAll();showToast('✅ Datos importados');}catch{showToast('❌ Archivo inválido',false);}};
+  r.onload=e=>{try{data=JSON.parse(e.target.result); if(!data.retos) data.retos=[]; data.tipsters.forEach(t=>refreshBankPico(t)); save();renderAll();showToast('✅ Datos importados');}catch{showToast('❌ Archivo inválido',false);}};
   r.readAsText(f);ev.target.value='';
 }
 
@@ -2213,12 +2874,18 @@ window.setUnitTipster=setUnitTipster;
 window.setDateRange=setDateRange;
 window.clearDateRange=clearDateRange;
 window.exportData=exportData;
+window.setGraficasSubView=setGraficasSubView;
+window.toggleRetoMode=toggleRetoMode;
+window.selectRetoMode=selectRetoMode;
+window.confirmRetoBank=confirmRetoBank;
+window.cancelRetoFlow=cancelRetoFlow;
+window.finalizeReto=finalizeReto;
+window.setRetosFilterTipster=setRetosFilterTipster;
+window.setRetosFilterEstado=setRetosFilterEstado;
+window.updateRiskPanel=updateRiskPanel;
+window.toggleSonadora=toggleSonadora;
+window.toggleEditSonadora=toggleEditSonadora;
 window.importData=importData;
-window.saveBalanceSaldo=saveBalanceSaldo;
-window.setBalancePeriod=setBalancePeriod;
-window.setBalanceDateRange=setBalanceDateRange;
-window.clearBalanceDateRange=clearBalanceDateRange;
-window.renderBalance=renderBalance;
 </script>
 </body>
 </html>
