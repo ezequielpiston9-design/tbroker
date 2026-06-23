@@ -15,6 +15,14 @@
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+  // 🔥 AUTH
+  import {
+    getAuth,
+    signInAnonymously,
+    onAuthStateChanged
+  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
   const cfg = {
     apiKey:"AIzaSyC0uoiKkkQIU_NrnJQr5VSs2vB94UN87Mo",
     authDomain:"myproject-dfb0d.firebaseapp.com",
@@ -24,17 +32,58 @@
     messagingSenderId:"142948635097",
     appId:"1:142948635097:web:5893a023003346eb22c9c8"
   };
+
   const app = initializeApp(cfg);
-  const db  = getDatabase(app);
-  const r   = ref(db, 'tipsterbook');
-  window._fbSave = async (d) => { try { await set(r,{p:JSON.stringify(d)}); } catch(e){ console.warn('FB save err',e); } };
+
+  // DATABASE
+  const db = getDatabase(app);
+  const r  = ref(db, 'tipsterbook');
+
+  // AUTH
+  const auth = getAuth(app);
+
+  // LOGIN ANÓNIMO AUTOMÁTICO
+  signInAnonymously(auth)
+    .then(() => {
+      console.log("✅ Login anónimo OK");
+      document.getElementById('syncStatus').textContent = '🟢 Sincronizado';
+    })
+    .catch((e) => {
+      console.error("❌ Auth error", e);
+      document.getElementById('syncStatus').textContent = '🔴 Error auth';
+    });
+
+  // ESTADO LOGIN
+  onAuthStateChanged(auth, (user) => {
+    if(user){
+      console.log("UID:", user.uid);
+    }
+  });
+
+  // SAVE
+  window._fbSave = async (d) => {
+    try {
+      await set(r,{p:JSON.stringify(d)});
+    } catch(e){
+      console.warn('FB save err',e);
+    }
+  };
+
+  // LISTEN
   window._fbListen = (cb) => {
     onValue(r, snap => {
       const v = snap.val();
-      if(v && v.p){ try{ cb(JSON.parse(v.p)); }catch(e){} }
-      else cb({tipsters:[], retos:[]});
+
+      if(v && v.p){
+        try{
+          cb(JSON.parse(v.p));
+        }catch(e){}
+      } else {
+        cb({tipsters:[], retos:[]});
+      }
     });
   };
+
   window._fbReady = true;
   window.dispatchEvent(new Event('fb-ready'));
 </script>
