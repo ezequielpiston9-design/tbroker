@@ -613,6 +613,19 @@ select option{background:var(--s2);}
       <div class="fg"><label>Monto ($)</label><input type="number" id="eMonto"></div>
       <div class="fg"><label>Cuota</label><input type="number" id="eCuota" step="0.01"></div>
       <div class="fg"><label>Nº Eventos</label><input type="number" id="eEventos" min="1"></div>
+      <div class="fg"><label>Deporte</label>
+        <select id="eDeporte">
+          <option value="Fútbol Europeo">⚽ Fútbol Europeo</option>
+          <option value="Fútbol Latino">⚽ Fútbol Latino</option>
+          <option value="Fútbol Otro">⚽ Fútbol Otro</option>
+          <option value="Basketball">🏀 Basketball</option>
+          <option value="Tenis">🎾 Tenis</option>
+          <option value="Boxeo">🥊 Boxeo</option>
+          <option value="LoL">🎮 LoL</option>
+          <option value="CS:GO/Valo">🎮 CS:GO/Valo</option>
+          <option value="Otro">🎯 Otro</option>
+        </select>
+      </div>
       <div class="fg"><label>Fecha</label><input type="date" id="eFecha"></div>
     </div>
     <div style="margin-bottom:11px;">
@@ -2437,6 +2450,12 @@ function openEditModal(tid, bid) {
   document.getElementById('eCuota').value=b.cuota;
   document.getElementById('eEventos').value=b.eventos||1;
   document.getElementById('eFecha').value=b.fecha||'';
+  const eDepSel = document.getElementById('eDeporte');
+  if (eDepSel) {
+    const norm = normalizeSport(b.deporte);
+    const opts = [...eDepSel.options].map(o=>o.value);
+    eDepSel.value = opts.includes(b.deporte) ? b.deporte : (opts.includes(norm) ? norm : 'Fútbol Europeo');
+  }
   document.querySelectorAll('#editBetTypeChips .chip').forEach(c=>c.classList.toggle('selected',(b.types||[]).includes(c.dataset.val)));
   editJugada=b.played; setEditJugada(b.played);
   editResult=b.result; setEditResult(b.result);
@@ -2465,6 +2484,8 @@ function saveEditBet() {
   b.cuota=parseFloat(document.getElementById('eCuota').value);
   b.eventos=parseInt(document.getElementById('eEventos').value)||1;
   b.fecha=document.getElementById('eFecha').value;
+  const eDepSel2 = document.getElementById('eDeporte');
+  if (eDepSel2) b.deporte = eDepSel2.value;
   b.types=getChips('editBetTypeChips');
   b.played=editJugada; b.result=editResult;
   b.esSonadora=editSonadora;
