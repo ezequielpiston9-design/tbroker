@@ -223,14 +223,19 @@ select option{background:var(--s2);}
 <!-- GLOBAL STATS -->
 <div class="stats-strip" id="globalStats">
   <div class="stat-box"><div class="stat-lbl">Tipsters</div><div class="stat-val purple" id="g-tipsters">0</div></div>
+  <div class="stat-box"><div class="stat-lbl">Bank Total (jug)</div><div class="stat-val green" id="g-bank-jug">—</div></div>
+  <div class="stat-box"><div class="stat-lbl">Bank Total (no jug)</div><div class="stat-val pink" id="g-bank-nojug">—</div></div>
+  <div class="stat-box"><div class="stat-lbl">Retorno global</div><div class="stat-val" id="g-retorno">—</div></div>
+  <div class="stat-box"><div class="stat-lbl">Drawdown global</div><div class="stat-val" id="g-drawdown">—</div></div>
+  <div class="stat-box"><div class="stat-lbl">En juego ahora</div><div class="stat-val gold" id="g-enjuego">$0</div></div>
   <div class="stat-box"><div class="stat-lbl">Apostado (jug)</div><div class="stat-val" id="g-inv">$0</div></div>
-  <div class="stat-box"><div class="stat-lbl">Apostado (no jug)</div><div class="stat-val" id="g-inv-skip">$0</div></div>
   <div class="stat-box"><div class="stat-lbl">Profit (jug)</div><div class="stat-val green" id="g-profit">$0</div></div>
   <div class="stat-box"><div class="stat-lbl">Yield (jug)</div><div class="stat-val cyan" id="g-yield">0%</div></div>
   <div class="stat-box"><div class="stat-lbl">WR (jug)</div><div class="stat-val gold" id="g-wr">0%</div></div>
   <div class="stat-box"><div class="stat-lbl">Profit (no jug)</div><div class="stat-val pink" id="g-profit-skip">$0</div></div>
   <div class="stat-box"><div class="stat-lbl">Yield (no jug)</div><div class="stat-val pink" id="g-yield-skip">0%</div></div>
   <div class="stat-box"><div class="stat-lbl">WR (no jug)</div><div class="stat-val gold" id="g-wr-skip">0%</div></div>
+  <div class="stat-box"><div class="stat-lbl">Apostado (no jug)</div><div class="stat-val" id="g-inv-skip">$0</div></div>
   <div class="stat-box"><div class="stat-lbl">Jugadas / Total</div><div class="stat-val purple" id="g-bets">0/0</div></div>
 </div>
 
@@ -240,6 +245,8 @@ select option{background:var(--s2);}
   <button class="tab" onclick="switchTab('nueva')">➕ Nueva Apuesta</button>
   <button class="tab" onclick="switchTab('unidades')">📐 Unidades</button>
   <button class="tab" onclick="switchTab('graficas')">📊 Gráficas</button>
+  <button class="tab" onclick="switchTab('balance')">💰 Balance</button>
+  <button class="tab" onclick="switchTab('apuestas')">📋 Apuestas</button>
 </div>
 
 <!-- ===== TAB TIPSTERS ===== -->
@@ -374,6 +381,7 @@ select option{background:var(--s2);}
         <div class="chip" data-val="BTTS" onclick="toggleChip(this)">🥅 BTTS</div>
         <div class="chip" data-val="1X2" onclick="toggleChip(this)">3️⃣ 1X2</div>
         <div class="chip" data-val="Combo" onclick="toggleChip(this)">🔗 Combo</div>
+        <div class="chip" data-val="Clasificar" onclick="toggleChip(this)">🏅 Clasificar</div>
         <div class="chip" data-val="Doble Oportunidad" onclick="toggleChip(this)">🔁 Doble Op.</div>
         <div class="chip" data-val="Live" onclick="toggleChip(this)">🔴 Live</div>
       </div>
@@ -600,7 +608,62 @@ select option{background:var(--s2);}
   </div>
 </div>
 
+<!-- ===== TAB BALANCE ===== -->
+<div id="tab-balance" class="tab-content">
+  <div class="card" style="margin-bottom:11px;">
+    <div class="card-title">💰 Balance Global</div>
+    <div class="pboxes">
+      <div class="pbox"><div class="pbox-lbl">Balance Actual</div><div class="pbox-val-lg" id="bal-actual">$0</div></div>
+      <div class="pbox"><div class="pbox-lbl">Balance Inicial</div><div class="pbox-val" id="bal-inicial">$0</div></div>
+      <div class="pbox"><div class="pbox-lbl">Profit Total (jug)</div><div class="pbox-val" id="bal-profit">$0</div></div>
+      <div class="pbox"><div class="pbox-lbl">Retorno</div><div class="pbox-val" id="bal-retorno">—</div></div>
+      <div class="pbox"><div class="pbox-lbl">Tipster líder 🏆</div><div class="pbox-val gold" id="bal-top">—</div></div>
+      <div class="pbox"><div class="pbox-lbl">Tipster en rojo 📉</div><div class="pbox-val red" id="bal-bottom">—</div></div>
+    </div>
+    <div style="font-size:0.6rem;color:var(--muted);margin-top:8px;">El balance suma el bankroll inicial de cada tipster (si lo configuraste) más el profit acumulado de todas las apuestas jugadas. Cada apuesta ganada lo sube, cada perdida lo baja.</div>
+  </div>
+  <div class="card" style="margin-bottom:11px;">
+    <div class="card-title">Evolución del Balance</div>
+    <div class="period-bar" style="margin-bottom:9px;">
+      <button class="period-btn active" data-balperiod="all" onclick="setBalancePeriod('all')">Todo</button>
+      <button class="period-btn" data-balperiod="1y" onclick="setBalancePeriod('1y')">1 Año</button>
+      <button class="period-btn" data-balperiod="6m" onclick="setBalancePeriod('6m')">6 Meses</button>
+      <button class="period-btn" data-balperiod="3m" onclick="setBalancePeriod('3m')">3 Meses</button>
+      <button class="period-btn" data-balperiod="1m" onclick="setBalancePeriod('1m')">1 Mes</button>
+      <button class="period-btn" data-balperiod="1w" onclick="setBalancePeriod('1w')">1 Semana</button>
+    </div>
+    <div class="chart-wrap-lg"><canvas id="chartBalance"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Ranking de Tipsters — Más ganador → Más perdedor</div>
+    <div id="balanceRanking"></div>
+  </div>
+</div>
 
+<!-- ===== TAB APUESTAS (LISTADO GLOBAL) ===== -->
+<div id="tab-apuestas" class="tab-content">
+  <div class="card" style="margin-bottom:11px;">
+    <div class="card-title">Filtros</div>
+    <div style="margin-bottom:8px;"><span class="flbl">Resultado:</span>
+      <div class="filter-bar" style="margin-top:5px;">
+        <button class="flt-btn a-all" id="apf-all" onclick="setApuestasFilter('all')">🔵 Todas</button>
+        <button class="flt-btn" id="apf-win" onclick="setApuestasFilter('win')">✅ Ganadas</button>
+        <button class="flt-btn" id="apf-loss" onclick="setApuestasFilter('loss')">❌ Perdidas</button>
+        <button class="flt-btn" id="apf-pending" onclick="setApuestasFilter('pending')">⏳ Jugándose</button>
+        <button class="flt-btn" id="apf-void" onclick="setApuestasFilter('void')">↩️ Void</button>
+      </div>
+    </div>
+    <div><span class="flbl">Tipster:</span>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="apTipsterFilter"></div>
+    </div>
+  </div>
+  <div class="stats-strip">
+    <div class="stat-box"><div class="stat-lbl">Apuestas</div><div class="stat-val purple" id="ap-count">0</div></div>
+    <div class="stat-box"><div class="stat-lbl">Profit</div><div class="stat-val green" id="ap-profit">$0</div></div>
+    <div class="stat-box"><div class="stat-lbl">Win Rate</div><div class="stat-val gold" id="ap-wr">0%</div></div>
+  </div>
+  <div class="card"><div class="card-title">Todas las Apuestas (más nuevas primero)</div><div id="apuestasTable"></div></div>
+</div>
 
 
 </div><!-- /container -->
@@ -644,6 +707,7 @@ select option{background:var(--s2);}
         <div class="chip" data-val="BTTS" onclick="toggleEditChip(this)">🥅 BTTS</div>
         <div class="chip" data-val="1X2" onclick="toggleEditChip(this)">3️⃣ 1X2</div>
         <div class="chip" data-val="Combo" onclick="toggleEditChip(this)">🔗 Combo</div>
+        <div class="chip" data-val="Clasificar" onclick="toggleEditChip(this)">🏅 Clasificar</div>
         <div class="chip" data-val="Doble Oportunidad" onclick="toggleEditChip(this)">🔁 Doble Op.</div>
         <div class="chip" data-val="Live" onclick="toggleEditChip(this)">🔴 Live</div>
       </div>
@@ -838,6 +902,8 @@ let retoModeOn = false, activeRetoId = null, pendingRetoMode = null;
 let retosFilterTipster = 'all', retosFilterEstado = 'all';
 let graficasSubView = 'apuestas';
 let riskSimTimer = null;
+let balPeriod = 'all';
+let apFilterResult = 'all', apFilterTipster = 'all';
 const COLORS = ['#6c63ff','#22c55e','#06b6d4','#f59e0b','#e879f9','#ef4444','#f97316','#84cc16','#14b8a6','#a78bfa'];
 const RETO_MODES = {
   allin:    { label: '🎯 All In' },
@@ -1197,10 +1263,12 @@ function switchTab(id) {
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab:not(.subtab)').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
-  ['tipsters','nueva','unidades','graficas'].forEach((x,i)=>{ if(x===id) document.querySelectorAll('.tab:not(.subtab)')[i]?.classList.add('active'); });
+  ['tipsters','nueva','unidades','graficas','balance','apuestas'].forEach((x,i)=>{ if(x===id) document.querySelectorAll('.tab:not(.subtab)')[i]?.classList.add('active'); });
   if (id==='graficas') { updateChartTipsterFilter(); setGraficasSubView(graficasSubView); }
   if (id==='unidades') { updateUnitTipsterFilter(); renderUnidades(); }
   if (id==='nueva') { renderRetoInfoPanel(); updateRiskPanel(); }
+  if (id==='balance') { renderBalanceTab(); }
+  if (id==='apuestas') { updateApuestasTipsterFilter(); renderApuestasList(); }
 }
 
 // ============================================================
@@ -1239,6 +1307,7 @@ function getSortedTipsters() {
     return 0;
   });
 }
+let openTipsterIds = new Set();
 function renderAll() { renderTipsterList(); updateTipsterSelect(); updateGlobalStats(); }
 
 function renderTipsterList() {
@@ -1276,14 +1345,61 @@ function renderTipsterList() {
           <span class="chevron" id="chev-${t.id}">▼</span>
         </div>
       </div>
-      <div class="tipster-body" id="tbody-${t.id}">${renderTipsterBody(t,s,sk,ratio,roi,color)}</div>
+      <div class="tipster-body${openTipsterIds.has(t.id) ? ' open' : ''}" id="tbody-${t.id}">${renderTipsterBody(t,s,sk,ratio,roi,color)}</div>
     </div>`;
   }).join('');
+  // re-apply chevron state
+  data.tipsters.forEach(t => {
+    const chev = document.getElementById('chev-'+t.id);
+    if (chev) chev.classList.toggle('open', openTipsterIds.has(t.id));
+  });
 }
 
 function renderTipsterBody(t, s, sk, ratio, roi, color) {
   const pb = t.bets.filter(b=>b.played), sb2 = t.bets.filter(b=>!b.played);
+  const bankActual   = getBankActual(t);
+  const bankActualSk = getBankActualSkip(t);
+  const bankRef      = getBankReferencia(t);
+  const bankPico     = getBankPico(t);
+  const retornoPct   = (bankActual!=null && bankRef!=null && bankRef>0) ? (bankActual/bankRef-1)*100 : null;
+  const ddPicoPct    = (bankActual!=null && bankPico!=null && bankPico>0) ? Math.max(0,(1-bankActual/bankPico)*100) : null;
+  const ddColor      = ddPicoPct==null?'':ddPicoPct<=15?'green':ddPicoPct<=35?'gold':'red';
+  const retColor     = retornoPct==null?'':retornoPct>=0?'green':'red';
+
+  // Pending bets: newest first
+  const pending = t.bets.filter(b=>b.result==='pending').sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+
   return `
+    ${(bankActual!=null||bankActualSk!=null) ? `
+    <div class="section-divider">💰 Balance</div>
+    <div class="pboxes">
+      ${bankActual!=null?`<div class="pbox"><div class="pbox-lbl">Bank (Jugadas)</div><div class="pbox-val ${bankActual>=0?'green':'red'}">$${bankActual.toFixed(2)}</div></div>`:''}
+      ${bankActualSk!=null?`<div class="pbox"><div class="pbox-lbl">Bank (No Jug.)</div><div class="pbox-val ${bankActualSk>=0?'pink':'red'}">$${bankActualSk.toFixed(2)}</div></div>`:''}
+      ${bankRef!=null?`<div class="pbox"><div class="pbox-lbl">Bank Referencia</div><div class="pbox-val">$${bankRef.toFixed(2)}</div></div>`:''}
+      ${bankPico!=null?`<div class="pbox"><div class="pbox-lbl">Bank Pico</div><div class="pbox-val cyan">$${bankPico.toFixed(2)}</div></div>`:''}
+      ${retornoPct!=null?`<div class="pbox"><div class="pbox-lbl">Retorno desde inicio</div><div class="pbox-val ${retColor}">${retornoPct>=0?'+':''}${retornoPct.toFixed(2)}%</div></div>`:''}
+      ${ddPicoPct!=null?`<div class="pbox"><div class="pbox-lbl">Drawdown desde pico</div><div class="pbox-val ${ddColor}">${ddPicoPct.toFixed(2)}%</div></div>`:''}
+    </div>` : ''}
+    ${pending.length ? `
+    <div class="section-divider">⏳ Apuestas Activas (${pending.length})</div>
+    <div style="overflow-x:auto;margin-bottom:9px;">
+    <table class="bets-table"><thead><tr>
+      <th>Fecha</th><th>Descripción</th><th>Tipo</th><th>Stake</th><th>Monto</th><th>Cuota</th><th>Jugada</th><th></th>
+    </tr></thead><tbody>
+    ${pending.map(b=>`<tr class="${b.played?'':'row-skipped'}">
+      <td>${b.fecha||'—'}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;">${b.retoId?'🎯':''}${b.esSonadora?'🌙':''}${(b.retoId||b.esSonadora)?' ':''}${b.desc||'—'}</td>
+      <td><div class="types-tags">${(b.types||[]).map(tp=>`<span class="type-tag">${tp}</span>`).join('')}</div></td>
+      <td style="font-family:'DM Mono',monospace;">${b.stake?b.stake+'u':'—'}</td>
+      <td>$${(b.monto||0).toFixed(0)}</td>
+      <td>${(b.cuota||0).toFixed(2)}</td>
+      <td><span class="badge ${b.played?'badge-played':'badge-skipped'}">${b.played?'✅':'👁'}</span></td>
+      <td style="display:flex;gap:3px;">
+        <button class="btn-edit" onclick="openEditModal(${t.id},${b.id})">✏️</button>
+        <button class="btn-del" onclick="deleteBet(${t.id},${b.id})">🗑</button>
+      </td>
+    </tr>`).join('')}
+    </tbody></table></div>` : ''}
     <div class="section-divider">✅ Estadísticas — Jugadas (tu profit real)</div>
     <div class="pboxes">
       <div class="pbox"><div class="pbox-lbl">Apuestas</div><div class="pbox-val">${s.total}</div></div>
@@ -1296,7 +1412,7 @@ function renderTipsterBody(t, s, sk, ratio, roi, color) {
       <div class="pbox"><div class="pbox-lbl">U. Netas</div><div class="pbox-val ${s.uNet>=0?'green':'red'}">${fmtU(s.uNet)}</div></div>
       <div class="pbox"><div class="pbox-lbl">Yield (U)</div><div class="pbox-val ${s.uYield>=0?'cyan':'red'}">${s.uYield.toFixed(2)}%</div></div>
       ${ratio!==null?`<div class="pbox"><div class="pbox-lbl">$ / stake</div><div class="pbox-val purple">≈$${ratio.toFixed(0)}</div></div>`:''}
-      ${t.bankroll?`<div class="pbox"><div class="pbox-lbl">Bankroll</div><div class="pbox-val">$${t.bankroll.toFixed(0)}</div></div>`:''}
+      ${t.bankroll?`<div class="pbox"><div class="pbox-lbl">Bankroll inicial</div><div class="pbox-val">$${t.bankroll.toFixed(0)}</div></div>`:''}
     </div>
     <div class="section-divider">👁 Estadísticas — No Jugadas (rendimiento real tipster)</div>
     <div class="pboxes">
@@ -1371,8 +1487,12 @@ function sortBetsTable(tid, key, el) {
   document.getElementById(`betsTableWrap-${tid}`).innerHTML = renderBetsTable(t, key);
 }
 function toggleTipster(id) {
-  document.getElementById('tbody-'+id).classList.toggle('open');
-  document.getElementById('chev-'+id).classList.toggle('open');
+  if (openTipsterIds.has(id)) openTipsterIds.delete(id);
+  else openTipsterIds.add(id);
+  const body = document.getElementById('tbody-'+id);
+  const chev = document.getElementById('chev-'+id);
+  if (body) body.classList.toggle('open', openTipsterIds.has(id));
+  if (chev) chev.classList.toggle('open', openTipsterIds.has(id));
 }
 
 // ============================================================
@@ -2546,16 +2666,37 @@ function updateTipsterSelect() {
 function updateGlobalStats() {
   let inv=0,prof=0,won=0,closed=0,total=0,played=0;
   let invSk=0,profSk=0,wonSk=0,closedSk=0;
+  let bankJugTotal=0, bankNoJugTotal=0, bankRefTotal=0, bankPicoTotal=0;
+  let hasBankJug=false, hasBankNoJug=false, hasBankRef=false, hasBankPico=false;
+  let enJuego=0;
   data.tipsters.forEach(t=>{
     const s=calcStats(t.bets,'played'), sk=calcStats(t.bets,'skipped');
     inv+=s.invested; prof+=s.profit; won+=s.won; closed+=s.closed;
     total+=t.bets.length; played+=t.bets.filter(b=>b.played).length;
     invSk+=sk.invested; profSk+=sk.profit; wonSk+=sk.won; closedSk+=sk.closed;
+    // bank balances
+    const bj = getBankActual(t);
+    if (bj!=null) { bankJugTotal+=bj; hasBankJug=true; }
+    const bnj = getBankActualSkip(t);
+    if (bnj!=null) { bankNoJugTotal+=bnj; hasBankNoJug=true; }
+    const bref = getBankReferencia(t);
+    if (bref!=null) { bankRefTotal+=bref; hasBankRef=true; }
+    const bpico = getBankPico(t);
+    if (bpico!=null) { bankPicoTotal+=bpico; hasBankPico=true; }
+    // en juego = apuestas pendientes jugadas
+    enJuego += t.bets.filter(b=>b.played&&b.result==='pending').reduce((s,b)=>s+(b.monto||0),0);
   });
   const yield_=inv>0?prof/inv*100:0, wr=closed>0?won/closed*100:0;
   const yieldSk=invSk>0?profSk/invSk*100:0, wrSk=closedSk>0?wonSk/closedSk*100:0;
+  const retorno = hasBankJug&&hasBankRef&&bankRefTotal>0 ? (bankJugTotal/bankRefTotal-1)*100 : null;
+  const ddPico  = hasBankJug&&hasBankPico&&bankPicoTotal>0 ? Math.max(0,(1-bankJugTotal/bankPicoTotal)*100) : null;
   const se=(id,txt,cls)=>{const e=document.getElementById(id);if(e){e.textContent=txt;if(cls)e.className='stat-val '+cls;}};
   se('g-tipsters', data.tipsters.length, 'purple');
+  se('g-bank-jug',   hasBankJug   ? '$'+bankJugTotal.toFixed(2)   : '—', hasBankJug?(bankJugTotal>=0?'green':'red'):'');
+  se('g-bank-nojug', hasBankNoJug ? '$'+bankNoJugTotal.toFixed(2) : '—', hasBankNoJug?(bankNoJugTotal>=0?'pink':'red'):'');
+  se('g-retorno',  retorno!=null ? (retorno>=0?'+':'')+retorno.toFixed(2)+'%' : '—', retorno!=null?(retorno>=0?'green':'red'):'');
+  se('g-drawdown', ddPico!=null  ? ddPico.toFixed(2)+'%' : '—', ddPico!=null?(ddPico<=15?'green':ddPico<=35?'gold':'red'):'');
+  se('g-enjuego', '$'+enJuego.toFixed(2), enJuego>0?'gold':'');
   se('g-inv', '$'+inv.toFixed(0));
   se('g-inv-skip', '$'+invSk.toFixed(0), 'pink');
   se('g-profit', fmt(prof), prof>=0?'green':'red');
@@ -2565,6 +2706,158 @@ function updateGlobalStats() {
   se('g-yield-skip', yieldSk.toFixed(1)+'%', yieldSk>=0?'pink':'red');
   se('g-wr-skip', wrSk.toFixed(0)+'%', 'gold');
   se('g-bets', played+'/'+total, 'purple');
+}
+
+// ============================================================
+// BALANCE TAB
+// ============================================================
+function getBaselineTotal() {
+  return data.tipsters.reduce((s,t) => s + (t.bankroll != null ? t.bankroll : 0), 0);
+}
+function computeBalanceSeries() {
+  const baseline = getBaselineTotal();
+  const allPlayed = data.tipsters
+    .flatMap(t => t.bets.filter(b => b.played && b.result !== 'pending' && b.fecha));
+  const dateMap = {};
+  allPlayed.forEach(b => { dateMap[b.fecha] = (dateMap[b.fecha]||0) + calcProfit(b); });
+  const dates = Object.keys(dateMap).sort();
+  const labels = ['Inicio'], values = [parseFloat(baseline.toFixed(2))];
+  let running = baseline;
+  dates.forEach(d => { running += dateMap[d]; labels.push(d); values.push(parseFloat(running.toFixed(2))); });
+  return { labels, values, baseline };
+}
+function setBalancePeriod(p) {
+  balPeriod = p;
+  document.querySelectorAll('[data-balperiod]').forEach(x => x.classList.toggle('active', x.dataset.balperiod === p));
+  renderBalanceChart();
+}
+function renderBalanceChart() {
+  const full = computeBalanceSeries();
+  let labels = full.labels, values = full.values;
+  if (balPeriod !== 'all') {
+    const now = new Date(), d = new Date(now);
+    if (balPeriod==='1y') d.setFullYear(now.getFullYear()-1);
+    else if (balPeriod==='6m') d.setMonth(now.getMonth()-6);
+    else if (balPeriod==='3m') d.setMonth(now.getMonth()-3);
+    else if (balPeriod==='1m') d.setMonth(now.getMonth()-1);
+    else if (balPeriod==='1w') d.setDate(now.getDate()-7);
+    const cutoff = d.toISOString().split('T')[0];
+    let idx = labels.findIndex((l,i) => i>0 && l >= cutoff);
+    if (idx === -1) idx = labels.length;
+    if (idx > 0) {
+      labels = ['Período', ...labels.slice(idx)];
+      values = [values[idx-1], ...values.slice(idx)];
+    }
+  }
+  destroyChart('cBalance');
+  const c = document.getElementById('chartBalance')?.getContext('2d');
+  if (c) charts.cBalance = new Chart(c, { type:'line', data:{ labels, datasets:[{
+    label:'Balance ($)', data: values, borderColor:'#6c63ff', backgroundColor:'rgba(108,99,255,.12)',
+    fill:true, tension:0.4, pointRadius: values.length>60?0:4, pointHoverRadius:6,
+    pointBackgroundColor: values.map((v,i)=> i===0?'#6c63ff':(v>=values[i-1]?'#22c55e':'#ef4444')),
+    pointBorderColor:'transparent'
+  }]}, options: cOpts('$') });
+}
+function renderBalanceRanking() {
+  const el = document.getElementById('balanceRanking'); if (!el) return;
+  if (!data.tipsters.length) { el.innerHTML = '<div class="no-bets">Sin tipsters registrados.</div>'; return; }
+  const rows = data.tipsters.map((t,i) => {
+    const s = calcStats(t.bets, 'played');
+    return { name:t.name, color: COLORS[i % COLORS.length], profit:s.profit, yield_:s.yield_, wr:s.wr, bets:s.total };
+  }).sort((a,b) => b.profit - a.profit);
+  el.innerHTML = `<table class="bets-table"><thead><tr>
+    <th>#</th><th>Tipster</th><th>Profit $</th><th>Yield</th><th>Win Rate</th><th>Apuestas Jugadas</th>
+  </tr></thead><tbody>${rows.map((r,i) => `
+    <tr>
+      <td>${i+1}${i===0&&r.profit>0?' 🏆':''}${i===rows.length-1&&r.profit<0?' 📉':''}</td>
+      <td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${r.color};margin-right:6px;"></span>${r.name}</td>
+      <td class="${r.profit>=0?'green':'red'}" style="font-family:'DM Mono',monospace;">${fmt(r.profit)}</td>
+      <td class="${r.yield_>=0?'cyan':'red'}" style="font-family:'DM Mono',monospace;">${r.yield_.toFixed(1)}%</td>
+      <td class="gold" style="font-family:'DM Mono',monospace;">${r.wr.toFixed(0)}%</td>
+      <td>${r.bets}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+function renderBalanceTab() {
+  const baseline = getBaselineTotal();
+  let profitTotal = 0;
+  const perTipster = data.tipsters.map(t => ({ name:t.name, profit: calcStats(t.bets,'played').profit }));
+  perTipster.forEach(p => profitTotal += p.profit);
+  const balanceActual = baseline + profitTotal;
+  const retorno = baseline > 0 ? (profitTotal / baseline * 100) : null;
+  const se = (id,txt,cls) => { const e=document.getElementById(id); if(e){ e.textContent=txt; if(cls) e.className = e.id==='bal-actual' ? 'pbox-val-lg '+cls : 'pbox-val '+cls; } };
+  se('bal-actual', fmt(balanceActual), balanceActual>=0?'green':'red');
+  se('bal-inicial', '$'+baseline.toFixed(2), '');
+  se('bal-profit', fmt(profitTotal), profitTotal>=0?'green':'red');
+  se('bal-retorno', retorno!=null ? (retorno>=0?'+':'')+retorno.toFixed(2)+'%' : '—', retorno!=null?(retorno>=0?'green':'red'):'');
+  if (perTipster.length) {
+    const sorted = [...perTipster].sort((a,b)=>b.profit-a.profit);
+    const top = sorted[0], bottom = sorted[sorted.length-1];
+    se('bal-top', top.name+' '+fmt(top.profit), 'gold');
+    se('bal-bottom', bottom.name+' '+fmt(bottom.profit), 'red');
+  } else {
+    se('bal-top', '—', ''); se('bal-bottom', '—', '');
+  }
+  renderBalanceChart();
+  renderBalanceRanking();
+}
+
+// ============================================================
+// APUESTAS TAB (LISTADO GLOBAL)
+// ============================================================
+function setApuestasFilter(f) {
+  apFilterResult = f;
+  ['all','win','loss','pending','void'].forEach(x => {
+    const btn = document.getElementById('apf-'+x);
+    if (btn) btn.className = 'flt-btn' + (x===f ? ' a-all' : '');
+  });
+  renderApuestasList();
+}
+function setApuestasFilterTipster(id, el) {
+  apFilterTipster = id;
+  document.querySelectorAll('#apTipsterFilter .tf-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderApuestasList();
+}
+function updateApuestasTipsterFilter() {
+  const el = document.getElementById('apTipsterFilter'); if (!el) return;
+  el.innerHTML = `<button class="tf-btn ${apFilterTipster==='all'?'active':''}" onclick="setApuestasFilterTipster('all',this)">Todos</button>` +
+    data.tipsters.map(t => `<button class="tf-btn ${apFilterTipster===t.id?'active':''}" onclick="setApuestasFilterTipster(${t.id},this)">${t.name}</button>`).join('');
+}
+function renderApuestasList() {
+  const el = document.getElementById('apuestasTable'); if (!el) return;
+  let bets = data.tipsters.flatMap(t => t.bets.map(b => ({ ...b, tipsterName: t.name, tipsterId: t.id })));
+  if (apFilterTipster !== 'all') bets = bets.filter(b => b.tipsterId === apFilterTipster);
+  if (apFilterResult !== 'all') bets = bets.filter(b => b.result === apFilterResult);
+  bets.sort((a,b) => (b.fecha||'').localeCompare(a.fecha||'') || (b.id - a.id));
+
+  const closed = bets.filter(b => b.result !== 'pending');
+  const profit = closed.reduce((s,b) => s + calcProfit(b), 0);
+  const notVoid = closed.filter(b => b.result !== 'void');
+  const wr = notVoid.length ? notVoid.filter(b => b.result==='win').length / notVoid.length * 100 : 0;
+  const se = (id,txt,cls) => { const e=document.getElementById(id); if(e){ e.textContent=txt; if(cls) e.className='stat-val '+cls; } };
+  se('ap-count', bets.length, 'purple');
+  se('ap-profit', fmt(profit), profit>=0?'green':'red');
+  se('ap-wr', wr.toFixed(0)+'%', 'gold');
+
+  if (!bets.length) { el.innerHTML = '<div class="no-bets">Sin apuestas para este filtro.</div>'; return; }
+  el.innerHTML = `<div style="overflow-x:auto;"><table class="bets-table"><thead><tr>
+    <th>Fecha</th><th>Tipster</th><th>Descripción</th><th>Tipo</th><th>Stake</th><th>Monto</th><th>Cuota</th><th>Jugada</th><th>Resultado</th><th>Profit $</th><th>Unidades</th>
+  </tr></thead><tbody>${bets.map(b => {
+    const p = calcProfit(b), u = calcUnits(b);
+    return `<tr class="${b.played?'':'row-skipped'}">
+      <td>${b.fecha||'—'}</td>
+      <td>${b.tipsterName}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;">${b.retoId?'🎯':''}${b.esSonadora?'🌙':''}${(b.retoId||b.esSonadora)?' ':''}${b.desc||'—'}</td>
+      <td><div class="types-tags">${(b.types||[]).map(tp=>`<span class="type-tag">${tp}</span>`).join('')}</div></td>
+      <td style="font-family:'DM Mono',monospace;">${b.stake?b.stake+'u':'—'}</td>
+      <td>$${(b.monto||0).toFixed(0)}</td>
+      <td>${(b.cuota||0).toFixed(2)}</td>
+      <td><span class="badge ${b.played?'badge-played':'badge-skipped'}">${b.played?'✅':'👁'}</span></td>
+      <td><span class="badge badge-${b.result}">${b.result==='pending'?'⏳ Jugándose':resLabel(b.result)}</span></td>
+      <td class="${p>=0?'green':'red'}" style="font-family:'DM Mono',monospace;">${b.result!=='pending'?fmt(p):'—'}</td>
+      <td class="${u!==null?(u>=0?'cyan':'red'):''}" style="font-family:'DM Mono',monospace;">${u!==null&&b.result!=='pending'?fmtU(u):'—'}</td>
+    </tr>`;
+  }).join('')}</tbody></table></div>`;
 }
 
 // ============================================================
@@ -3001,6 +3294,9 @@ window.updateRiskPanel=updateRiskPanel;
 window.toggleSonadora=toggleSonadora;
 window.toggleEditSonadora=toggleEditSonadora;
 window.importData=importData;
+window.setBalancePeriod=setBalancePeriod;
+window.setApuestasFilter=setApuestasFilter;
+window.setApuestasFilterTipster=setApuestasFilterTipster;
 </script>
 </body>
 </html>
