@@ -691,6 +691,13 @@ select option{background:var(--s2);}
         <button class="flt-btn" id="apf-void" onclick="setApuestasFilter('void')">↩️ Void</button>
       </div>
     </div>
+    <div style="margin-bottom:8px;"><span class="flbl">Jugada:</span>
+      <div class="filter-bar" style="margin-top:5px;">
+        <button class="flt-btn a-all" id="apj-all" onclick="setApuestasFilterJugada('all')">🔵 Todas</button>
+        <button class="flt-btn" id="apj-played" onclick="setApuestasFilterJugada('played')">✅ Jugadas</button>
+        <button class="flt-btn" id="apj-skipped" onclick="setApuestasFilterJugada('skipped')">👁 No Jugadas</button>
+      </div>
+    </div>
     <div><span class="flbl">Tipster:</span>
       <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="apTipsterFilter"></div>
     </div>
@@ -943,7 +950,7 @@ let riskSimTimer = null;
 let balPeriod = 'all';
 let balDateFrom = null, balDateTo = null;
 let balView = 'jugadas';
-let apFilterResult = 'all', apFilterTipster = 'all';
+let apFilterResult = 'all', apFilterTipster = 'all', apFilterJugada = 'all';
 const COLORS = ['#6c63ff','#22c55e','#06b6d4','#f59e0b','#e879f9','#ef4444','#f97316','#84cc16','#14b8a6','#a78bfa'];
 const RETO_MODES = {
   allin:    { label: '🎯 All In' },
@@ -2496,6 +2503,13 @@ function updateEditSonadoraBadgeUI() {
   b.textContent = editSonadora ? '🌙 Soñadora: ON' : '🌙 Soñadora: OFF';
 }
 
+function refreshExtraTabsIfActive() {
+  const balTab = document.getElementById('tab-balance');
+  const apTab = document.getElementById('tab-apuestas');
+  if (balTab && balTab.classList.contains('active')) renderBalanceTab();
+  if (apTab && apTab.classList.contains('active')) renderApuestasList();
+}
+
 function saveBet() {
   const tid = parseInt(document.getElementById('bTipster').value);
   const t = data.tipsters.find(t=>t.id===tid);
@@ -2529,6 +2543,7 @@ function saveBet() {
   t.bets.push(newBet);
   refreshBankPico(t);
   save(); renderAll();
+  refreshExtraTabsIfActive();
 
   let retoEndedMsg = null;
   if (newBet.retoId) {
@@ -2593,6 +2608,7 @@ function deleteBet(tid, bid) {
       const rid = bet ? bet.retoId : null;
       t.bets=t.bets.filter(b=>b.id!==bid);
       save(); renderAll();
+      refreshExtraTabsIfActive();
       if (rid) {
         recomputeReto(rid);
         if (activeRetoId === rid) { renderRetoInfoPanel(); updateRiskPanel(); }
@@ -2657,6 +2673,7 @@ function saveEditBet() {
   b.esSonadora=editSonadora;
   refreshBankPico(t);
   save(); renderAll(); closeEditModal();
+  refreshExtraTabsIfActive();
   if (b.retoId) {
     recomputeReto(b.retoId);
     if (activeRetoId === b.retoId) { renderRetoInfoPanel(); updateRiskPanel(); }
@@ -3010,6 +3027,14 @@ function setApuestasFilter(f) {
   });
   renderApuestasList();
 }
+function setApuestasFilterJugada(f) {
+  apFilterJugada = f;
+  ['all','played','skipped'].forEach(x => {
+    const btn = document.getElementById('apj-'+x);
+    if (btn) btn.className = 'flt-btn' + (x===f ? ' a-'+x : '');
+  });
+  renderApuestasList();
+}
 function setApuestasFilterTipster(id, el) {
   apFilterTipster = id;
   document.querySelectorAll('#apTipsterFilter .tf-btn').forEach(b => b.classList.remove('active'));
@@ -3025,6 +3050,8 @@ function renderApuestasList() {
   const el = document.getElementById('apuestasTable'); if (!el) return;
   let bets = data.tipsters.flatMap(t => t.bets.map(b => ({ ...b, tipsterName: t.name, tipsterId: t.id })));
   if (apFilterTipster !== 'all') bets = bets.filter(b => b.tipsterId === apFilterTipster);
+  if (apFilterJugada === 'played') bets = bets.filter(b => b.played);
+  else if (apFilterJugada === 'skipped') bets = bets.filter(b => !b.played);
   if (apFilterResult !== 'all') bets = bets.filter(b => b.result === apFilterResult);
   bets.sort((a,b) => (b.fecha||'').localeCompare(a.fecha||'') || (b.id - a.id));
 
@@ -3039,7 +3066,7 @@ function renderApuestasList() {
 
   if (!bets.length) { el.innerHTML = '<div class="no-bets">Sin apuestas para este filtro.</div>'; return; }
   el.innerHTML = `<div style="overflow-x:auto;"><table class="bets-table"><thead><tr>
-    <th>Fecha</th><th>Tipster</th><th>Descripción</th><th>Tipo</th><th>Stake</th><th>Monto</th><th>Cuota</th><th>Jugada</th><th>Resultado</th><th>Profit $</th><th>Unidades</th>
+    <th>Fecha</th><th>Tipster</th><th>Descripción</th><th>Tipo</th><th>Stake</th><th>Monto</th><th>Cuota</th><th>Jugada</th><th>Resultado</th><th>Profit $</th><th>Unidades</th><th>Acciones</th>
   </tr></thead><tbody>${bets.map(b => {
     const p = calcProfit(b), u = calcUnits(b);
     return `<tr class="${b.played?'':'row-skipped'}">
@@ -3054,6 +3081,7 @@ function renderApuestasList() {
       <td><span class="badge badge-${b.result}">${b.result==='pending'?'⏳ Jugándose':resLabel(b.result)}</span></td>
       <td class="${p>=0?'green':'red'}" style="font-family:'DM Mono',monospace;">${b.result!=='pending'?fmt(p):'—'}</td>
       <td class="${u!==null?(u>=0?'cyan':'red'):''}" style="font-family:'DM Mono',monospace;">${u!==null&&b.result!=='pending'?fmtU(u):'—'}</td>
+      <td><div style="display:flex;gap:4px;"><button class="btn-edit" onclick="openEditModal(${b.tipsterId},${b.id})">✏️</button><button class="btn-del" onclick="deleteBet(${b.tipsterId},${b.id})">🗑</button></div></td>
     </tr>`;
   }).join('')}</tbody></table></div>`;
 }
@@ -3501,6 +3529,7 @@ window.setMovTipo=setMovTipo;
 window.addBalanceMov=addBalanceMov;
 window.deleteBalanceMov=deleteBalanceMov;
 window.setApuestasFilter=setApuestasFilter;
+window.setApuestasFilterJugada=setApuestasFilterJugada;
 window.setApuestasFilterTipster=setApuestasFilterTipster;
 </script>
 </body>
