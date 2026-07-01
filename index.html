@@ -82,6 +82,7 @@ select option{background:var(--s2);}
 .jugada-toggle{display:flex;gap:6px;}
 .jt-btn{flex:1;padding:10px;border:2px solid var(--border);border-radius:9px;background:var(--s2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all .18s;text-align:center;}
 .jt-btn.played{border-color:var(--green);background:rgba(34,197,94,.12);color:var(--green);}
+.jt-btn.retiro-sel{border-color:var(--red);background:rgba(239,68,68,.12);color:var(--red);}
 .jt-btn.skipped{border-color:var(--pink);background:rgba(232,121,249,.12);color:var(--pink);}
 /* RESULT */
 .result-toggle{display:flex;gap:5px;flex-wrap:wrap;}
@@ -620,23 +621,36 @@ select option{background:var(--s2);}
     <div class="card-title" id="bal-cardtitle">💰 Balance Global (Jugadas)</div>
     <div class="pboxes">
       <div class="pbox"><div class="pbox-lbl" id="bal-actual-lbl">Balance Actual</div><div class="pbox-val-lg" id="bal-actual">$0</div></div>
-      <div class="pbox"><div class="pbox-lbl">Balance Inicial</div><div class="pbox-val" id="bal-inicial">$0</div></div>
-      <div class="pbox" id="bal-ingresado-box"><div class="pbox-lbl">💵 Balance Ingresado</div>
-        <input type="number" id="bal-ingresado-input" value="0" step="0.01" placeholder="0"
-          style="width:100%;background:var(--s3);border:1px solid var(--border);color:var(--green);padding:6px 8px;border-radius:6px;font-family:'DM Mono',monospace;font-size:0.86rem;text-align:center;outline:none;"
-          onchange="updateBalanceAdj('ingresado', this.value)">
+      <div class="pbox"><div class="pbox-lbl">Balance Inicial ✏️</div>
+        <input type="number" id="bal-inicial-input" value="0" step="0.01" placeholder="0"
+          style="width:100%;background:var(--s3);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-family:'DM Mono',monospace;font-size:0.86rem;text-align:center;outline:none;"
+          onchange="updateBalanceInicial(this.value)">
       </div>
-      <div class="pbox" id="bal-retirado-box"><div class="pbox-lbl">🏧 Balance Retirado</div>
-        <input type="number" id="bal-retirado-input" value="0" step="0.01" placeholder="0"
-          style="width:100%;background:var(--s3);border:1px solid var(--border);color:var(--red);padding:6px 8px;border-radius:6px;font-family:'DM Mono',monospace;font-size:0.86rem;text-align:center;outline:none;"
-          onchange="updateBalanceAdj('retirado', this.value)">
-      </div>
+      <div class="pbox" id="bal-totaling-box"><div class="pbox-lbl">💵 Total Ingresado</div><div class="pbox-val green" id="bal-totaling">$0</div></div>
+      <div class="pbox" id="bal-totalret-box"><div class="pbox-lbl">🏧 Total Retirado</div><div class="pbox-val red" id="bal-totalret">$0</div></div>
       <div class="pbox"><div class="pbox-lbl" id="bal-profit-lbl">Profit Total (jug)</div><div class="pbox-val" id="bal-profit">$0</div></div>
       <div class="pbox"><div class="pbox-lbl">Retorno</div><div class="pbox-val" id="bal-retorno">—</div></div>
       <div class="pbox"><div class="pbox-lbl">Tipster líder 🏆</div><div class="pbox-val gold" id="bal-top">—</div></div>
       <div class="pbox"><div class="pbox-lbl">Tipster en rojo 📉</div><div class="pbox-val red" id="bal-bottom">—</div></div>
     </div>
-    <div style="font-size:0.6rem;color:var(--muted);margin-top:8px;" id="bal-desc">El balance suma el bankroll inicial de cada tipster (si lo configuraste), más lo que ingresaste, menos lo que retiraste, más el profit acumulado de todas las apuestas jugadas. Cada apuesta ganada lo sube, cada perdida lo baja.</div>
+    <div style="font-size:0.6rem;color:var(--muted);margin-top:8px;" id="bal-desc">El balance parte de un balance inicial editable (podés dejarlo en 0 y cargar todo por historial), suma los ingresos, resta los retiros, y suma el profit acumulado de todas las apuestas jugadas. Cada apuesta ganada lo sube, cada perdida lo baja.</div>
+  </div>
+  <div class="card" style="margin-bottom:11px;" id="bal-hist-card">
+    <div class="card-title">📜 Historial de Ingresos / Retiros</div>
+    <div class="form-grid" style="margin-bottom:9px;">
+      <div class="fg"><label>Tipo</label>
+        <div class="jugada-toggle">
+          <button class="jt-btn played" id="movTipo-ingreso" onclick="setMovTipo('ingreso')">💵 Ingreso</button>
+          <button class="jt-btn" id="movTipo-retiro" onclick="setMovTipo('retiro')">🏧 Retiro</button>
+        </div>
+      </div>
+      <div class="fg"><label>Monto</label><input type="number" id="movMonto" step="0.01" placeholder="0"></div>
+      <div class="fg"><label>Fecha</label><input type="date" id="movFecha"></div>
+      <div class="fg"><label>Nota <span class="opt">(opcional)</span></label><input type="text" id="movNota" placeholder="Ej: transferencia banco"></div>
+    </div>
+    <button class="btn btn-primary" onclick="addBalanceMov()">➕ Agregar Movimiento</button>
+    <div class="section-divider">Historial (más nuevo primero)</div>
+    <div id="balanceMovsHistory"></div>
   </div>
   <div class="card" style="margin-bottom:11px;">
     <div class="card-title" id="bal-chart-title">Evolución del Balance (Jugadas)</div>
@@ -647,6 +661,14 @@ select option{background:var(--s2);}
       <button class="period-btn" data-balperiod="3m" onclick="setBalancePeriod('3m')">3 Meses</button>
       <button class="period-btn" data-balperiod="1m" onclick="setBalancePeriod('1m')">1 Mes</button>
       <button class="period-btn" data-balperiod="1w" onclick="setBalancePeriod('1w')">1 Semana</button>
+    </div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <span class="flbl">Rango personalizado:</span>
+      <input type="date" id="balDateFrom" style="width:140px;padding:5px 9px;font-size:0.72rem;" onchange="setBalDateRange()">
+      <span style="color:var(--muted);font-size:0.75rem;">→</span>
+      <input type="date" id="balDateTo" style="width:140px;padding:5px 9px;font-size:0.72rem;" onchange="setBalDateRange()">
+      <button class="period-btn" onclick="clearBalDateRange()" style="padding:4px 9px;">✕ Limpiar</button>
+      <span id="balDateRangeLabel" style="font-size:0.65rem;color:var(--cyan);font-family:'DM Mono',monospace;"></span>
     </div>
     <div class="chart-wrap-lg"><canvas id="chartBalance"></canvas></div>
   </div>
@@ -919,6 +941,7 @@ let retosFilterTipster = 'all', retosFilterEstado = 'all';
 let graficasSubView = 'apuestas';
 let riskSimTimer = null;
 let balPeriod = 'all';
+let balDateFrom = null, balDateTo = null;
 let balView = 'jugadas';
 let apFilterResult = 'all', apFilterTipster = 'all';
 const COLORS = ['#6c63ff','#22c55e','#06b6d4','#f59e0b','#e879f9','#ef4444','#f97316','#84cc16','#14b8a6','#a78bfa'];
@@ -938,7 +961,7 @@ function initApp() {
   const ls = localStorage.getItem('tipsterbook_v4');
   if (ls) { try { data = JSON.parse(ls); } catch(e){} }
   if (!data.retos) data.retos = [];
-  if (!data.balanceAdj) data.balanceAdj = { ingresado: 0, retirado: 0 };
+  ensureBalanceData();
   data.tipsters.forEach(t => { refreshBankPico(t); maybeRefreshBankPctSnapshot(t); });
   renderAll();
   setSyncStatus('connecting');
@@ -954,7 +977,7 @@ function startFB() {
     if (remote.tipsters && remote.tipsters.length > 0) {
       data = remote;
       if (!data.retos) data.retos = [];
-      if (!data.balanceAdj) data.balanceAdj = { ingresado: 0, retirado: 0 };
+      ensureBalanceData();
       localStorage.setItem('tipsterbook_v4', JSON.stringify(data));
       renderAll();
     }
@@ -2730,32 +2753,69 @@ function updateGlobalStats() {
 // ============================================================
 // BALANCE TAB
 // ============================================================
-function ensureBalanceAdj() {
-  if (!data.balanceAdj) data.balanceAdj = { ingresado: 0, retirado: 0 };
-}
+let movTipoSel = 'ingreso';
 function getBaselineTotal() {
   return data.tipsters.reduce((s,t) => s + (t.bankroll != null ? t.bankroll : 0), 0);
 }
+function ensureBalanceData() {
+  if (!data.balanceMovs) data.balanceMovs = [];
+  if (!data.balanceAdj) data.balanceAdj = {};
+  if (typeof data.balanceAdj.inicial !== 'number') {
+    // Migración: si venía de la versión anterior (ingresado/retirado sueltos), los convierte en movimientos
+    let seed = 0;
+    if (data.balanceAdj.ingresado || data.balanceAdj.retirado) {
+      if (data.balanceAdj.ingresado) data.balanceMovs.push({ id: Date.now(), tipo:'ingreso', monto: data.balanceAdj.ingresado, fecha: new Date().toISOString().split('T')[0], nota:'Migración automática' });
+      if (data.balanceAdj.retirado) data.balanceMovs.push({ id: Date.now()+1, tipo:'retiro', monto: data.balanceAdj.retirado, fecha: new Date().toISOString().split('T')[0], nota:'Migración automática' });
+    } else {
+      seed = getBaselineTotal();
+    }
+    data.balanceAdj.inicial = seed;
+    delete data.balanceAdj.ingresado;
+    delete data.balanceAdj.retirado;
+  }
+}
 function computeBalanceSeries(view) {
-  ensureBalanceAdj();
-  const baseline = getBaselineTotal();
-  const adj = view === 'jugadas' ? ((data.balanceAdj.ingresado||0) - (data.balanceAdj.retirado||0)) : 0;
-  const startBase = baseline + adj;
+  ensureBalanceData();
+  const inicial = data.balanceAdj.inicial || 0;
   const wantPlayed = view === 'jugadas';
-  const bets = data.tipsters
-    .flatMap(t => t.bets.filter(b => b.played === wantPlayed && b.result !== 'pending' && b.fecha));
+  const betEvents = data.tipsters
+    .flatMap(t => t.bets.filter(b => b.played === wantPlayed && b.result !== 'pending' && b.fecha))
+    .map(b => ({ fecha: b.fecha, delta: calcProfit(b) }));
+  const movEvents = wantPlayed ? data.balanceMovs.map(m => ({ fecha: m.fecha, delta: m.tipo==='ingreso' ? m.monto : -m.monto })) : [];
+  const allEvents = [...betEvents, ...movEvents];
   const dateMap = {};
-  bets.forEach(b => { dateMap[b.fecha] = (dateMap[b.fecha]||0) + calcProfit(b); });
+  allEvents.forEach(e => { if (!e.fecha) return; dateMap[e.fecha] = (dateMap[e.fecha]||0) + e.delta; });
   const dates = Object.keys(dateMap).sort();
-  const labels = ['Inicio'], values = [parseFloat(startBase.toFixed(2))];
-  let running = startBase;
+  const labels = ['Inicio'], values = [parseFloat(inicial.toFixed(2))];
+  let running = inicial;
   dates.forEach(d => { running += dateMap[d]; labels.push(d); values.push(parseFloat(running.toFixed(2))); });
-  return { labels, values, baseline: startBase };
+  return { labels, values, baseline: inicial };
 }
 function setBalancePeriod(p) {
   balPeriod = p;
+  balDateFrom = null; balDateTo = null;
+  const bf = document.getElementById('balDateFrom'); if (bf) bf.value = '';
+  const bt = document.getElementById('balDateTo'); if (bt) bt.value = '';
+  const lbl = document.getElementById('balDateRangeLabel'); if (lbl) lbl.textContent = '';
   document.querySelectorAll('[data-balperiod]').forEach(x => x.classList.toggle('active', x.dataset.balperiod === p));
   renderBalanceChart();
+}
+function setBalDateRange() {
+  const from = document.getElementById('balDateFrom')?.value;
+  const to = document.getElementById('balDateTo')?.value;
+  if (!from && !to) return;
+  balDateFrom = from || null; balDateTo = to || null;
+  balPeriod = 'custom';
+  document.querySelectorAll('[data-balperiod]').forEach(x => x.classList.remove('active'));
+  const lbl = document.getElementById('balDateRangeLabel');
+  if (lbl) lbl.textContent = (from||'inicio')+' → '+(to||'hoy');
+  renderBalanceChart();
+}
+function clearBalDateRange() {
+  balDateFrom = null; balDateTo = null;
+  const bf = document.getElementById('balDateFrom'); if (bf) bf.value = '';
+  const bt = document.getElementById('balDateTo'); if (bt) bt.value = '';
+  setBalancePeriod('all');
 }
 function setBalanceView(v) {
   balView = v;
@@ -2764,17 +2824,78 @@ function setBalanceView(v) {
   if (nb) nb.className = 'flt-btn' + (v==='noJugadas' ? ' a-skipped' : '');
   renderBalanceTab();
 }
-function updateBalanceAdj(field, val) {
-  ensureBalanceAdj();
+function updateBalanceInicial(val) {
+  ensureBalanceData();
   const n = parseFloat(val);
-  data.balanceAdj[field] = isNaN(n) ? 0 : n;
+  data.balanceAdj.inicial = isNaN(n) ? 0 : n;
   save();
   renderBalanceTab();
+}
+function setMovTipo(t) {
+  movTipoSel = t;
+  const ib = document.getElementById('movTipo-ingreso'), rb = document.getElementById('movTipo-retiro');
+  if (ib) ib.className = 'jt-btn' + (t==='ingreso' ? ' played' : '');
+  if (rb) rb.className = 'jt-btn' + (t==='retiro' ? ' retiro-sel' : '');
+}
+function addBalanceMov() {
+  ensureBalanceData();
+  const montoEl = document.getElementById('movMonto');
+  const monto = parseFloat(montoEl.value);
+  if (!monto || monto <= 0) { showToast('❌ Ingresá un monto válido', false); return; }
+  const fecha = document.getElementById('movFecha').value || new Date().toISOString().split('T')[0];
+  const nota = document.getElementById('movNota').value.trim();
+  data.balanceMovs.push({ id: Date.now(), tipo: movTipoSel, monto, fecha, nota });
+  montoEl.value = '';
+  document.getElementById('movNota').value = '';
+  save();
+  renderBalanceTab();
+  showToast(movTipoSel==='ingreso' ? '✅ Ingreso agregado' : '✅ Retiro agregado');
+}
+function deleteBalanceMov(id) {
+  ensureBalanceData();
+  data.balanceMovs = data.balanceMovs.filter(m => m.id !== id);
+  save();
+  renderBalanceTab();
+}
+function renderBalanceMovsHistory() {
+  const el = document.getElementById('balanceMovsHistory'); if (!el) return;
+  ensureBalanceData();
+  const movs = [...data.balanceMovs].sort((a,b) => (b.fecha||'').localeCompare(a.fecha||'') || (b.id-a.id));
+  if (!movs.length) { el.innerHTML = '<div class="no-bets">Todavía no registraste ingresos ni retiros.</div>'; return; }
+  el.innerHTML = `<div style="overflow-x:auto;"><table class="bets-table"><thead><tr>
+    <th>Fecha</th><th>Tipo</th><th>Monto</th><th>Nota</th><th></th>
+  </tr></thead><tbody>${movs.map(m => `
+    <tr>
+      <td>${m.fecha||'—'}</td>
+      <td><span class="badge ${m.tipo==='ingreso'?'badge-win':'badge-loss'}">${m.tipo==='ingreso'?'💵 Ingreso':'🏧 Retiro'}</span></td>
+      <td class="${m.tipo==='ingreso'?'green':'red'}" style="font-family:'DM Mono',monospace;">${m.tipo==='ingreso'?'+':'-'}$${m.monto.toFixed(2)}</td>
+      <td>${m.nota||'—'}</td>
+      <td><button class="btn-del" onclick="deleteBalanceMov(${m.id})">🗑</button></td>
+    </tr>`).join('')}</tbody></table></div>`;
 }
 function renderBalanceChart() {
   const full = computeBalanceSeries(balView);
   let labels = full.labels, values = full.values;
-  if (balPeriod !== 'all') {
+  if (balPeriod === 'custom' && (balDateFrom || balDateTo)) {
+    const from = balDateFrom, to = balDateTo;
+    const idxs = [];
+    for (let i = 1; i < labels.length; i++) {
+      const d = labels[i];
+      if (from && d < from) continue;
+      if (to && d > to) continue;
+      idxs.push(i);
+    }
+    if (idxs.length === 0) {
+      let startVal = values[0];
+      if (from) { for (let i = labels.length-1; i >= 0; i--) { if (i===0 || labels[i] < from) { startVal = values[i]; break; } } }
+      labels = ['Período']; values = [startVal];
+    } else {
+      const firstIdx = idxs[0];
+      const startVal = values[firstIdx-1];
+      labels = ['Período', ...idxs.map(i => labels[i])];
+      values = [startVal, ...idxs.map(i => values[i])];
+    }
+  } else if (balPeriod !== 'all') {
     const now = new Date(), d = new Date(now);
     if (balPeriod==='1y') d.setFullYear(now.getFullYear()-1);
     else if (balPeriod==='6m') d.setMonth(now.getMonth()-6);
@@ -2820,18 +2941,21 @@ function renderBalanceRanking() {
     </tr>`).join('')}</tbody></table>`;
 }
 function renderBalanceTab() {
-  ensureBalanceAdj();
+  ensureBalanceData();
   const view = balView;
   const isJug = view === 'jugadas';
 
-  // toggle visibility of ingresado/retirado boxes (solo aplica a balance real = jugadas)
-  const ib = document.getElementById('bal-ingresado-box'), rb = document.getElementById('bal-retirado-box');
-  if (ib) ib.style.display = isJug ? 'block' : 'none';
-  if (rb) rb.style.display = isJug ? 'block' : 'none';
-  // sync input values (sin pisar mientras el usuario está escribiendo)
-  const iInput = document.getElementById('bal-ingresado-input'), rInput = document.getElementById('bal-retirado-input');
-  if (iInput && document.activeElement !== iInput) iInput.value = data.balanceAdj.ingresado || 0;
-  if (rInput && document.activeElement !== rInput) rInput.value = data.balanceAdj.retirado || 0;
+  // toggle visibility de cajas que solo aplican a plata real (jugadas)
+  const tib = document.getElementById('bal-totaling-box'), trb = document.getElementById('bal-totalret-box');
+  if (tib) tib.style.display = isJug ? 'block' : 'none';
+  if (trb) trb.style.display = isJug ? 'block' : 'none';
+  const histCard = document.getElementById('bal-hist-card');
+  if (histCard) histCard.style.display = isJug ? 'block' : 'none';
+
+  // sync balance inicial input (sin pisar mientras el usuario está escribiendo)
+  const iniInput = document.getElementById('bal-inicial-input');
+  if (iniInput && document.activeElement !== iniInput) iniInput.value = data.balanceAdj.inicial || 0;
+  if (!document.getElementById('movFecha').value) document.getElementById('movFecha').value = new Date().toISOString().split('T')[0];
 
   // labels dinámicos
   const suf = isJug ? '(Jugadas)' : '(No Jugadas)';
@@ -2842,23 +2966,24 @@ function renderBalanceTab() {
   const t5 = document.getElementById('bal-profit-lbl'); if (t5) t5.textContent = 'Profit Total '+suf;
   const desc = document.getElementById('bal-desc');
   if (desc) desc.textContent = isJug
-    ? 'El balance suma el bankroll inicial de cada tipster (si lo configuraste), más lo que ingresaste, menos lo que retiraste, más el profit acumulado de todas las apuestas jugadas. Cada apuesta ganada lo sube, cada perdida lo baja.'
+    ? 'El balance parte de un balance inicial editable (podés dejarlo en 0 y cargar todo por historial), suma los ingresos, resta los retiros, y suma el profit acumulado de todas las apuestas jugadas. Cada apuesta ganada lo sube, cada perdida lo baja.'
     : 'Balance hipotético de las apuestas que registraste pero NO jugaste (solo seguimiento). No incluye ingresos ni retiros, porque no es dinero real.';
 
-  const baseline = getBaselineTotal();
-  const ingresado = data.balanceAdj.ingresado || 0;
-  const retirado  = data.balanceAdj.retirado  || 0;
-  const adj = isJug ? (ingresado - retirado) : 0;
+  const inicial = data.balanceAdj.inicial || 0;
+  const totalIng = data.balanceMovs.filter(m => m.tipo==='ingreso').reduce((s,m) => s+m.monto, 0);
+  const totalRet = data.balanceMovs.filter(m => m.tipo==='retiro').reduce((s,m) => s+m.monto, 0);
+  const adj = isJug ? (totalIng - totalRet) : 0;
   const key = isJug ? 'played' : 'skipped';
   let profitTotal = 0;
   const perTipster = data.tipsters.map(t => ({ name:t.name, profit: calcStats(t.bets,key).profit }));
   perTipster.forEach(p => profitTotal += p.profit);
-  const balanceActual = baseline + adj + profitTotal;
-  const retBase = baseline + adj;
+  const balanceActual = inicial + adj + profitTotal;
+  const retBase = inicial + adj;
   const retorno = retBase > 0 ? (profitTotal / retBase * 100) : null;
   const se = (id,txt,cls) => { const e=document.getElementById(id); if(e){ e.textContent=txt; if(cls) e.className = e.id==='bal-actual' ? 'pbox-val-lg '+cls : 'pbox-val '+cls; } };
   se('bal-actual', fmt(balanceActual), balanceActual>=0?'green':'red');
-  se('bal-inicial', '$'+baseline.toFixed(2), '');
+  se('bal-totaling', '$'+totalIng.toFixed(2), 'green');
+  se('bal-totalret', '$'+totalRet.toFixed(2), 'red');
   se('bal-profit', fmt(profitTotal), profitTotal>=0?'green':'red');
   se('bal-retorno', retorno!=null ? (retorno>=0?'+':'')+retorno.toFixed(2)+'%' : '—', retorno!=null?(retorno>=0?'green':'red'):'');
   if (perTipster.length) {
@@ -2871,6 +2996,7 @@ function renderBalanceTab() {
   }
   renderBalanceChart();
   renderBalanceRanking();
+  renderBalanceMovsHistory();
 }
 
 // ============================================================
@@ -3289,7 +3415,7 @@ function exportData(){
 function importData(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=e=>{try{data=JSON.parse(e.target.result); if(!data.retos) data.retos=[]; if(!data.balanceAdj) data.balanceAdj={ingresado:0,retirado:0}; data.tipsters.forEach(t=>{refreshBankPico(t);maybeRefreshBankPctSnapshot(t);}); save();renderAll();showToast('✅ Datos importados');}catch{showToast('❌ Archivo inválido',false);}};
+  r.onload=e=>{try{data=JSON.parse(e.target.result); if(!data.retos) data.retos=[]; ensureBalanceData(); data.tipsters.forEach(t=>{refreshBankPico(t);maybeRefreshBankPctSnapshot(t);}); save();renderAll();showToast('✅ Datos importados');}catch{showToast('❌ Archivo inválido',false);}};
   r.readAsText(f);ev.target.value='';
 }
 
@@ -3367,8 +3493,13 @@ window.toggleSonadora=toggleSonadora;
 window.toggleEditSonadora=toggleEditSonadora;
 window.importData=importData;
 window.setBalancePeriod=setBalancePeriod;
+window.setBalDateRange=setBalDateRange;
+window.clearBalDateRange=clearBalDateRange;
 window.setBalanceView=setBalanceView;
-window.updateBalanceAdj=updateBalanceAdj;
+window.updateBalanceInicial=updateBalanceInicial;
+window.setMovTipo=setMovTipo;
+window.addBalanceMov=addBalanceMov;
+window.deleteBalanceMov=deleteBalanceMov;
 window.setApuestasFilter=setApuestasFilter;
 window.setApuestasFilterTipster=setApuestasFilterTipster;
 </script>
