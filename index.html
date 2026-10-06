@@ -32,7 +32,7 @@
     onValue(r, snap => {
       const v = snap.val();
       if(v && v.p){ try{ cb(JSON.parse(v.p)); }catch(e){} }
-      else cb({tipsters:[], retos:[]});
+      else cb(null); // la nube todavía no tiene datos
     });
   };
   window._fbReady = true;
@@ -249,12 +249,24 @@ select option{background:var(--s2);}
   </div>
 </header>
 
+<!-- EXPORTAR VISTA DE GRÁFICAS -->
+<div class="picker-overlay" id="exportViewOverlay" style="display:none;" onclick="if(event.target===this)closeExportView()">
+  <div class="picker-sheet">
+    <div id="exportViewInfo" style="padding:12px 18px 8px;font-size:0.66rem;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.55;border-bottom:1px solid rgba(255,255,255,.055);"></div>
+    <div class="picker-row" onclick="exportView('txt')"><div class="picker-row-left"><span class="picker-name">📄 TXT — reporte legible</span></div></div>
+    <div class="picker-row" onclick="exportView('json')"><div class="picker-row-left"><span class="picker-name">🧾 JSON — todos los datos</span></div></div>
+    <div class="picker-row" onclick="exportView('csv')"><div class="picker-row-left"><span class="picker-name">📊 CSV — para Excel / Sheets</span></div></div>
+    <div class="picker-row" onclick="exportView('png')"><div class="picker-row-left"><span class="picker-name">🖼 PNG — gráfica de profit acumulado</span></div></div>
+  </div>
+</div>
+
 <!-- MENÚ MÁS -->
 <div class="picker-overlay" id="moreMenuOverlay" style="display:none;" onclick="if(event.target===this)closeMoreMenu()">
   <div class="picker-sheet">
     <div class="picker-row" onclick="closeMoreMenu();switchTab('notas')"><div class="picker-row-left"><span class="picker-name">📝 Notas</span></div></div>
     <div class="picker-row" onclick="closeMoreMenu();exportData()"><div class="picker-row-left"><span class="picker-name">📤 Exportar</span></div></div>
     <div class="picker-row" onclick="closeMoreMenu();document.getElementById('importFile').click()"><div class="picker-row-left"><span class="picker-name">📥 Importar</span></div></div>
+    <div class="picker-row" onclick="closeMoreMenu();restorePrebackup()"><div class="picker-row-left"><span class="picker-name">↩️ Restaurar respaldo local</span></div></div>
     <div class="picker-row" onclick="closeMoreMenu();switchTab('config')"><div class="picker-row-left"><span class="picker-name">⚙️ Configuración</span></div></div>
   </div>
 </div>
@@ -626,6 +638,9 @@ select option{background:var(--s2);}
       <div><span class="flbl">Tipsters:</span>
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="chartTipsterFilter"></div>
       </div>
+      <div><span class="flbl">Casa / moneda:</span>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="chartCasaFilterBar"></div>
+      </div>
       <div><span class="flbl">Grupo:</span>
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="chartGrupoFilterBar"></div>
       </div>
@@ -649,6 +664,7 @@ select option{background:var(--s2);}
           <span id="dateRangeLabel" style="font-size:0.65rem;color:var(--cyan);font-family:'DM Mono',monospace;"></span>
         </div>
       </div>
+      <div><button class="btn btn-ghost" onclick="openExportView()">📥 Exportar esta vista (TXT · JSON · CSV · PNG)</button></div>
     </div>
   </div>
   <div class="stats-strip">
@@ -660,6 +676,7 @@ select option{background:var(--s2);}
     <div class="stat-box"><div class="stat-lbl">Cuota media ganada</div><div class="stat-val green" id="cs-cuotawin">—</div></div>
     <div class="stat-box"><div class="stat-lbl">Cuota media perdida</div><div class="stat-val red" id="cs-cuotaloss">—</div></div>
   </div>
+  <div id="cs-casas" style="display:none;font-size:0.64rem;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6;margin:-4px 0 11px;"></div>
   <div class="two-col">
     <div class="card"><div class="card-title">Profit Acumulado</div><div class="chart-wrap"><canvas id="chartProfit"></canvas></div></div>
     <div class="card"><div class="card-title">Distribución Resultados</div><div class="chart-wrap"><canvas id="chartResults"></canvas></div></div>
@@ -828,8 +845,11 @@ select option{background:var(--s2);}
         <button class="flt-btn" id="apj-skipped" onclick="setApuestasFilterJugada('skipped')">👁 No Jugadas</button>
       </div>
     </div>
-    <div><span class="flbl">Tipster:</span>
+    <div style="margin-bottom:8px;"><span class="flbl">Tipster:</span>
       <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="apTipsterFilter"></div>
+    </div>
+    <div><span class="flbl">Grupo:</span>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;" id="apGrupoFilter"></div>
     </div>
   </div>
   <div class="stats-strip">
@@ -863,9 +883,10 @@ select option{background:var(--s2);}
     <div class="card-title">💱 Tipo de Cambio</div>
     <div class="fg">
       <label>1 US$ (bet365) equivale a <span class="opt">($ pesos uruguayos, 1xbet)</span></label>
-      <input type="number" id="exchangeRateInput" step="1" placeholder="1000" oninput="updateExchangeRate(this.value)">
+      <input type="number" id="exchangeRateInput" step="1" placeholder="40" oninput="updateExchangeRate(this.value)">
     </div>
-    <div style="font-size:0.6rem;color:var(--muted);margin-top:6px;">Se usa para unificar en pesos las stats compartidas de un tipster (WR, Yield, Profit) cuando tiene apuestas en ambas casas. El Balance de cada casa queda siempre en su propia moneda, sin conversión.</div>
+    <div style="font-size:0.6rem;color:var(--muted);margin-top:6px;">Se usa para unificar en pesos las stats compartidas de un tipster (WR, Yield, Profit) cuando tiene apuestas en ambas casas. Cada apuesta de bet365 guarda el cambio vigente cuando la registraste: si cambias este valor solo afecta a las apuestas NUEVAS y a las conversiones del formulario. El Balance de cada casa queda siempre en su propia moneda, sin conversión.</div>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="applyExchangeToHistory()">🔁 Aplicar este cambio a todo el historial</button>
   </div>
   <div class="card">
     <div class="card-title">⚙️ Configuración</div>
@@ -909,8 +930,8 @@ select option{background:var(--s2);}
     </div>
     <input type="hidden" id="editBetId"><input type="hidden" id="editTipsterId">
     <div style="display:flex;gap:8px;margin:10px 0;">
-      <div class="casa-btn casa-1xbet" id="ecasa-1xbet" onclick="setEditCasa('1xbet')"><span class="casa-accent">1</span>xbet</div>
-      <div class="casa-btn casa-bet365" id="ecasa-bet365" onclick="setEditCasa('bet365')">bet<span class="casa-accent">365</span></div>
+      <div class="casa-btn casa-1xbet" id="ecasa-1xbet" onclick="onEditCasaTap('1xbet')"><span class="casa-accent">1</span>xbet</div>
+      <div class="casa-btn casa-bet365" id="ecasa-bet365" onclick="onEditCasaTap('bet365')">bet<span class="casa-accent">365</span></div>
     </div>
     <input type="hidden" id="eCasa" value="1xbet">
     <div class="fg" style="margin-bottom:9px;">
@@ -929,6 +950,7 @@ select option{background:var(--s2);}
       </div>
       <div class="fg"><label>Stake</label><input type="number" id="eStake" step="0.5" oninput="recalcEditMontoForJugadaContext()"></div>
       <div class="fg"><label id="eMontoLabel">Monto ($)</label><input type="number" id="eMonto"></div>
+      <div class="fg" id="eFxRow" style="display:none;"><label>Tipo de cambio de esta apuesta <span class="opt">(1 US$ = $ pesos)</span></label><input type="number" id="eFx" step="0.01"></div>
       <div class="fg"><label>Cuota</label><input type="number" id="eCuota" step="0.01"></div>
       <div class="fg"><label>Nº Eventos</label><input type="number" id="eEventos" min="1"></div>
       <div class="fg"><label>Deporte</label>
@@ -1122,7 +1144,8 @@ select option{background:var(--s2);}
   <div class="modal-box" style="max-width:380px;">
     <div class="modal-title">💰 Bank del Reto</div>
     <div class="fg"><label>Modo elegido</label><div id="retoBankModeLabel" style="font-family:'DM Mono',monospace;color:var(--accent);font-weight:700;padding:6px 0;"></div></div>
-    <div class="fg"><label>Monto inicial del reto ($)</label><input type="number" id="retoBankInput" placeholder="ej: 100" min="1" onkeydown="if(event.key==='Enter')document.getElementById('retoObjetivoInput').focus()"></div>
+    <div class="fg"><label>Casa del reto</label><div style="display:flex;gap:8px;"><div class="casa-btn casa-1xbet sel" id="retocasa-1xbet" onclick="setRetoCasaPending('1xbet')"><span class="casa-accent">1</span>xbet</div><div class="casa-btn casa-bet365" id="retocasa-bet365" onclick="setRetoCasaPending('bet365')">bet<span class="casa-accent">365</span></div></div></div>
+    <div class="fg"><label id="retoBankLbl">Monto inicial del reto ($)</label><input type="number" id="retoBankInput" placeholder="ej: 100" min="1" onkeydown="if(event.key==='Enter')document.getElementById('retoObjetivoInput').focus()"></div>
     <div class="fg"><label>Objetivo <span class="opt">(multiplicador del bank inicial)</span></label><input type="number" id="retoObjetivoInput" placeholder="ej: 10" min="1" step="0.5" value="10" onkeydown="if(event.key==='Enter')confirmRetoBank()"></div>
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="confirmRetoBank()">🚀 Iniciar Reto</button>
@@ -1179,6 +1202,8 @@ let betException = false;
 let betCuotaException = false;
 let chartFilter = 'all', chartTipsters = [], chartPeriod = 'all', chartDateFrom = null, chartDateTo = null;
 let chartGrupoFilter = null;
+let chartCasaFilter = null;   // null = todas | '1xbet' | 'bet365'
+let chartCasaEff = null;      // moneda efectiva de la vista (si la vista tiene una sola casa, es esa; si es mixta, null = pesos)
 let chartExcludeArchived = true;
 let chartTypesFilter = [];
 let unitFilter = 'all', unitTipster = 'all', unitPeriod = 'all', unitDateFrom = null, unitDateTo = null;
@@ -1205,7 +1230,7 @@ let balDateFrom = null, balDateTo = null;
 let balView = 'jugadas';
 let balCasa = '1xbet';
 let curCasa = '1xbet';
-let apFilterResult = 'all', apFilterTipster = 'all', apFilterJugada = 'all';
+let apFilterResult = 'all', apFilterTipster = 'all', apFilterJugada = 'all', apFilterGrupo = null;
 const COLORS = ['#6c63ff','#22c55e','#06b6d4','#f59e0b','#e879f9','#ef4444','#f97316','#84cc16','#14b8a6','#a78bfa'];
 const RETO_MODES = {
   allin:    { label: '🎯 All In' },
@@ -1228,6 +1253,7 @@ function initApp() {
   migrateOldTypeLabels();
   ensureNotas();
   ensureGrupos();
+  if (migrateFxAndRetoCasa()) localStorage.setItem('tipsterbook_v4', JSON.stringify(data));
   data.tipsters.forEach(t => { refreshBankPico(t); maybeRefreshBankPctSnapshot(t); });
   updateDeportePickerTrigger('bDeporte');
   renderAll();
@@ -1241,19 +1267,46 @@ function startFB() {
   fbListening = true;
   setSyncStatus('syncing');
   window._fbListen(remote => {
-    if (remote.tipsters && remote.tipsters.length > 0) {
-      data = remote;
-      if (!data.retos) data.retos = [];
-      ensureBalanceData();
-      ensureGlobalStakeDefault();
-      migrateOldTypeLabels();
-      ensureNotas();
-      ensureGrupos();
-      localStorage.setItem('tipsterbook_v4', JSON.stringify(data));
-      renderAll();
+    if (remote === null) {
+      // La nube todavía no tiene datos: si este dispositivo sí los tiene, se suben (antes esperaban al próximo cambio).
+      if (data.tipsters.length || data.retos.length) save();
+      setSyncStatus('ok');
+      return;
     }
+    if (!Array.isArray(remote.tipsters)) remote.tipsters = [];
+    // Antes se ignoraba cualquier base con 0 tipsters: borrar el último tipster (o vaciar la nube) nunca llegaba a los
+    // otros dispositivos, que después lo volvían a subir. Ahora se acepta, pero con respaldo local por si fue un error.
+    if (remote.tipsters.length === 0 && data.tipsters.length > 0) {
+      try { localStorage.setItem('tipsterbook_v4_prebackup', JSON.stringify({ ts: new Date().toISOString(), data })); } catch(e) {}
+      showToast('⚠️ La nube quedó vacía. Guardé un respaldo local (Más → Restaurar respaldo).', false);
+    }
+    data = remote;
+    if (!data.retos) data.retos = [];
+    ensureBalanceData();
+    ensureGlobalStakeDefault();
+    migrateOldTypeLabels();
+    ensureNotas();
+    ensureGrupos();
+    const migrated = migrateFxAndRetoCasa();
+    localStorage.setItem('tipsterbook_v4', JSON.stringify(data));
+    renderAll();
+    if (migrated) save();
     setSyncStatus('ok');
   });
+}
+
+function restorePrebackup() {
+  let bk = null;
+  try { bk = JSON.parse(localStorage.getItem('tipsterbook_v4_prebackup')); } catch(e) {}
+  if (!bk || !bk.data || !bk.data.tipsters || !bk.data.tipsters.length) return showToast('No hay respaldo local para restaurar', false);
+  const when = bk.ts ? new Date(bk.ts).toLocaleString() : 'fecha desconocida';
+  showConfirm('¿Restaurar el respaldo local del ' + when + ' (' + bk.data.tipsters.length + ' tipsters)? Reemplaza lo que hay ahora y se sube a la nube.', () => {
+    data = bk.data;
+    if (!data.retos) data.retos = [];
+    ensureBalanceData(); ensureGlobalStakeDefault(); migrateOldTypeLabels(); ensureNotas(); ensureGrupos(); migrateFxAndRetoCasa();
+    save(); renderAll(); refreshExtraTabsIfActive();
+    showToast('✅ Respaldo restaurado');
+  }, 'Sí, restaurar');
 }
 
 function save() {
@@ -1338,6 +1391,21 @@ function setEditCasa(casa) {
   if (lbl) lbl.textContent = 'Monto (' + CASA_INFO[casa].symbol + ')';
   const montoInput = document.getElementById('eMonto');
   if (montoInput) montoInput.classList.toggle('usd-amount', casa==='bet365');
+  const fxRow = document.getElementById('eFxRow'); if (fxRow) fxRow.style.display = casa==='bet365' ? '' : 'none';
+}
+// Cambio de casa hecho por el usuario en el editor: el monto se convierte con el tipo de cambio de la apuesta.
+function onEditCasaTap(casa) {
+  const prev = document.getElementById('eCasa').value || '1xbet';
+  ensureExchangeRate();
+  const fxEl = document.getElementById('eFx');
+  const rate = (fxEl && parseFloat(fxEl.value) > 0) ? parseFloat(fxEl.value) : data.exchangeRate;
+  setEditCasa(casa);
+  if (prev === casa) return;
+  const el = document.getElementById('eMonto');
+  const m = parseFloat(el.value);
+  if (isNaN(m) || m <= 0) return;
+  el.value = (casa === 'bet365' ? m / rate : m * rate).toFixed(2);
+  showToast('💱 Monto convertido a ' + CASA_INFO[casa].symbol + ' (1 US$ = ' + rate + ' $)');
 }
 function toggleEditDescExpand() {
   const el = document.getElementById('eDesc');
@@ -1367,9 +1435,50 @@ function updateExchangeRate(val) {
   save();
   renderAll();
 }
-function toPesos(amount, casa) {
-  if (casa === 'bet365') { ensureExchangeRate(); return amount * data.exchangeRate; }
+// fx = tipo de cambio guardado en la apuesta al registrarla. Si no lo trae, se usa el actual (compatibilidad).
+function toPesos(amount, casa, fx) {
+  if (casa === 'bet365') { ensureExchangeRate(); return amount * (fx > 0 ? fx : data.exchangeRate); }
   return amount;
+}
+// Sella con el tipo de cambio actual las apuestas de bet365 que todavía no lo tienen (migración única).
+function ensureBetFx() {
+  ensureExchangeRate();
+  let changed = false;
+  data.tipsters.forEach(t => t.bets.forEach(b => {
+    if (b.casa === 'bet365' && !(b.fx > 0)) { b.fx = data.exchangeRate; changed = true; }
+  }));
+  return changed;
+}
+// Los retos guardan su casa (su bank está en esa moneda). Los viejos la heredan de sus apuestas.
+function ensureRetoCasa() {
+  let changed = false;
+  data.retos.forEach(r => {
+    if (r.casa) return;
+    const b = data.tipsters.flatMap(t => t.bets).find(x => x.retoId === r.id);
+    r.casa = (b && b.casa) || '1xbet';
+    changed = true;
+  });
+  return changed;
+}
+function migrateFxAndRetoCasa() {
+  const a = ensureBetFx();
+  const b = ensureRetoCasa();
+  return a || b;
+}
+function retoSym(r) { return CASA_INFO[(r && r.casa) || '1xbet'].symbol; }
+function getActiveRetoCasa() {
+  if (!(retoModeOn && activeRetoId)) return null;
+  const r = data.retos.find(x => x.id === activeRetoId);
+  return r ? (r.casa || '1xbet') : null;
+}
+function applyExchangeToHistory() {
+  ensureExchangeRate();
+  showConfirm('¿Recalcular TODAS las apuestas de bet365 con el cambio actual (1 US$ = ' + data.exchangeRate + ' $)? Cambia el profit en pesos de todo el historial.', () => {
+    let n = 0;
+    data.tipsters.forEach(t => t.bets.forEach(b => { if (b.casa === 'bet365') { b.fx = data.exchangeRate; n++; } }));
+    save(); renderAll(); refreshExtraTabsIfActive();
+    showToast('✅ ' + n + ' apuestas recalculadas');
+  }, 'Sí, recalcular');
 }
 function calcStats(bets, filter = 'all', raw = false) {
   const fb = filter==='all' ? bets : bets.filter(b => filter==='played' ? b.played : !b.played);
@@ -1378,8 +1487,8 @@ function calcStats(bets, filter = 'all', raw = false) {
   const notVoid = closed.filter(b => b.result !== 'void');
   // Las apuestas de bet365 (USD) se convierten a pesos acá para que las stats agregadas queden unificadas,
   // salvo que raw=true (vistas ya filtradas a una sola casa, donde no corresponde convertir).
-  const invested = closed.reduce((s,b) => s + (raw ? (b.monto||0) : toPesos(b.monto||0, b.casa)), 0);
-  const profit  = closed.reduce((s,b) => s + (raw ? calcProfit(b) : toPesos(calcProfit(b), b.casa)), 0);
+  const invested = closed.reduce((s,b) => s + (raw ? (b.monto||0) : toPesos(b.monto||0, b.casa, b.fx)), 0);
+  const profit  = closed.reduce((s,b) => s + (raw ? calcProfit(b) : toPesos(calcProfit(b), b.casa, b.fx)), 0);
   const yield_  = invested > 0 ? profit / invested * 100 : 0;
   const wr      = notVoid.length > 0 ? won.length / notVoid.length * 100 : 0;
   const ws = closed.filter(b => b.stake);
@@ -1781,7 +1890,7 @@ function maybeRefreshBankPctSnapshot(t) {
 function computeExposicionPrevia(t, fecha) {
   if (!t || !fecha) return 0;
   return t.bets.filter(b => b.played && b.result === 'pending' && b.fecha === fecha)
-    .reduce((s,b) => s + (b.monto||0), 0);
+    .reduce((s,b) => s + toPesos(b.monto||0, b.casa, b.fx), 0);
 }
 function getEscaleraStage(reto) {
   const mult = reto.bankInicial > 0 ? reto.bankActual / reto.bankInicial : 1;
@@ -1832,9 +1941,9 @@ function showAlert(msg) {
   ov.appendChild(box);
   document.body.appendChild(ov);
 }
-function showConfirm(msg, onYes) {
+function showConfirm(msg, onYes, yesLabel) {
   const ov=document.createElement('div'); ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;display:flex;align-items:center;justify-content:center;padding:14px;';
-  ov.innerHTML=`<div style="background:#0d1018;border:1px solid #ef4444;border-radius:12px;padding:22px;max-width:320px;width:100%;text-align:center;"><div style="font-size:.9rem;color:#e2e8f0;margin-bottom:18px;line-height:1.5;">${msg}</div><div style="display:flex;gap:9px;justify-content:center;"><button id="_cy" style="padding:8px 20px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-family:DM Sans,sans-serif;font-weight:700;cursor:pointer;">Sí, eliminar</button><button id="_cn" style="padding:8px 20px;background:#1a1f2c;color:#e2e8f0;border:1px solid #222736;border-radius:8px;font-family:DM Sans,sans-serif;font-weight:700;cursor:pointer;">Cancelar</button></div></div>`;
+  ov.innerHTML=`<div style="background:#0d1018;border:1px solid #ef4444;border-radius:12px;padding:22px;max-width:320px;width:100%;text-align:center;"><div style="font-size:.9rem;color:#e2e8f0;margin-bottom:18px;line-height:1.5;">${msg}</div><div style="display:flex;gap:9px;justify-content:center;"><button id="_cy" style="padding:8px 20px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-family:DM Sans,sans-serif;font-weight:700;cursor:pointer;">${yesLabel||'Sí, eliminar'}</button><button id="_cn" style="padding:8px 20px;background:#1a1f2c;color:#e2e8f0;border:1px solid #222736;border-radius:8px;font-family:DM Sans,sans-serif;font-weight:700;cursor:pointer;">Cancelar</button></div></div>`;
   document.body.appendChild(ov);
   ov.querySelector('#_cy').onclick=()=>{ov.remove();onYes();};
   ov.querySelector('#_cn').onclick=()=>ov.remove();
@@ -2338,6 +2447,8 @@ function saveEditTipster() {
   const fcsBtn = document.getElementById('etForceCuotaSugerida');
   t.forceCuotaSugerida = fcsBtn ? fcsBtn.classList.contains('on') : false;
   t.casaDefault = document.getElementById('etCasaDefault').value || null;
+  const selEnForm = getSelectedTipster();
+  if (selEnForm && selEnForm.id === t.id && !getActiveRetoCasa()) setCurCasa(pickCasaForTipster(t));
   refreshBankPico(t);
   save(); renderAll(); closeEditTipsterModal(); showToast('✅ Tipster actualizado');
 }
@@ -2424,17 +2535,8 @@ function onTipsterChange() {
   document.getElementById('bPreview').style.display = 'none';
   const t = getSelectedTipster();
   if (t) maybeRefreshBankPctSnapshot(t);
-  // Auto-selecciona la Casa (1xbet/bet365): prioridad al valor manual configurado en el tipster,
-  // si no, según cuál casa tenga más apuestas jugadas con ese tipster. Default: 1xbet.
-  if (t) {
-    if (t.casaDefault) setCurCasa(t.casaDefault);
-    else {
-      const relevantBets = statsBets(t.bets).filter(b => b.played);
-      const c1x = relevantBets.filter(b => (b.casa||'1xbet') === '1xbet').length;
-      const c365 = relevantBets.filter(b => b.casa === 'bet365').length;
-      setCurCasa(c365 > c1x ? 'bet365' : '1xbet');
-    }
-  }
+  // Auto-selecciona la Casa (1xbet/bet365): ⚙️ Configurar > última usada con este tipster > la más usada > 1xbet.
+  if (t) setCurCasa(pickCasaForTipster(t));
   // Auto-selecciona Jugada / No Jugada según la tendencia histórica del tipster.
   // Excluye apuestas de Reto (siempre quedan "jugada" a la fuerza, no reflejan tu preferencia real).
   // Si hay empate (o todavía no tiene apuestas), se deja sin seleccionar.
@@ -2451,7 +2553,41 @@ function onTipsterChange() {
   updateGlobalExpoPanel();
 }
 
+// Casa que corresponde a un tipster: 1) la fijada a mano en ⚙️ Configurar, 2) la última que usaste con él,
+// 3) la que más usa en sus apuestas jugadas, 4) 1xbet.
+function pickCasaForTipster(t) {
+  if (!t) return '1xbet';
+  if (t.casaDefault && CASA_INFO[t.casaDefault]) return t.casaDefault;
+  if (t.lastCasa && CASA_INFO[t.lastCasa]) return t.lastCasa;
+  const relevantBets = statsBets(t.bets).filter(b => b.played);
+  const c1x = relevantBets.filter(b => (b.casa||'1xbet') === '1xbet').length;
+  const c365 = relevantBets.filter(b => b.casa === 'bet365').length;
+  return c365 > c1x ? 'bet365' : '1xbet';
+}
+
+// Al cambiar de casa con un monto ya cargado, el monto se re-expresa en la nueva moneda:
+// automático → se recalcula desde el stake; manual (o sin dato para recalcular) → se convierte con el tipo de cambio.
+function reconvertFormMonto(prevCasa, nextCasa) {
+  if (prevCasa === nextCasa) return;
+  if (retoModeOn && activeRetoId) return; // el bank del reto no tiene moneda propia: no se toca
+  const montoEl = document.getElementById('bMonto'); if (!montoEl) return;
+  const monto = parseFloat(montoEl.value);
+  if (isNaN(monto) || monto <= 0) return;
+  let nuevo = null;
+  const t = getSelectedTipster();
+  const stake = parseFloat(document.getElementById('bStake').value);
+  if (t && isAutoActive() && !isNaN(stake) && stake > 0) nuevo = resolveMontoFromStake(t, stake, curJugada, nextCasa);
+  if (nuevo == null) nuevo = convertAmount(monto, prevCasa, nextCasa);
+  montoEl.value = nuevo.toFixed(2);
+}
+
 function setCurCasa(casa) {
+  const retoCasa = getActiveRetoCasa();
+  if (retoCasa && retoCasa !== casa) {
+    showToast('🎯 Este reto es en ' + CASA_INFO[retoCasa].label + '. Sal del modo Reto para usar otra casa.', false);
+    return;
+  }
+  const prev = curCasa;
   curCasa = casa;
   const b1 = document.getElementById('curcasa-1xbet'), b2 = document.getElementById('curcasa-bet365');
   if (b1) b1.classList.toggle('sel', casa==='1xbet');
@@ -2461,6 +2597,7 @@ function setCurCasa(casa) {
   if (lbl) lbl.textContent = 'Dinero (' + CASA_INFO[casa].symbol + ')';
   const montoInput = document.getElementById('bMonto');
   if (montoInput) montoInput.classList.toggle('usd-amount', casa==='bet365');
+  reconvertFormMonto(prev, casa);
   updatePreview();
   updateGlobalExpoPanel();
 }
@@ -2551,67 +2688,96 @@ function ensureGlobalStakeDefault() {
     data.globalStakeDefault['bet365'] = { stake: 1, monto: 2.5 };
   }
 }
+// ── Conversión de moneda: 1xbet = pesos (UYU), bet365 = US$. El bank de cada tipster, la tabla de stakes
+// y el modo % bank están definidos en PESOS; al operar en bet365 hay que pasarlos a dólares (÷ tipo de cambio).
+function fromPesos(amount, casa) {
+  if (casa === 'bet365') { ensureExchangeRate(); return amount / data.exchangeRate; }
+  return amount;
+}
+function convertAmount(amount, fromCasa, toCasa) {
+  if (fromCasa === toCasa) return amount;
+  return fromPesos(toPesos(amount, fromCasa || '1xbet'), toCasa || '1xbet');
+}
+// Ratio monto/stake promedio llevado a pesos (sirve de respaldo cuando no hay historial en la casa elegida).
+function avgStakeRatioPesos(bets, jugada=null) {
+  let b = bets.filter(x => x.stake && x.monto);
+  if (jugada !== null) {
+    const f = b.filter(x => x.played === jugada);
+    if (f.length) b = f;
+  }
+  if (!b.length) return null;
+  return b.reduce((s,x) => s + toPesos(x.monto, x.casa||'1xbet', x.fx) / x.stake, 0) / b.length;
+}
+
 function resolveMontoFromStake(t, stake, jugada=null, casa=null) {
+  const c = casa || '1xbet';
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   if (mode === 'off') return null;
   if (mode === 'default') {
     ensureGlobalStakeDefault();
-    const gd = data.globalStakeDefault[casa || '1xbet'];
+    const gd = data.globalStakeDefault[c];
     return gd.stake > 0 ? stake * (gd.monto / gd.stake) : null;
   }
   if (mode === 'bankpct') {
     const bankRef = getBankPctReference(t);
     if (bankRef == null || !t.stakeUnitPct) return null;
-    return stake * t.stakeUnitPct * bankRef;
+    return fromPesos(stake * t.stakeUnitPct * bankRef, c);
   }
   if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
     let row = null;
     if (jugada !== null) row = t.stakeTable.find(r => r.stake === stake && (r.jugada !== false) === jugada);
     if (!row) row = t.stakeTable.find(r => r.stake === stake);
-    if (row) return row.monto;
+    if (row) return fromPesos(row.monto, c);
     // No hay fila exacta para este stake: escalamos proporcionalmente usando la fila
     // de referencia más cercana (de la categoría jugada/no-jugada correcta si existe).
     let refRows = jugada !== null ? t.stakeTable.filter(r => (r.jugada !== false) === jugada) : t.stakeTable;
     if (!refRows.length) refRows = t.stakeTable;
     if (refRows.length) {
       const ref = refRows.reduce((best, r) => Math.abs(r.stake - stake) < Math.abs(best.stake - stake) ? r : best, refRows[0]);
-      if (ref.stake > 0) return stake * (ref.monto / ref.stake);
+      if (ref.stake > 0) return fromPesos(stake * (ref.monto / ref.stake), c);
     }
   }
-  const ratio = avgStakeRatio(t.bets, jugada, casa);
-  return ratio ? stake * ratio : null;
+  const ratio = avgStakeRatio(t.bets, jugada, c);
+  if (ratio) return stake * ratio;
+  // Sin historial en esta casa: usamos el promedio de la otra casa, convertido con el tipo de cambio.
+  const ratioP = avgStakeRatioPesos(t.bets, jugada);
+  return ratioP ? fromPesos(stake * ratioP, c) : null;
 }
 
 function resolveStakeFromMonto(t, monto, jugada=null, casa=null) {
+  const c = casa || '1xbet';
   const mode = t.stakeMode || (t.autoStake !== false ? 'avg' : 'off');
   if (mode === 'off') return null;
   if (mode === 'default') {
     ensureGlobalStakeDefault();
-    const gd = data.globalStakeDefault[casa || '1xbet'];
+    const gd = data.globalStakeDefault[c];
     return gd.monto > 0 ? monto / (gd.monto / gd.stake) : null;
   }
+  const montoP = toPesos(monto, c); // bankpct / tabla / respaldo trabajan en pesos
   if (mode === 'bankpct') {
     const bankRef = getBankPctReference(t);
     if (bankRef == null || !t.stakeUnitPct) return null;
     const perUnit = t.stakeUnitPct * bankRef;
-    return perUnit > 0 ? monto / perUnit : null;
+    return perUnit > 0 ? montoP / perUnit : null;
   }
   if (mode === 'table' && t.stakeTable && t.stakeTable.length) {
     let row = null;
-    if (jugada !== null) row = t.stakeTable.find(r => r.monto === monto && (r.jugada !== false) === jugada);
-    if (!row) row = t.stakeTable.find(r => r.monto === monto);
+    if (jugada !== null) row = t.stakeTable.find(r => r.monto === montoP && (r.jugada !== false) === jugada);
+    if (!row) row = t.stakeTable.find(r => r.monto === montoP);
     if (row) return row.stake;
     // No hay fila exacta para este monto: escalamos proporcionalmente usando la fila
     // de referencia más cercana (de la categoría jugada/no-jugada correcta si existe).
     let refRows = jugada !== null ? t.stakeTable.filter(r => (r.jugada !== false) === jugada) : t.stakeTable;
     if (!refRows.length) refRows = t.stakeTable;
     if (refRows.length) {
-      const ref = refRows.reduce((best, r) => Math.abs(r.monto - monto) < Math.abs(best.monto - monto) ? r : best, refRows[0]);
-      if (ref.monto > 0) return monto / (ref.monto / ref.stake);
+      const ref = refRows.reduce((best, r) => Math.abs(r.monto - montoP) < Math.abs(best.monto - montoP) ? r : best, refRows[0]);
+      if (ref.monto > 0) return montoP / (ref.monto / ref.stake);
     }
   }
-  const ratio = avgStakeRatio(t.bets, jugada, casa);
-  return ratio ? monto / ratio : null;
+  const ratio = avgStakeRatio(t.bets, jugada, c);
+  if (ratio) return monto / ratio;
+  const ratioP = avgStakeRatioPesos(t.bets, jugada);
+  return ratioP ? montoP / ratioP : null;
 }
 
 function onStakeInput() {
@@ -2745,7 +2911,10 @@ function updateRiskPanel() {
   if (bankPico === null || bankPico <= 0) bankPico = Math.max(bankActual, bankReferencia);
   if (bankActual > bankPico) bankPico = bankActual; // por si no se refrescó todavía
 
-  const montoApuesta = parseFloat(document.getElementById('bMonto').value) || 0;
+  // El bank del tipster está en pesos: una apuesta en bet365 (US$) se convierte antes de medir el riesgo.
+  // En modo Reto el bank no tiene moneda propia, así que no se convierte.
+  const montoForm = parseFloat(document.getElementById('bMonto').value) || 0;
+  const montoApuesta = reto ? montoForm : toPesos(montoForm, curCasa);
   const cuota = parseFloat(document.getElementById('bCuota').value) || 0;
   const fecha = document.getElementById('bFecha').value;
 
@@ -2786,7 +2955,7 @@ function updateRiskPanel() {
     const sugerido = reto.bankActual * frac;
     const progreso = reto.bankInicial > 0 ? reto.bankActual / reto.bankInicial : 0;
     const objetivo = reto.objetivo || 10;
-    expEl.innerHTML = '$' + sugerido.toFixed(2) + ' <span style="font-size:0.58rem;color:var(--muted2);">(' + (frac*100).toFixed(0) + '% del bank)</span><br><span style="font-size:0.82rem;color:var(--gold);">x' + progreso.toFixed(2) + ' de x' + objetivo + '</span>';
+    expEl.innerHTML = retoSym(reto) + sugerido.toFixed(2) + ' <span style="font-size:0.58rem;color:var(--muted2);">(' + (frac*100).toFixed(0) + '% del bank)</span><br><span style="font-size:0.82rem;color:var(--gold);">x' + progreso.toFixed(2) + ' de x' + objetivo + '</span>';
     expEl.className = 'pbox-val-lg';
   } else {
     expLbl.textContent = 'Exposición Total Hoy';
@@ -2794,7 +2963,7 @@ function updateRiskPanel() {
     expEl.className = 'pbox-val-lg ' + (expLevel==='green'?'green':expLevel==='yellow'?'gold':'red');
   }
 
-  document.getElementById('rk-bankpierde').textContent = '$' + bankSiPierde.toFixed(2);
+  document.getElementById('rk-bankpierde').textContent = (reto ? retoSym(reto) : '$') + bankSiPierde.toFixed(2);
   const retornoEl = document.getElementById('rk-retorno');
   retornoEl.textContent = (retornoPct>=0?'+':'') + (retornoPct*100).toFixed(2) + '%';
   retornoEl.className = 'pbox-val ' + (retornoPct>=0?'green':'red');
@@ -2863,6 +3032,7 @@ function toggleRetoMode() {
   if (existing) {
     activeRetoId = existing.id;
     retoModeOn = true;
+    setCurCasa(existing.casa || '1xbet');
     updateRetoToggleUI();
     renderRetoInfoPanel();
     applyRetoStakeToForm();
@@ -2873,7 +3043,17 @@ function toggleRetoMode() {
   }
 }
 
+let pendingRetoCasa = '1xbet';
+function setRetoCasaPending(casa) {
+  pendingRetoCasa = casa;
+  const a = document.getElementById('retocasa-1xbet'), b = document.getElementById('retocasa-bet365');
+  if (a) a.classList.toggle('sel', casa === '1xbet');
+  if (b) b.classList.toggle('sel', casa === 'bet365');
+  const lbl = document.getElementById('retoBankLbl');
+  if (lbl) lbl.textContent = 'Monto inicial del reto (' + CASA_INFO[casa].symbol + ')';
+}
 function selectRetoMode(mode) {
+  setRetoCasaPending(curCasa || '1xbet');
   pendingRetoMode = mode;
   document.getElementById('retoModeModal').style.display = 'none';
   document.getElementById('retoBankModeLabel').textContent = retoModeLabel(mode);
@@ -2892,7 +3072,7 @@ function confirmRetoBank() {
   const winRateInicial = statsT.closed > 0 ? statsT.wr : null;
   const cuotaMediaInicial = avgCuota(t.bets.filter(b => b.played));
   const reto = {
-    id: Date.now(), tipsterId: t.id, mode: pendingRetoMode,
+    id: Date.now(), tipsterId: t.id, mode: pendingRetoMode, casa: pendingRetoCasa,
     bankInicial: bank, bankActual: bank, bankPicoReto: bank, objetivo, step: 0, estado: 'activo',
     winRateInicial, cuotaMediaInicial,
     fechaInicio: new Date().toISOString().split('T')[0], fechaFin: null, historial: []
@@ -2901,6 +3081,7 @@ function confirmRetoBank() {
   save();
   activeRetoId = reto.id;
   retoModeOn = true;
+  setCurCasa(reto.casa); // el reto fija la casa del formulario
   document.getElementById('retoBankModal').style.display = 'none';
   updateRetoToggleUI();
   renderRetoInfoPanel();
@@ -2927,9 +3108,9 @@ function renderRetoInfoPanel() {
   const frac = getRetoFraction(reto);
   const next = reto.bankActual * frac;
   document.getElementById('rp-mode').textContent = retoModeLabel(reto.mode);
-  document.getElementById('rp-bankini').textContent = '$' + reto.bankInicial.toFixed(2);
-  document.getElementById('rp-bankcur').textContent = '$' + reto.bankActual.toFixed(2);
-  document.getElementById('rp-next').textContent = '$' + next.toFixed(2);
+  document.getElementById('rp-bankini').textContent = retoSym(reto) + reto.bankInicial.toFixed(2);
+  document.getElementById('rp-bankcur').textContent = retoSym(reto) + reto.bankActual.toFixed(2);
+  document.getElementById('rp-next').textContent = retoSym(reto) + next.toFixed(2);
   document.getElementById('rp-pct').textContent = (frac*100).toFixed(1) + '%';
   const t = data.tipsters.find(x => x.id === reto.tipsterId);
   const liveWr = t ? calcStats(statsBets(t.bets), 'played').wr : null;
@@ -3107,12 +3288,12 @@ function renderRetos() {
           <div class="avatar" style="background:${estColor}">${(t?t.name:'?').substring(0,2).toUpperCase()}</div>
           <div>
             <div class="tipster-name">${t?t.name:'Tipster eliminado'} — ${retoModeLabel(r.mode)}</div>
-            <div style="font-size:0.58rem;color:var(--muted);margin-top:2px;">Inicio: ${r.fechaInicio||'—'}${r.fechaFin?(' · Fin: '+r.fechaFin):''} · Objetivo: x${objetivo}</div>
+            <div style="font-size:0.58rem;color:var(--muted);margin-top:2px;">Inicio: ${r.fechaInicio||'—'}${r.fechaFin?(' · Fin: '+r.fechaFin):''} · Objetivo: x${objetivo} · ${CASA_INFO[r.casa||'1xbet'].label}</div>
           </div>
         </div>
         <div class="tipster-right">
-          <div class="tip-stat"><div class="tip-stat-lbl">Bank Inicial</div><div class="tip-stat-val">$${r.bankInicial.toFixed(0)}</div></div>
-          <div class="tip-stat"><div class="tip-stat-lbl">Bank Actual</div><div class="tip-stat-val ${estClass}">$${r.bankActual.toFixed(2)}</div></div>
+          <div class="tip-stat"><div class="tip-stat-lbl">Bank Inicial</div><div class="tip-stat-val">${retoSym(r)}${r.bankInicial.toFixed(0)}</div></div>
+          <div class="tip-stat"><div class="tip-stat-lbl">Bank Actual</div><div class="tip-stat-val ${estClass}">${retoSym(r)}${r.bankActual.toFixed(2)}</div></div>
           <div class="tip-stat"><div class="tip-stat-lbl">Progreso</div><div class="tip-stat-val gold">x${mult.toFixed(2)} de x${objetivo}</div></div>
           <div class="tip-stat"><div class="tip-stat-lbl">Win Rate (tipster)</div><div class="tip-stat-val gold">${liveWr!=null?liveWr.toFixed(1)+'%':'N/A'}</div></div>
           <div class="tip-stat"><div class="tip-stat-lbl">Cuota Media (tipster)</div><div class="tip-stat-val gold">${liveCm!=null?liveCm.toFixed(2):'N/A'}</div></div>
@@ -3126,7 +3307,7 @@ function renderRetos() {
       </div>
       <div class="tipster-body open" style="padding:13px;">
         ${(r.historial && r.historial.length) ? `<table class="bets-table"><thead><tr><th>Fecha</th><th>Descripción</th><th>Monto</th><th>Cuota</th><th>Resultado</th><th>Bank antes</th><th>Bank después</th></tr></thead><tbody>
-        ${r.historial.map(h=>`<tr><td>${h.fecha||'—'}</td><td>${h.desc||'—'}</td><td>$${(h.monto||0).toFixed(2)}</td><td>${(h.cuota||0).toFixed(2)}</td><td><span class="badge badge-${h.resultado}">${resLabel(h.resultado)}</span></td><td>$${h.bankAntes.toFixed(2)}</td><td>$${h.bankDespues.toFixed(2)}</td></tr>`).join('')}
+        ${r.historial.map(h=>`<tr><td>${h.fecha||'—'}</td><td>${h.desc||'—'}</td><td>${retoSym(r)}${(h.monto||0).toFixed(2)}</td><td>${(h.cuota||0).toFixed(2)}</td><td><span class="badge badge-${h.resultado}">${resLabel(h.resultado)}</span></td><td>${retoSym(r)}${h.bankAntes.toFixed(2)}</td><td>${retoSym(r)}${h.bankDespues.toFixed(2)}</td></tr>`).join('')}
         </tbody></table>` : '<div class="no-bets">Sin apuestas registradas en este reto todavía.</div>'}
       </div>
     </div>`;
@@ -3414,7 +3595,9 @@ function saveBet() {
     esSonadora: curSonadora,
     retoId: (retoModeOn && activeRetoId) ? activeRetoId : null
   };
+  if (newBet.casa === 'bet365') { ensureExchangeRate(); newBet.fx = data.exchangeRate; } // cambio vigente al registrar
   t.bets.push(newBet);
+  if (!newBet.retoId) t.lastCasa = newBet.casa; // se recuerda la casa usada con este tipster
   refreshBankPico(t);
   save(); renderAll();
   refreshExtraTabsIfActive();
@@ -3473,7 +3656,7 @@ function clearForm() {
   document.getElementById('autoCuotaBadge').textContent='📐 Auto';
   betCuotaException = false;
   updateExceptionRow();
-  setCurCasa('1xbet');
+  setCurCasa(getActiveRetoCasa() || pickCasaForTipster(getSelectedTipster()));
   document.getElementById('bGrupo').value = '';
   updateGrupoPickerTrigger('bGrupo');
   if (retoModeOn && activeRetoId) applyRetoStakeToForm();
@@ -3507,6 +3690,8 @@ function openEditModal(tid, bid) {
   document.getElementById('editBetId').value=bid;
   document.getElementById('editTipsterId').value=tid;
   setEditCasa(b.casa || '1xbet');
+  ensureExchangeRate();
+  const eFxEl = document.getElementById('eFx'); if (eFxEl) eFxEl.value = (b.casa === 'bet365' && b.fx > 0) ? b.fx : data.exchangeRate;
   document.getElementById('eGrupo').value = b.grupo || '';
   updateGrupoPickerTrigger('eGrupo');
   document.getElementById('eDesc').value=b.desc||'';
@@ -3524,7 +3709,7 @@ function openEditModal(tid, bid) {
     updateDeportePickerTrigger('eDeporte');
   }
   document.querySelectorAll('#editBetTypeChips .chip').forEach(c=>c.classList.toggle('selected',(b.types||[]).includes(c.dataset.val)));
-  editJugada=b.played; setEditJugada(b.played);
+  editJugada=b.played; setEditJugada(b.played, false); // false: al abrir NO se recalcula el monto guardado
   editResult=b.result; setEditResult(b.result);
   editSonadora = !!b.esSonadora; updateEditSonadoraBadgeUI();
   document.getElementById('editModal').style.display='flex';
@@ -3555,11 +3740,11 @@ function setEditResult(r) {
   editResult=r;
   ['win','loss','void','pending'].forEach(x=>document.getElementById('ert-'+x).className='rt-btn'+(x===r?' '+x:''));
 }
-function setEditJugada(v) {
+function setEditJugada(v, recalc=true) {
   editJugada=v;
   document.getElementById('ejt-played').className='jt-btn'+(v===true?' played':'');
   document.getElementById('ejt-skipped').className='jt-btn'+(v===false?' skipped':'');
-  recalcEditMontoForJugadaContext();
+  if (recalc) recalcEditMontoForJugadaContext();
 }
 function recalcEditMontoForJugadaContext() {
   const tid = parseInt(document.getElementById('editTipsterId').value);
@@ -3585,6 +3770,7 @@ function saveEditBet() {
   const eDepSel2 = document.getElementById('eDeporte');
   if (eDepSel2) b.deporte = eDepSel2.value;
   b.casa = document.getElementById('eCasa').value || '1xbet';
+  if (b.casa === 'bet365') { ensureExchangeRate(); b.fx = parseFloat(document.getElementById('eFx').value) || b.fx || data.exchangeRate; } else { delete b.fx; }
   b.grupo = document.getElementById('eGrupo').value || '';
   b.types=getChips('editBetTypeChips');
   b.played=editJugada; b.result=editResult;
@@ -4173,11 +4359,25 @@ function updateApuestasTipsterFilter() {
   const el = document.getElementById('apTipsterFilter'); if (!el) return;
   el.innerHTML = `<button class="tf-btn ${apFilterTipster==='all'?'active':''}" onclick="setApuestasFilterTipster('all',this)">Todos</button>` +
     data.tipsters.map(t => `<button class="tf-btn ${apFilterTipster===t.id?'active':''}" onclick="setApuestasFilterTipster(${t.id},this)">${t.name}</button>`).join('');
+  updateApuestasGrupoFilter();
+}
+function setApuestasFilterGrupo(g) {
+  apFilterGrupo = g;
+  updateApuestasGrupoFilter();
+  renderApuestasList();
+}
+function updateApuestasGrupoFilter() {
+  const el = document.getElementById('apGrupoFilter'); if (!el) return;
+  ensureGrupos();
+  if (!data.grupos.length) { el.innerHTML = '<span style="font-size:0.62rem;color:var(--muted);">Todavía no creaste grupos. Se crean desde Nueva Apuesta.</span>'; return; }
+  el.innerHTML = `<button class="tf-btn ${!apFilterGrupo?'active':''}" onclick="setApuestasFilterGrupo(null)">Todos</button>` +
+    data.grupos.map(g => `<button class="tf-btn ${apFilterGrupo===g?'active':''}" onclick="setApuestasFilterGrupo('${g.replace(/'/g,"\\'")}')">🏷️ ${g}</button>`).join('');
 }
 function renderApuestasList() {
   const el = document.getElementById('apuestasTable'); if (!el) return;
   let bets = data.tipsters.flatMap(t => t.bets.map(b => ({ ...b, tipsterName: t.name, tipsterId: t.id })));
   if (apFilterTipster !== 'all') bets = bets.filter(b => b.tipsterId === apFilterTipster);
+  if (apFilterGrupo) bets = bets.filter(b => b.grupo === apFilterGrupo);
   if (apFilterJugada === 'played') bets = bets.filter(b => b.played);
   else if (apFilterJugada === 'skipped') bets = bets.filter(b => !b.played);
   if (apFilterResult !== 'all') bets = bets.filter(b => b.result === apFilterResult);
@@ -4379,8 +4579,14 @@ function renderUnidades() {
 // CHARTS TAB
 // ============================================================
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
-function cOpts(pre='',suf=''){
-  return{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>{if(pre==='$')return(v<0?'-$'+Math.abs(v):'$'+v);return v+suf;}},grid:{color:'rgba(255,255,255,.04)'}}}};
+// Fecha corta para ejes: "5 oct" (sin año). Evita duplicar día+mes cuando dos fechas caen el mismo mes consecutivo.
+const SHORT_MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function shortDateLabel(iso) {
+  const [, m, d] = iso.split('-').map(Number);
+  return parseInt(d,10) + ' ' + SHORT_MONTHS[m-1];
+}
+function cOpts(pre='',suf='',sym='$'){
+  return{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>{if(pre==='$')return(v<0?'-'+sym+Math.abs(v):sym+v);return v+suf;}},grid:{color:'rgba(255,255,255,.04)'}}}};
 }
 function setChartFilter(f){chartFilter=f;['all','played','skipped'].forEach(x=>document.getElementById('flt-'+x).className='flt-btn'+(x===f?' a-'+x:''));renderCharts();}
 function updateTypesFilterChips(typeMap, typeCount) {
@@ -4454,6 +4660,7 @@ function updateChartTipsterFilter(){
       return `<button class="tipster-chip ${sel?'sel':''}" style="--tc:${col}" onclick="toggleChartTipster(${t.id})">${t.desactivado?'🔌 ':t.archivado?'📦 ':''}${t.name}</button>`;
     }).join('');
   updateChartGrupoFilterBar();
+  updateChartCasaFilterBar();
 }
 function updateChartGrupoFilterBar(){
   const el=document.getElementById('chartGrupoFilterBar'); if(!el) return;
@@ -4479,8 +4686,51 @@ function getActiveTipsters(){
   if (chartExcludeArchived) ts = ts.filter(t=>!t.archivado&&!t.desactivado);
   return ts;
 }
+// ── Casa / moneda en Gráficas ──
+// Con una sola casa en la vista, todo se muestra en SU moneda (sin conversión).
+// Con ambas casas mezcladas, los montos se pasan a pesos usando el tipo de cambio guardado en cada apuesta
+// y debajo de los totales se muestra el detalle real por casa.
+function computeChartCasaEff() {
+  if (chartCasaFilter) return chartCasaFilter;
+  const set = new Set(filterByGrupo(filterByPeriodEx(getActiveTipsters().flatMap(t => statsBets(t.bets)), chartPeriod)).map(b => b.casa || '1xbet'));
+  return set.size === 1 ? [...set][0] : null;
+}
+function chartMoney(amount, b) { return chartCasaEff ? amount : toPesos(amount, b.casa || '1xbet', b.fx); }
+function chartProfitOf(b) { return chartMoney(calcProfit(b), b); }
+function chartMontoOf(b)  { return chartMoney(b.monto || 0, b); }
+function chartSym() { return chartCasaEff ? CASA_INFO[chartCasaEff].symbol : '$'; }
+function chartFmt(n) { return (n >= 0 ? '+' : '-') + chartSym() + Math.abs(n).toFixed(2); }
+function updateChartCasaFilterBar() {
+  const el = document.getElementById('chartCasaFilterBar'); if (!el) return;
+  const btn = (val, label) => `<button class="tf-btn ${chartCasaFilter === val ? 'active' : ''}" onclick="setChartCasaFilter(${val ? "'" + val + "'" : 'null'})">${label}</button>`;
+  el.innerHTML = btn(null, 'Todas') + btn('1xbet', '1xbet ($)') + btn('bet365', 'bet365 (US$)');
+}
+function setChartCasaFilter(c) {
+  chartCasaFilter = c;
+  updateChartCasaFilterBar();
+  renderCharts();
+}
+function renderCasasBreakdown(closed) {
+  const el = document.getElementById('cs-casas'); if (!el) return;
+  const per = {};
+  closed.forEach(b => {
+    const c = b.casa || '1xbet';
+    const x = per[c] || (per[c] = { n: 0, profit: 0, invested: 0 });
+    x.n++; x.profit += calcProfit(b); x.invested += b.monto || 0;
+  });
+  const casas = Object.keys(per);
+  if (chartCasaEff || casas.length < 2) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.innerHTML = '💱 Vista mixta: los totales de arriba están en $ (bet365 convertido con el cambio de cada apuesta). En su moneda real:<br>' +
+    casas.map(c => {
+      const x = per[c], y = x.invested > 0 ? x.profit / x.invested * 100 : 0;
+      return '• ' + CASA_INFO[c].label + ': ' + (x.profit >= 0 ? '+' : '-') + CASA_INFO[c].symbol + Math.abs(x.profit).toFixed(2) + ' (yield ' + y.toFixed(1) + '%, ' + x.n + ' cerradas)';
+    }).join('<br>');
+}
 function filterByGrupo(bets) {
-  return chartGrupoFilter ? bets.filter(b => b.grupo === chartGrupoFilter) : bets;
+  let r = chartGrupoFilter ? bets.filter(b => b.grupo === chartGrupoFilter) : bets;
+  if (chartCasaFilter) r = r.filter(b => (b.casa || '1xbet') === chartCasaFilter);
+  return r;
 }
 function getFilteredBets(){
   let ts=getActiveTipsters();
@@ -4488,20 +4738,202 @@ function getFilteredBets(){
   if(chartFilter==='played') bets=bets.filter(b=>b.played);
   else if(chartFilter==='skipped') bets=bets.filter(b=>!b.played);
   if(chartGrupoFilter) bets=bets.filter(b=>b.grupo===chartGrupoFilter);
+  if(chartCasaFilter) bets=bets.filter(b=>(b.casa||'1xbet')===chartCasaFilter);
   return filterByPeriodEx(bets,chartPeriod);
 }
+// ============================================================
+// EXPORTAR LA VISTA ACTUAL DE GRÁFICAS
+// Respeta exactamente los filtros activos: tipsters, jugadas/no jugadas, grupo, período y rango de fechas.
+// Los totales van SEPARADOS por casa (1xbet en $, bet365 en US$) sin mezclar monedas.
+// ============================================================
+const EXPORT_PERIOD_LABELS = { all:'Todo', '1y':'Último año', '6m':'Últimos 6 meses', '3m':'Últimos 3 meses', '1m':'Último mes', '1w':'Última semana', '1d':'Hoy' };
+function exportViewFilters() {
+  const per = chartPeriod === 'custom' ? ((chartDateFrom||'inicio') + ' → ' + (chartDateTo||'hoy')) : (EXPORT_PERIOD_LABELS[chartPeriod] || chartPeriod);
+  return {
+    grupo: chartGrupoFilter || 'Todos',
+    casa: chartCasaFilter ? CASA_INFO[chartCasaFilter].label : 'Todas',
+    tipsters: (chartTipsters.length === 0 && !chartExcludeArchived) ? 'Todos' : getActiveTipsters().map(t => t.name),
+    apuestas: chartFilter === 'played' ? 'Solo jugadas' : chartFilter === 'skipped' ? 'Solo no jugadas' : 'Todas',
+    periodo: per,
+    solo_activos: !!chartExcludeArchived
+  };
+}
+function buildExportView() {
+  const bets = getFilteredBets().slice().sort((a,b) => (a.fecha||'').localeCompare(b.fecha||'') || (a.id||0) - (b.id||0));
+  const rows = bets.map(b => {
+    const casa = b.casa || '1xbet';
+    const closed = b.result !== 'pending';
+    const u = calcUnits(b);
+    return {
+      fecha: b.fecha || null, tipster: b.tipsterName, grupo: b.grupo || '', descripcion: b.desc || '',
+      deporte: b.deporte || '', tipos: b.types || [], casa, moneda: CASA_INFO[casa].symbol,
+      stake: b.stake ?? null, monto: b.monto ?? null, cuota: b.cuota ?? null, eventos: b.eventos ?? null,
+      jugada: !!b.played, resultado: b.result,
+      profit: closed ? +calcProfit(b).toFixed(2) : null,
+      unidades: (closed && u != null) ? +u.toFixed(2) : null
+    };
+  });
+  const porCasa = {}, dia = {};
+  let unidades = 0;
+  rows.forEach(r => {
+    const c = porCasa[r.casa] || (porCasa[r.casa] = { moneda: r.moneda, apuestas:0, ganadas:0, perdidas:0, void:0, pendientes:0, invertido:0, profit:0 });
+    c.apuestas++;
+    if (r.resultado === 'pending') { c.pendientes++; return; }
+    if (r.resultado === 'win') c.ganadas++; else if (r.resultado === 'loss') c.perdidas++; else c.void++;
+    c.invertido += r.monto || 0; c.profit += r.profit || 0;
+    unidades += r.unidades || 0;
+    if (r.fecha) { const d = dia[r.casa] || (dia[r.casa] = {}); d[r.fecha] = (d[r.fecha] || 0) + (r.profit || 0); }
+  });
+  Object.values(porCasa).forEach(c => {
+    c.yield_pct = c.invertido > 0 ? +(c.profit / c.invertido * 100).toFixed(2) : 0;
+    c.winrate_pct = (c.ganadas + c.perdidas) > 0 ? +(c.ganadas / (c.ganadas + c.perdidas) * 100).toFixed(1) : 0;
+    c.invertido = +c.invertido.toFixed(2); c.profit = +c.profit.toFixed(2);
+  });
+  const diario = {};
+  Object.keys(dia).forEach(casa => {
+    let acum = 0;
+    diario[casa] = Object.keys(dia[casa]).sort().map(f => { acum += dia[casa][f]; return { fecha: f, profit_dia: +dia[casa][f].toFixed(2), acumulado: +acum.toFixed(2) }; });
+  });
+  const fechas = rows.map(r => r.fecha).filter(Boolean).sort();
+  return {
+    app: 'Tipsterbook',
+    exportado: new Date().toISOString(),
+    filtros: exportViewFilters(),
+    rango_real: { desde: fechas[0] || null, hasta: fechas[fechas.length-1] || null },
+    resumen: { apuestas: rows.length, unidades_netas: +unidades.toFixed(2), por_casa: porCasa },
+    profit_acumulado_por_dia: diario,
+    apuestas: rows
+  };
+}
+function exportSm(n, casa) { return (n >= 0 ? '+' : '-') + CASA_INFO[casa].symbol + Math.abs(n).toFixed(2); }
+function exportViewToTxt(v) {
+  const f = v.filtros, L = [];
+  const stamp = new Date().toLocaleString('sv-SE').slice(0,16);
+  L.push('TIPSTERBOOK — Exportación de vista');
+  L.push('Generado: ' + stamp);
+  L.push('');
+  L.push('FILTROS');
+  L.push('  Grupo:     ' + f.grupo);
+  L.push('  Tipsters:  ' + (Array.isArray(f.tipsters) ? f.tipsters.join(', ') : f.tipsters));
+  L.push('  Apuestas:  ' + f.apuestas);
+  L.push('  Casa:      ' + f.casa);
+  L.push('  Período:   ' + f.periodo + (v.rango_real.desde ? '  (datos: ' + v.rango_real.desde + ' → ' + v.rango_real.hasta + ')' : ''));
+  L.push('');
+  L.push('RESUMEN (por casa, sin mezclar monedas)');
+  Object.keys(v.resumen.por_casa).forEach(casa => {
+    const c = v.resumen.por_casa[casa];
+    L.push('  ' + CASA_INFO[casa].label + ' (' + c.moneda + '): ' + c.apuestas + ' apuestas | ' + c.ganadas + 'G ' + c.perdidas + 'P ' + c.void + 'V ' + c.pendientes + ' pend | invertido ' + c.moneda + c.invertido.toFixed(2) + ' | profit ' + exportSm(c.profit, casa) + ' | yield ' + c.yield_pct.toFixed(1) + '% | WR ' + c.winrate_pct.toFixed(0) + '%');
+  });
+  L.push('  Unidades netas (todas las casas): ' + (v.resumen.unidades_netas >= 0 ? '+' : '') + v.resumen.unidades_netas.toFixed(2) + 'u');
+  Object.keys(v.profit_acumulado_por_dia).forEach(casa => {
+    L.push('');
+    L.push('PROFIT ACUMULADO POR DÍA — ' + CASA_INFO[casa].label + ' (' + CASA_INFO[casa].symbol + ')');
+    v.profit_acumulado_por_dia[casa].forEach(d => L.push('  ' + d.fecha + '   ' + exportSm(d.profit_dia, casa).padStart(11) + '   acum ' + exportSm(d.acumulado, casa)));
+  });
+  L.push('');
+  L.push('APUESTAS (' + v.apuestas.length + ')');
+  const cols = [
+    ['Fecha',   r => r.fecha || '—'],
+    ['Tipster', r => r.tipster],
+    ['Casa',    r => r.casa],
+    ['Stake',   r => r.stake == null ? '—' : String(r.stake)],
+    ['Monto',   r => r.monto == null ? '—' : r.moneda + r.monto.toFixed(2)],
+    ['Cuota',   r => r.cuota == null ? '—' : r.cuota.toFixed(2)],
+    ['Jug.',    r => r.jugada ? 'SI' : 'NO'],
+    ['Result.', r => ({win:'GANADA', loss:'PERDIDA', void:'VOID', pending:'PENDIENTE'})[r.resultado] || r.resultado],
+    ['Profit',  r => r.profit == null ? '—' : exportSm(r.profit, r.casa)]
+  ];
+  if (f.grupo === 'Todos') cols.push(['Grupo', r => r.grupo || '—']);
+  cols.push(['Descripción', r => r.descripcion || '—']);
+  const cells = v.apuestas.map(r => cols.map(c => c[1](r)));
+  const w = cols.map((c, i) => Math.max(c[0].length, ...cells.map(row => row[i].length)));
+  const line = row => '  ' + row.map((x, i) => i === row.length - 1 ? x : x.padEnd(w[i])).join('  ');
+  L.push(line(cols.map(c => c[0])));
+  L.push('  ' + w.slice(0, -1).map(n => '-'.repeat(n)).join('  ') + '  ' + '-'.repeat(11));
+  cells.forEach(row => L.push(line(row)));
+  return L.join('\n') + '\n';
+}
+function exportViewToCsv(v) {
+  const esc = x => { const s = x == null ? '' : String(x); return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const head = ['fecha','tipster','grupo','casa','moneda','stake','monto','cuota','jugada','resultado','profit','unidades','deporte','tipos','descripcion'];
+  const lines = [head.join(',')];
+  v.apuestas.forEach(r => lines.push([r.fecha, r.tipster, r.grupo, r.casa, r.moneda, r.stake, r.monto, r.cuota, r.jugada ? 'si' : 'no', r.resultado, r.profit, r.unidades, r.deporte, (r.tipos||[]).join(' + '), r.descripcion].map(esc).join(',')));
+  return '\ufeff' + lines.join('\n') + '\n';
+}
+function downloadBlob(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+function exportViewBaseName(v) {
+  const slug = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase();
+  const desde = chartPeriod === 'custom' ? (chartDateFrom || v.rango_real.desde || 'inicio') : (v.rango_real.desde || 'inicio');
+  const hasta = chartPeriod === 'custom' ? (chartDateTo || v.rango_real.hasta || 'hoy') : (v.rango_real.hasta || 'hoy');
+  return 'tipsterbook_' + slug(v.filtros.grupo === 'Todos' ? 'todos' : v.filtros.grupo) + '_' + desde + '_' + hasta;
+}
+function exportViewPng(v, base) {
+  if (!charts.cProfit) renderCharts();
+  const src = document.getElementById('chartProfit');
+  if (!src || !charts.cProfit) return showToast('No se pudo generar la gráfica', false);
+  const s = src.width / (src.clientWidth || src.width);
+  const pad = 14 * s, lines = [];
+  const f = v.filtros;
+  lines.push('Grupo: ' + f.grupo + '  ·  Casa: ' + f.casa + '  ·  Período: ' + f.periodo + '  ·  ' + f.apuestas);
+  Object.keys(v.resumen.por_casa).forEach(casa => {
+    const c = v.resumen.por_casa[casa];
+    lines.push(CASA_INFO[casa].label + ': ' + c.apuestas + ' apuestas · profit ' + exportSm(c.profit, casa) + ' · yield ' + c.yield_pct.toFixed(1) + '% · WR ' + c.winrate_pct.toFixed(0) + '%');
+  });
+  if (Object.keys(v.resumen.por_casa).length > 1 && !chartCasaEff) lines.push('Nota: la curva está en $ (bet365 convertido con el cambio de cada apuesta).');
+  else if (chartCasaEff) lines.push('Moneda de la curva: ' + CASA_INFO[chartCasaEff].symbol);
+  const head = (34 + lines.length * 17) * s;
+  const out = document.createElement('canvas');
+  out.width = src.width + pad * 2; out.height = src.height + head + pad;
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#0d1018'; ctx.fillRect(0, 0, out.width, out.height);
+  ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold ' + (15 * s) + 'px sans-serif';
+  ctx.fillText('Profit acumulado — Tipsterbook', pad, 24 * s);
+  ctx.fillStyle = '#8b95b0'; ctx.font = (11 * s) + 'px monospace';
+  lines.forEach((t, i) => ctx.fillText(t, pad, (44 + i * 17) * s));
+  ctx.drawImage(src, pad, head);
+  out.toBlob(b => { if (b) { downloadBlob(b, base + '.png'); showToast('📥 Gráfica exportada'); } else showToast('No se pudo generar la imagen', false); }, 'image/png');
+}
+function openExportView() {
+  const f = exportViewFilters();
+  const n = getFilteredBets().length;
+  document.getElementById('exportViewInfo').innerHTML =
+    'Se exporta lo que estás viendo (' + n + ' apuestas)<br>Grupo: ' + f.grupo + ' · Casa: ' + f.casa + ' · Período: ' + f.periodo + '<br>' +
+    'Tipsters: ' + (Array.isArray(f.tipsters) ? f.tipsters.join(', ') : f.tipsters) + ' · ' + f.apuestas;
+  document.getElementById('exportViewOverlay').style.display = 'flex';
+}
+function closeExportView() { document.getElementById('exportViewOverlay').style.display = 'none'; }
+function exportView(kind) {
+  closeExportView();
+  const v = buildExportView();
+  if (!v.apuestas.length) return showToast('No hay apuestas en esta vista para exportar', false);
+  const base = exportViewBaseName(v);
+  if (kind === 'json') downloadBlob(new Blob([JSON.stringify(v, null, 2)], { type: 'application/json' }), base + '.json');
+  else if (kind === 'txt') downloadBlob(new Blob([exportViewToTxt(v)], { type: 'text/plain;charset=utf-8' }), base + '.txt');
+  else if (kind === 'csv') downloadBlob(new Blob([exportViewToCsv(v)], { type: 'text/csv;charset=utf-8' }), base + '.csv');
+  else if (kind === 'png') return exportViewPng(v, base);
+  showToast('📥 Exportado: ' + base + '.' + kind);
+}
+
 function renderCharts(){
   updateChartTipsterFilter();
+  chartCasaEff = computeChartCasaEff();
+  const cSym = chartSym();
   const bets=getFilteredBets();
   const closed=bets.filter(b=>b.result!=='pending');
   let profit=0,invested=0,won=0;
-  closed.forEach(b=>{invested+=b.monto||0;profit+=calcProfit(b);if(b.result==='win')won++;});
+  closed.forEach(b=>{invested+=chartMontoOf(b);profit+=chartProfitOf(b);if(b.result==='win')won++;});
+  renderCasasBreakdown(closed);
   const yield_=invested>0?profit/invested*100:0;
   const wr=closed.filter(b=>b.result!=='void').length>0?won/closed.filter(b=>b.result!=='void').length*100:0;
   const avgSt=bets.length>0?bets.reduce((s,b)=>s+(b.stake||0),0)/bets.length:0;
   const se=(id,txt,cls)=>{const e=document.getElementById(id);if(e){e.textContent=txt;if(cls)e.className='stat-val '+cls;}};
   se('cs-bets',bets.length,'purple');
-  se('cs-profit',fmt(profit),profit>=0?'green':'red');
+  se('cs-profit',chartFmt(profit),profit>=0?'green':'red');
   se('cs-yield',yield_.toFixed(1)+'%',yield_>=0?'cyan':'red');
   se('cs-wr',wr.toFixed(0)+'%','gold');
   se('cs-stake',avgSt.toFixed(1)+'u');
@@ -4514,12 +4946,12 @@ function renderCharts(){
   destroyChart('cProfit');
   const sc=closed.filter(b=>b.fecha).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const dateMap={};
-  sc.forEach(b=>{if(!dateMap[b.fecha])dateMap[b.fecha]=0;dateMap[b.fecha]+=calcProfit(b);});
+  sc.forEach(b=>{if(!dateMap[b.fecha])dateMap[b.fecha]=0;dateMap[b.fecha]+=chartProfitOf(b);});
   const sortedDays=Object.keys(dateMap).sort();
-  let cum=0;const lb=[],vl=[];
-  sortedDays.forEach(d=>{cum+=dateMap[d];lb.push(d);vl.push(parseFloat(cum.toFixed(2)));});
+  let cum=0;const lb=[],vl=[],lbFull=[];
+  sortedDays.forEach(d=>{cum+=dateMap[d];lb.push(shortDateLabel(d));lbFull.push(d);vl.push(parseFloat(cum.toFixed(2)));});
   const c1=document.getElementById('chartProfit')?.getContext('2d');
-  if(c1) charts.cProfit=new Chart(c1,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado',data:vl,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,.12)',fill:true,tension:0.4,pointRadius:vl.length>60?0:4,pointHoverRadius:6,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444'),pointBorderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}},tooltip:{callbacks:{label:ctx=>{const v=ctx.parsed.y;return(v>=0?'+$':'-$')+Math.abs(v).toFixed(2);}}}},scales:{x:{ticks:{color:'#6b7694',maxTicksLimit:12},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694',callback:v=>v<0?'-$'+Math.abs(v):'$'+v},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  if(c1) charts.cProfit=new Chart(c1,{type:'line',data:{labels:lb,datasets:[{label:'Profit Acumulado',data:vl,borderColor:'#6c63ff',backgroundColor:'rgba(108,99,255,.12)',fill:true,tension:0.4,pointRadius:vl.length>60?0:4,pointHoverRadius:6,pointBackgroundColor:vl.map(v=>v>=0?'#22c55e':'#ef4444'),pointBorderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{bottom:2}},plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}},tooltip:{callbacks:{title:items=>lbFull[items[0].dataIndex]||'',label:ctx=>{const v=ctx.parsed.y;return(v>=0?'+'+cSym:'-'+cSym)+Math.abs(v).toFixed(2);}}}},scales:{x:{ticks:{color:'#9aa4bf',maxTicksLimit:7,autoSkip:true,maxRotation:0,minRotation:0,font:{family:"'DM Sans',sans-serif",size:11}},grid:{display:false},border:{color:'rgba(255,255,255,.08)'}},y:{ticks:{color:'#6b7694',callback:v=>v<0?'-'+cSym+Math.abs(v):cSym+v},grid:{color:'rgba(255,255,255,.04)'}}}}});
 
   destroyChart('cResults');
   const c2=document.getElementById('chartResults')?.getContext('2d');
@@ -4530,7 +4962,7 @@ function renderCharts(){
   closed.forEach(b=>{
     const key = (b.types && b.types.length) ? [...b.types].sort().join(' + ') : 'Sin tipo';
     if(!typeMap[key]) { typeMap[key]=0; typeCount[key]=0; }
-    typeMap[key]+=calcProfit(b);
+    typeMap[key]+=chartProfitOf(b);
     typeCount[key]++;
   });
   updateTypesFilterChips(typeMap, typeCount);
@@ -4539,18 +4971,18 @@ function renderCharts(){
   const tl=sortedKeys.map(k=>k+' ('+typeCount[k]+')');
   const tvFinal=sortedKeys.map(k=>parseFloat(typeMap[k].toFixed(2)));
   const c3=document.getElementById('chartTypes')?.getContext('2d');
-  if(c3) charts.cTypes=new Chart(c3,{type:'bar',data:{labels:tl,datasets:[{label:'Profit',data:tvFinal,backgroundColor:tvFinal.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:tvFinal.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1,borderRadius:3}]},options:{indexAxis:'y',...cOpts('$'),plugins:{...cOpts('$').plugins,legend:{display:false}}}});
+  if(c3) charts.cTypes=new Chart(c3,{type:'bar',data:{labels:tl,datasets:[{label:'Profit',data:tvFinal,backgroundColor:tvFinal.map(v=>v>=0?'rgba(34,197,94,.6)':'rgba(239,68,68,.6)'),borderColor:tvFinal.map(v=>v>=0?'#22c55e':'#ef4444'),borderWidth:1,borderRadius:3}]},options:{indexAxis:'y',...cOpts('$','',cSym),plugins:{...cOpts('$','',cSym).plugins,legend:{display:false}}}});
 
   destroyChart('cJugadas');
   let allB=filterByGrupo(filterByPeriodEx(getActiveTipsters().flatMap(t=>statsBets(t.bets)),chartPeriod)).filter(b=>b.result!=='pending');
   const pb2=allB.filter(b=>b.played),sb2=allB.filter(b=>!b.played);
-  const pP=pb2.reduce((s,b)=>s+calcProfit(b),0),sP=sb2.reduce((s,b)=>s+calcProfit(b),0);
-  const pI=pb2.reduce((s,b)=>s+(b.monto||0),0),sI=sb2.reduce((s,b)=>s+(b.monto||0),0);
+  const pP=pb2.reduce((s,b)=>s+chartProfitOf(b),0),sP=sb2.reduce((s,b)=>s+chartProfitOf(b),0);
+  const pI=pb2.reduce((s,b)=>s+chartMontoOf(b),0),sI=sb2.reduce((s,b)=>s+chartMontoOf(b),0);
   const pY2=pI>0?pP/pI*100:0,sY2=sI>0?sP/sI*100:0;
   const pWR=pb2.filter(b=>b.result!=='void').length>0?pb2.filter(b=>b.result==='win').length/pb2.filter(b=>b.result!=='void').length*100:0;
   const sWR=sb2.filter(b=>b.result!=='void').length>0?sb2.filter(b=>b.result==='win').length/sb2.filter(b=>b.result!=='void').length*100:0;
   const c4=document.getElementById('chartJugadas')?.getContext('2d');
-  if(c4) charts.cJugadas=new Chart(c4,{type:'bar',data:{labels:['Profit ($)','Yield (%)','Win Rate (%)'],datasets:[{label:'✅ Jugadas',data:[parseFloat(pP.toFixed(2)),parseFloat(pY2.toFixed(1)),parseFloat(pWR.toFixed(1))],backgroundColor:pP>=0?'rgba(34,197,94,.65)':'rgba(239,68,68,.65)',borderColor:pP>=0?'#22c55e':'#ef4444',borderWidth:1},{label:'👁 No Jugadas',data:[parseFloat(sP.toFixed(2)),parseFloat(sY2.toFixed(1)),parseFloat(sWR.toFixed(1))],backgroundColor:sP>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)',borderColor:sP>=0?'#06b6d4':'#fb923c',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  if(c4) charts.cJugadas=new Chart(c4,{type:'bar',data:{labels:['Profit ('+cSym+')','Yield (%)','Win Rate (%)'],datasets:[{label:'✅ Jugadas',data:[parseFloat(pP.toFixed(2)),parseFloat(pY2.toFixed(1)),parseFloat(pWR.toFixed(1))],backgroundColor:pP>=0?'rgba(34,197,94,.65)':'rgba(239,68,68,.65)',borderColor:pP>=0?'#22c55e':'#ef4444',borderWidth:1},{label:'👁 No Jugadas',data:[parseFloat(sP.toFixed(2)),parseFloat(sY2.toFixed(1)),parseFloat(sWR.toFixed(1))],backgroundColor:sP>=0?'rgba(6,182,212,.55)':'rgba(251,146,60,.65)',borderColor:sP>=0?'#06b6d4':'#fb923c',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e2e8f0',font:{family:'DM Sans'}}}},scales:{x:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b7694'},grid:{color:'rgba(255,255,255,.04)'}}}}});
 
   const activeTips = getActiveTipsters();
   const multiMode = activeTips.length !== 1;
@@ -4569,14 +5001,14 @@ function renderCharts(){
         let b=filterByGrupo(statsBets(t.bets).filter(x=>x.result!=='pending'&&x.fecha));
         if(chartFilter==='played') b=b.filter(x=>x.played);
         else if(chartFilter==='skipped') b=b.filter(x=>!x.played);
-        const dm={};b.forEach(x=>{if(!dm[x.fecha])dm[x.fecha]=0;dm[x.fecha]+=calcProfit(x);});
+        const dm={};b.forEach(x=>{if(!dm[x.fecha])dm[x.fecha]=0;dm[x.fecha]+=chartProfitOf(x);});
         let r=0;
         const dp=allSortedDates.map(d=>{r+=(dm[d]||0);return parseFloat(r.toFixed(2));});
         const col=COLORS[data.tipsters.indexOf(t)%COLORS.length];
         return{label:t.name,data:dp,borderColor:col,backgroundColor:'transparent',tension:0.4,pointRadius:allSortedDates.length>60?0:3,pointHoverRadius:5};
       });
       const c5=document.getElementById('chartAllTipsters')?.getContext('2d');
-      if(c5) charts.cAll=new Chart(c5,{type:'line',data:{labels:allSortedDates,datasets},options:cOpts('$')});
+      if(c5) charts.cAll=new Chart(c5,{type:'line',data:{labels:allSortedDates,datasets},options:cOpts('$','',cSym)});
     }
   }
 
@@ -4598,8 +5030,8 @@ function renderCharts(){
     const key=b.played?'p':'s';
     if(!roiMap[key][m]) roiMap[key][m]={profit:0,invested:0};
     if(!roiMap.a[m])    roiMap.a[m]   ={profit:0,invested:0};
-    roiMap[key][m].profit+=calcProfit(b); roiMap[key][m].invested+=b.monto||0;
-    roiMap.a[m].profit   +=calcProfit(b); roiMap.a[m].invested   +=b.monto||0;
+    roiMap[key][m].profit+=chartProfitOf(b); roiMap[key][m].invested+=chartMontoOf(b);
+    roiMap.a[m].profit   +=chartProfitOf(b); roiMap.a[m].invested   +=chartMontoOf(b);
   });
   const roiMonths=[...new Set(roiAllBets.map(b=>b.fecha.substring(0,7)))].sort();
   const roiV=k=>roiMonths.map(m=>roiMap[k][m]&&roiMap[k][m].invested>0?parseFloat((roiMap[k][m].profit/roiMap[k][m].invested*100).toFixed(1)):null);
@@ -4653,7 +5085,7 @@ function exportData(){
 function importData(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=e=>{try{data=JSON.parse(e.target.result); if(!data.retos) data.retos=[]; ensureBalanceData(); ensureGlobalStakeDefault(); migrateOldTypeLabels(); ensureNotas(); ensureGrupos(); data.tipsters.forEach(t=>{refreshBankPico(t);maybeRefreshBankPctSnapshot(t);}); save();renderAll();showToast('✅ Datos importados');}catch{showToast('❌ Archivo inválido',false);}};
+  r.onload=e=>{try{data=JSON.parse(e.target.result); if(!data.retos) data.retos=[]; ensureBalanceData(); ensureGlobalStakeDefault(); migrateOldTypeLabels(); ensureNotas(); ensureGrupos(); migrateFxAndRetoCasa(); data.tipsters.forEach(t=>{refreshBankPico(t);maybeRefreshBankPctSnapshot(t);}); save();renderAll();showToast('✅ Datos importados');}catch{showToast('❌ Archivo inválido',false);}};
   r.readAsText(f);ev.target.value='';
 }
 
@@ -4712,6 +5144,15 @@ window.setTCMetric=setTCMetric;
 window.setResult=setResult;
 window.toggleEditDescExpand=toggleEditDescExpand;
 window.setEditCasa=setEditCasa;
+window.onEditCasaTap=onEditCasaTap;
+window.applyExchangeToHistory=applyExchangeToHistory;
+window.setRetoCasaPending=setRetoCasaPending;
+window.restorePrebackup=restorePrebackup;
+window.openExportView=openExportView;
+window.setChartCasaFilter=setChartCasaFilter;
+window.setApuestasFilterGrupo=setApuestasFilterGrupo;
+window.closeExportView=closeExportView;
+window.exportView=exportView;
 window.toggleDescExpand=toggleDescExpand;
 window.setJugada=setJugada;
 window.recalcEditMontoForJugadaContext=recalcEditMontoForJugadaContext;
